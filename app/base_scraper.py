@@ -96,15 +96,15 @@ class BaseScraper(ABC):
             logger.warning(f"Error checking robots.txt for {url}: {e}")
             return True
     
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=5))
     def _fetch_page(self, url):
-        """Fetch a single page with retries"""
+        """Fetch a single page with retries (optimized for performance)"""
         if not self.can_fetch(url):
             logger.warning(f"Robots.txt disallows fetching {url}")
             return None
         
         try:
-            response = self.session.get(url, timeout=30)
+            response = self.session.get(url, timeout=15)  # Reduced timeout
             response.raise_for_status()
             return response.text
         except Exception as e:

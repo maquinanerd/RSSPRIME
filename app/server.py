@@ -94,8 +94,9 @@ def dynamic_feeds(source, section, format):
                 source=source, 
                 section=section, 
                 store=store, 
-                max_pages=3, 
-                request_delay=REQUEST_DELAY_MS/1000.0
+                max_pages=2,  # Reduced for performance
+                max_articles=20,  # Limit articles to prevent timeouts
+                request_delay=0.3  # Reduced delay for faster scraping
             )
             logger.info(f"Scraped {len(new_articles)} new articles for {source}/{section}")
             articles = store.get_recent_articles(

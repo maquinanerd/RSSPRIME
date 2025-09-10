@@ -64,8 +64,8 @@ class ScraperFactory:
         cls._scrapers.clear()
     
     @classmethod
-    def scrape_source_section(cls, source, section, store, max_pages=3, request_delay=1.0):
-        """Scrape a specific source and section"""
+    def scrape_source_section(cls, source, section, store, max_pages=2, max_articles=20, request_delay=0.3):
+        """Scrape a specific source and section with performance optimizations"""
         try:
             scraper = cls.get_scraper(source, store, request_delay)
             source_config = SOURCES_CONFIG[source]
@@ -80,8 +80,47 @@ class ScraperFactory:
             # TODO: Implement multi-URL scraping
             url = start_urls[0]
             
-            logger.info(f"Scraping {source}/{section} from {url}")
-            return scraper.scrape_and_store(url, max_pages=max_pages, source=source, section=section)
+            logger.info(f"Scraping {source}/{section} from {url} (max_articles: {max_articles})")
+            
+            # Use optimized scraping with article limits to prevent timeouts
+            all_article_urls = scraper.list_pages(url, max_pages)
+            
+            # Limit articles to prevent worker timeouts
+            limited_urls = all_article_urls[:max_articles] if len(all_article_urls) > max_articles else all_article_urls
+            logger.info(f"Processing {len(limited_urls)} articles (found {len(all_article_urls)})")
+            
+            new_articles = []
+            filters = section_config.get('filters', {})
+            
+            for i, article_url in enumerate(limited_urls, 1):
+                try:
+                    logger.info(f"Processing article {i}/{len(limited_urls)}: {article_url}")
+                    
+                    # Parse article
+                    article = scraper.parse_article(article_url, source=source, section=section)
+                    if not article:
+                        continue
+                    
+                    # Apply filters
+                    if filters and scraper._should_filter_article(article, filters):
+                        logger.info(f"Article filtered out: {article_url}")
+                        continue
+                    
+                    # Store article
+                    if scraper.store.upsert_article(article):
+                        new_articles.append(article)
+                        logger.info(f"Stored article: {article['title']}")
+                    
+                    # Reduced delay for performance
+                    if i < len(limited_urls):
+                        import time
+                        time.sleep(request_delay)
+                        
+                except Exception as e:
+                    logger.error(f"Error processing article {article_url}: {e}")
+                    continue
+            
+            return new_articles
             
         except Exception as e:
             logger.error(f"Failed to scrape {source}/{section}: {e}")
