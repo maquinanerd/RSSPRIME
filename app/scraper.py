@@ -13,6 +13,26 @@ from .utils import normalize_date, extract_mime_type, get_user_agent
 
 logger = logging.getLogger(__name__)
 
+def clean_image_url(url: str) -> str:
+    """Clean image URL by removing CDN optimization parameters"""
+    if not url:
+        return url
+    
+    if "/uploads/" in url:
+        # Extract the host from the original URL
+        if url.startswith('http'):
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            host = f"{parsed.scheme}://{parsed.netloc}"
+        else:
+            host = "https://lncimg.lance.com.br"
+        
+        # Keep the host + path from /uploads/
+        uploads_part = url.split("/uploads/", 1)[-1]
+        return f"{host}/uploads/{uploads_part}"
+    
+    return url
+
 class LanceScraper:
     def __init__(self, store, request_delay=1.0):
         self.store = store
@@ -195,15 +215,19 @@ class LanceScraper:
         # Image
         image = json_ld.get('image')
         if image:
+            raw_image_url = ''
             if isinstance(image, str):
-                metadata['image'] = image
+                raw_image_url = image
             elif isinstance(image, dict):
-                metadata['image'] = image.get('url', '')
+                raw_image_url = image.get('url', '')
             elif isinstance(image, list) and len(image) > 0:
                 if isinstance(image[0], str):
-                    metadata['image'] = image[0]
+                    raw_image_url = image[0]
                 elif isinstance(image[0], dict):
-                    metadata['image'] = image[0].get('url', '')
+                    raw_image_url = image[0].get('url', '')
+            
+            # Clean the image URL
+            metadata['image'] = clean_image_url(raw_image_url)
         
         # Dates
         metadata['date_published'] = json_ld.get('datePublished', '')
@@ -243,7 +267,8 @@ class LanceScraper:
         # Image fallback
         img_meta = soup.find('meta', {'property': 'og:image'})
         if img_meta and hasattr(img_meta, 'get') and img_meta.get('content'):
-            metadata['image'] = str(img_meta.get('content', ''))
+            raw_image_url = str(img_meta.get('content', ''))
+            metadata['image'] = clean_image_url(raw_image_url)
         
         return metadata
     
@@ -276,7 +301,7 @@ class LanceScraper:
                 'url': url,
                 'title': metadata.get('title', '').strip(),
                 'description': metadata.get('description', '').strip(),
-                'image': metadata.get('image', '').strip(),
+                'image': clean_image_url(metadata.get('image', '').strip()),
                 'author': metadata.get('author', '').strip(),
                 'date_published': normalize_date(metadata.get('date_published')),
                 'date_modified': normalize_date(metadata.get('date_modified')),
