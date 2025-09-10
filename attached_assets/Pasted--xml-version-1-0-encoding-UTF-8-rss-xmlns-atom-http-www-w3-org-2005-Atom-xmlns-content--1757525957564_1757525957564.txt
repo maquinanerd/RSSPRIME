@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+  <channel>
+    <title>UOL - Economia - Feed não oficial</title>
+    <link>https://lance-feeds.repl.co/feeds/uol/economia/rss</link>
+    <description>Notícias de economia do UOL</description>
+    <atom:link href="https://lance-feeds.repl.co/feeds/uol/economia/rss" rel="self"/>
+    <docs>http://www.rssboard.org/rss-specification</docs>
+    <generator>Multi-Source Feed Generator v1.0</generator>
+    <language>pt-BR</language>
+    <lastBuildDate>Wed, 10 Sep 2025 17:34:27 +0000</lastBuildDate>
+    <managingEditor>noreply@lance-feeds.repl.co (Multi-Source Feed Bot)</managingEditor>
+    <ttl>15</ttl>
+    <webMaster>noreply@lance-feeds.repl.co (Multi-Source Feed Bot)</webMaster>
+    <item>
+      <title>Mercado: Economia, FinanÃ§as e Investimentos | Folha</title>
+      <link>https://www1.folha.uol.com.br/mercado/</link>
+      <description>Informe-se sobre o mercado, economia e investimentos, com informaÃ§Ã£o em tempo real. Confira indicadores, bolsa, cotaÃ§Ãµes, impostos, colunistas e mais.</description>
+      <guid isPermaLink="true">https://www1.folha.uol.com.br/mercado/</guid>
+      <enclosure url="https://f.i.uol.com.br/hunting/folha/1/common/logo-folha-facebook.jpg" length="0" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Mercado Aberto | Programa completo | 10 de setembro de 2025 - 10/09/2025 - UOL Play</title>
+      <link>https://www.uol.com.br/play/videos/economia/2025/09/10/mercado-aberto--programa-completo--10-de-setembro-de-2025.htm</link>
+      <description>Confira e acompanhe notícias e curiosidades no UOL Play</description>
+      <guid isPermaLink="true">https://www.uol.com.br/play/videos/economia/2025/09/10/mercado-aberto--programa-completo--10-de-setembro-de-2025.htm</guid>
+      <enclosure url="https://conteudo.imguol.com.br/c/interacao/facebook/uol-videos-wide.png" length="0" type="image/png"/>
+    </item>
+  </channel>
+</rss>
