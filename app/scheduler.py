@@ -7,7 +7,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 logger = logging.getLogger(__name__)
 
 class FeedScheduler:
-    def __init__(self, scraper, store, refresh_interval_minutes=15):
+    def __init__(self, scraper, store, refresh_interval_minutes=10):
         self.scraper = scraper
         self.store = store
         self.refresh_interval_minutes = refresh_interval_minutes
@@ -86,14 +86,16 @@ class FeedScheduler:
             logger.info("Starting scheduled feed refresh")
             start_time = datetime.utcnow()
             
-            # Perform scraping from multiple sources
+            # Perform scraping from multiple sources - mais páginas para pegar notícias mais recentes
             start_urls = [
                 'https://www.lance.com.br/mais-noticias',
-                'https://www.lance.com.br/brasileirao'
+                'https://www.lance.com.br/brasileirao',
+                'https://www.lance.com.br/futebol-nacional',
+                'https://www.lance.com.br/futebol-internacional'
             ]
             new_articles = self.scraper.scrape_and_store(
                 start_urls=start_urls,
-                max_pages=3
+                max_pages=5  # Aumentar para pegar mais notícias
             )
             
             # Update last run time
