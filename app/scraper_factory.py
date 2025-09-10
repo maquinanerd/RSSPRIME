@@ -102,7 +102,7 @@ class ScraperFactory:
                         continue
                     
                     # Apply filters
-                    if filters and scraper._should_filter_article(article, filters):
+                    if filters and scraper.apply_filters(article, filters):
                         logger.info(f"Article filtered out: {article_url}")
                         continue
                     

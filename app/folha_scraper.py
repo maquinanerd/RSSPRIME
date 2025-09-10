@@ -16,7 +16,7 @@ class FolhaScraper(BaseScraper):
         """Return the main domain for Folha"""
         return "folha.uol.com.br"
     
-    def extract_article_links(self, html, base_url):
+    def extract_article_links(self, html, base_url, section=None):
         """Extract article links from Folha listing pages"""
         soup = BeautifulSoup(html, 'lxml')
         links = []

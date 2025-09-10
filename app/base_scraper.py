@@ -59,6 +59,37 @@ class BaseScraper(ABC):
         """Find the URL for the next page of articles"""
         pass
     
+    def apply_filters(self, article, filters):
+        """Apply filters to an article and return True if article should be excluded"""
+        if not filters:
+            return False
+            
+        try:
+            # Check exclude_authors filter
+            if filters.get('exclude_authors'):
+                author = article.get('author', '').lower()
+                for excluded_author in filters['exclude_authors']:
+                    if excluded_author.lower() in author:
+                        logger.debug(f"Excluding article by author: {author}")
+                        return True
+            
+            # Check exclude_terms filter  
+            if filters.get('exclude_terms'):
+                title = article.get('title', '').lower()
+                description = article.get('description', '').lower()
+                
+                for term in filters['exclude_terms']:
+                    term_lower = term.lower()
+                    if term_lower in title or term_lower in description:
+                        logger.debug(f"Excluding article containing term: {term}")
+                        return True
+            
+            return False  # Article should be included
+            
+        except Exception as e:
+            logger.warning(f"Error applying filters: {e}")
+            return False  # Include article if filter evaluation fails
+    
     def can_fetch(self, url):
         """Check if we can fetch the URL according to robots.txt"""
         try:
