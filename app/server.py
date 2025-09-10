@@ -20,7 +20,12 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
-app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
+app.secret_key = os.environ.get("SESSION_SECRET")
+if not app.secret_key:
+    # For development only - use proper env var in production
+    import secrets
+    app.secret_key = secrets.token_hex(32)
+    logger.warning("SESSION_SECRET not set, using temporary secret key for development")
 
 # Configuration from environment
 MAX_PAGES = int(os.environ.get("MAX_PAGES", "3"))
@@ -126,14 +131,8 @@ def rss_feed():
         limit = min(int(request.args.get('limit', DEFAULT_LIMIT)), 100)
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
-        # Multiple source URLs to scrape from
-        default_sources = [
-            'https://www.lance.com.br/mais-noticias',
-            'https://www.lance.com.br/brasileirao',
-            'https://www.lance.com.br/futebol-nacional',
-            'https://www.lance.com.br/futebol-internacional'
-        ]
-        source_url = request.args.get('source_url', default_sources[0])
+        # Fixed source URL for security (no user-controlled URLs)
+        source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"RSS feed requested: limit={limit}, pages={pages}, q='{q}'")
 
@@ -166,7 +165,7 @@ def atom_feed():
         limit = min(int(request.args.get('limit', DEFAULT_LIMIT)), 100)
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
-        # Single source URL - mais-noticias has all the news
+        # Fixed source URL for security
         source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"Atom feed requested: limit={limit}, pages={pages}, q='{q}'")
@@ -223,7 +222,7 @@ def admin_refresh():
 
         # Parse parameters
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
-        # Single source URL - mais-noticias has all the news
+        # Fixed source URL for security
         source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"Manual refresh triggered: pages={pages}")
