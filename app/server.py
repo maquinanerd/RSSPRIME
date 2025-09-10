@@ -9,6 +9,7 @@ from .store import ArticleStore
 from .scheduler import FeedScheduler
 from .utils import validate_admin_key, parse_query_filter
 from .sources_config import SOURCES_CONFIG as SOURCES
+from .scraper_factory import ScraperFactory
 
 # Configure logging
 logging.basicConfig(
@@ -68,7 +69,7 @@ def dynamic_feeds(source, section, format):
         
         # Get section-specific filters
         section_config = SOURCES[source]['sections'][section]
-        exclude_authors = section_config.get('exclude_authors', [])
+        exclude_authors = section_config.get('filters', {}).get('exclude_authors', [])
         
         # Get articles with filters
         query_filter = parse_query_filter(query) if query else None
@@ -83,17 +84,22 @@ def dynamic_feeds(source, section, format):
         # Force refresh if requested and no recent articles
         if force_refresh or not articles:
             logger.info(f"Force refresh requested for {source}/{section}")
-            # TODO: Implement multi-source scraping
-            # For now, only refresh LANCE! articles
-            if source == 'lance':
-                new_articles = scraper.scrape_and_store('https://www.lance.com.br/mais-noticias', max_pages=3)
-                articles = store.get_recent_articles(
-                    limit=limit, 
-                    query_filter=query_filter,
-                    source=source,
-                    section=section,
-                    exclude_authors=exclude_authors
-                )
+            # Use ScraperFactory to scrape any source
+            new_articles = ScraperFactory.scrape_source_section(
+                source=source, 
+                section=section, 
+                store=store, 
+                max_pages=3, 
+                request_delay=REQUEST_DELAY_MS/1000.0
+            )
+            logger.info(f"Scraped {len(new_articles)} new articles for {source}/{section}")
+            articles = store.get_recent_articles(
+                limit=limit, 
+                query_filter=query_filter,
+                source=source,
+                section=section,
+                exclude_authors=exclude_authors
+            )
         
         # Generate feed
         if format == 'rss':
