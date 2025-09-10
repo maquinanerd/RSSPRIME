@@ -107,6 +107,44 @@ SOURCES_CONFIG = {
                 'filters': {}
             }
         }
+    },
+    'globo': {
+        'name': 'Globo Esporte',
+        'base_url': 'https://ge.globo.com',
+        'language': 'pt-BR',
+        'scraper_class': 'GloboScraper',
+        'sections': {
+            'geral': {
+                'name': 'Geral',
+                'start_urls': ['https://ge.globo.com/'],
+                'description': 'Notícias gerais do Globo Esporte',
+                'filters': {}
+            },
+            'futebol': {
+                'name': 'Futebol',
+                'start_urls': ['https://ge.globo.com/futebol/'],
+                'description': 'Notícias de futebol do Globo Esporte',
+                'filters': {}
+            },
+            'brasileirao': {
+                'name': 'Brasileirão',
+                'start_urls': ['https://ge.globo.com/futebol/brasileirao-serie-a/'],
+                'description': 'Notícias do Brasileirão',
+                'filters': {}
+            },
+            'libertadores': {
+                'name': 'Libertadores',
+                'start_urls': ['https://ge.globo.com/futebol/libertadores/'],
+                'description': 'Notícias da Copa Libertadores',
+                'filters': {}
+            },
+            'internacional': {
+                'name': 'Internacional',
+                'start_urls': ['https://ge.globo.com/futebol/futebol-internacional/'],
+                'description': 'Notícias de futebol internacional',
+                'filters': {}
+            }
+        }
     }
 }
 
