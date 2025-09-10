@@ -45,5 +45,9 @@ args = "uv add requests beautifulsoup4 lxml feedgen python-dateutil tenacity aps
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 38897
+externalPort = 3000
+
 [agent]
 integrations = ["styling_replit==1.0.0", "web_scraper==1.0.0"]
