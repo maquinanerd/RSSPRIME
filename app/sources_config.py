@@ -84,6 +84,9 @@ SOURCES_CONFIG = {
     }
 }
 
+# Alias for easier imports
+SOURCES = SOURCES_CONFIG
+
 def get_source_config(source):
     """Get configuration for a specific source"""
     return SOURCES_CONFIG.get(source)

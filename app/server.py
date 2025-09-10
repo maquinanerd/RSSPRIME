@@ -8,6 +8,7 @@ from .feeds import FeedGenerator
 from .store import ArticleStore
 from .scheduler import FeedScheduler
 from .utils import validate_admin_key, parse_query_filter
+from .sources_config import SOURCES_CONFIG as SOURCES
 
 # Configure logging
 logging.basicConfig(
@@ -45,6 +46,72 @@ def index():
         logger.error(f"Error loading index page: {e}")
         return render_template('index.html', stats={'total_articles': 0, 'last_update': None})
 
+@app.route('/feeds/<source>/<section>/<format>')
+def dynamic_feeds(source, section, format):
+    """Dynamic feeds for any source/section/format combination"""
+    try:
+        # Validate source and section
+        if source not in SOURCES:
+            return f"Unknown source: {source}", 404
+        
+        if section not in SOURCES[source]['sections']:
+            return f"Unknown section '{section}' for source '{source}'", 404
+        
+        # Validate format
+        if format not in ['rss', 'atom']:
+            return f"Unsupported format: {format}. Use 'rss' or 'atom'", 400
+        
+        # Get parameters
+        limit = min(int(request.args.get('limit', DEFAULT_LIMIT)), 100)
+        query = request.args.get('q', '')
+        force_refresh = request.args.get('refresh') == '1'
+        
+        # Get section-specific filters
+        section_config = SOURCES[source]['sections'][section]
+        exclude_authors = section_config.get('exclude_authors', [])
+        
+        # Get articles with filters
+        query_filter = parse_query_filter(query) if query else None
+        articles = store.get_recent_articles(
+            limit=limit, 
+            query_filter=query_filter,
+            source=source,
+            section=section,
+            exclude_authors=exclude_authors
+        )
+        
+        # Force refresh if requested and no recent articles
+        if force_refresh or not articles:
+            logger.info(f"Force refresh requested for {source}/{section}")
+            # TODO: Implement multi-source scraping
+            # For now, only refresh LANCE! articles
+            if source == 'lance':
+                new_articles = scraper.scrape_and_store('https://www.lance.com.br/mais-noticias', max_pages=3)
+                articles = store.get_recent_articles(
+                    limit=limit, 
+                    query_filter=query_filter,
+                    source=source,
+                    section=section,
+                    exclude_authors=exclude_authors
+                )
+        
+        # Generate feed
+        if format == 'rss':
+            feed_content = feed_generator.generate_rss(articles, source=source, section=section)
+            content_type = 'application/rss+xml'
+        else:  # atom
+            feed_content = feed_generator.generate_atom(articles, source=source, section=section)
+            content_type = 'application/atom+xml'
+        
+        response = Response(feed_content, mimetype=content_type)
+        response.headers['Cache-Control'] = 'public, max-age=900'  # 15 minutes cache
+        return response
+    
+    except Exception as e:
+        logger.error(f"Error generating {format} feed for {source}/{section}: {e}")
+        return jsonify({'error': f'Failed to generate {format} feed'}), 500
+
+# Legacy routes for backward compatibility
 @app.route('/feeds/lance/rss.xml')
 def rss_feed():
     """Generate RSS feed"""

@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 from feedgen.feed import FeedGenerator as FG
 from .utils import extract_mime_type
+from .sources_config import SOURCES_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -83,13 +84,22 @@ class FeedGenerator:
             logger.error(f"Error adding article to feed: {article['url']}: {e}")
             return False
     
-    def generate_rss(self, articles):
+    def generate_rss(self, articles, source='lance', section='futebol'):
         """Generate RSS 2.0 feed"""
         try:
+            # Get source configuration
+            source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
+            section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
+            
             fg = self._create_base_feed()
             
+            # Update feed metadata for specific source
+            fg.title(f"{source_config['name']} - {section_config['name']} - Feed não oficial")
+            fg.description(section_config['description'])
+            fg.language(source_config['language'])
+            
             # RSS-specific settings
-            fg.link(href='https://lance-feeds.repl.co/feeds/lance/rss.xml', rel='self')
+            fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self')
             fg.ttl(15)  # 15 minutes TTL
             
             # Add articles (reverse order so newest appear first in feed)
@@ -105,13 +115,22 @@ class FeedGenerator:
             logger.error(f"Error generating RSS feed: {e}")
             raise
     
-    def generate_atom(self, articles):
+    def generate_atom(self, articles, source='lance', section='futebol'):
         """Generate Atom 1.0 feed"""
         try:
+            # Get source configuration
+            source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
+            section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
+            
             fg = self._create_base_feed()
             
+            # Update feed metadata for specific source
+            fg.title(f"{source_config['name']} - {section_config['name']} - Feed não oficial")
+            fg.description(section_config['description'])
+            fg.language(source_config['language'])
+            
             # Atom-specific settings
-            fg.link(href='https://lance-feeds.repl.co/feeds/lance/atom.xml', rel='self')
+            fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self')
             fg.updated(datetime.now(timezone.utc))
             
             # Add articles (reverse order so newest appear first in feed)
