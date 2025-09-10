@@ -1,4 +1,4 @@
-modules = ["python-3.11"]
+modules = ["python-3.11", "postgresql-16"]
 
 [nix]
 channel = "stable-25_05"
@@ -44,6 +44,10 @@ args = "uv add requests beautifulsoup4 lxml feedgen python-dateutil tenacity aps
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 43759
+externalPort = 3000
 
 [agent]
 integrations = ["styling_replit==1.0.0", "web_scraper==1.0.0"]
