@@ -93,11 +93,8 @@ def atom_feed():
         limit = min(int(request.args.get('limit', DEFAULT_LIMIT)), 100)
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
-        # Multiple source URLs to scrape from
-        default_sources = [
-            'https://www.lance.com.br/mais-noticias'
-        ]
-        source_url = request.args.get('source_url', default_sources[0])
+        # Single source URL - mais-noticias has all the news
+        source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"Atom feed requested: limit={limit}, pages={pages}, q='{q}'")
 
@@ -153,11 +150,8 @@ def admin_refresh():
 
         # Parse parameters
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
-        # Multiple source URLs to scrape from
-        default_sources = [
-            'https://www.lance.com.br/mais-noticias'
-        ]
-        source_url = request.args.get('source_url', default_sources[0])
+        # Single source URL - mais-noticias has all the news
+        source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"Manual refresh triggered: pages={pages}")
 
