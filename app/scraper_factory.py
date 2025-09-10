@@ -83,7 +83,7 @@ class ScraperFactory:
             logger.info(f"Scraping {source}/{section} from {url} (max_articles: {max_articles})")
             
             # Use optimized scraping with article limits to prevent timeouts
-            all_article_urls = scraper.list_pages(url, max_pages)
+            all_article_urls = scraper.list_pages(url, max_pages, section=section)
             
             # Limit articles to prevent worker timeouts
             limited_urls = all_article_urls[:max_articles] if len(all_article_urls) > max_articles else all_article_urls

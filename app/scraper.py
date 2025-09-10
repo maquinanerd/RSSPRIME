@@ -85,7 +85,7 @@ class LanceScraper:
             logger.error(f"Failed to fetch {url}: {e}")
             raise
 
-    def extract_article_links(self, html, base_url):
+    def extract_article_links(self, html, base_url, section=None):
         """Extract article links from listing page HTML"""
         soup = BeautifulSoup(html, 'lxml')
         links = []

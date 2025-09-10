@@ -16,30 +16,54 @@ class UolScraper(BaseScraper):
         """Return the main domain for UOL"""
         return "uol.com.br"
     
-    def extract_article_links(self, html, base_url):
-        """Extract article links from UOL listing pages"""
+    def extract_article_links(self, html, base_url, section=None):
+        """Extract article links from UOL listing pages with section filtering"""
         soup = BeautifulSoup(html, 'lxml')
         links = []
         
-        # UOL uses different structures for different sections
-        # Try multiple selectors to catch articles
-        selectors = [
-            # Main article links
-            'a[href*="/noticias/"]',
-            'a[href*="/economia/"]',
-            'a[href*="/politica/"]', 
-            'a[href*="/internacional/"]',
-            'a[href*="/esporte/futebol/"]',
-            # Generic news links
+        # Section-specific selectors for better filtering
+        section_selectors = {
+            'futebol': [
+                'a[href*="/esporte/futebol/"]',
+                'a[href*="/futebol/"]'
+            ],
+            'economia': [
+                'a[href*="/economia/"]',
+                'a[href*="/mercado/"]'
+            ],
+            'politica': [
+                'a[href*="/politica/"]',
+                'a[href*="/poder/"]'
+            ],
+            'mundo': [
+                'a[href*="/internacional/"]',
+                'a[href*="/mundo/"]'
+            ]
+        }
+        
+        # Use section-specific selectors if available, otherwise generic
+        if section and section in section_selectors:
+            selectors = section_selectors[section]
+        else:
+            # Fallback to generic selectors
+            selectors = [
+                'a[href*="/noticias/"]',
+                'a[href*="/economia/"]',
+                'a[href*="/politica/"]', 
+                'a[href*="/internacional/"]',
+                'a[href*="/esporte/futebol/"]'
+            ]
+        
+        # Add generic layout selectors
+        selectors.extend([
             'h2 a[href]',
             'h3 a[href]',
             '.manchete a[href]',
             '.chamada a[href]',
-            # Card-style layouts
             '.card a[href]',
             '.item a[href]',
             '.news-item a[href]'
-        ]
+        ])
         
         found_links = set()
         
@@ -59,8 +83,8 @@ class UolScraper(BaseScraper):
                     else:
                         continue
                     
-                    # Filter for UOL news articles
-                    if self._is_valid_uol_article_url(full_url):
+                    # Filter for UOL news articles with section filtering
+                    if self._is_valid_uol_article_url(full_url, section):
                         found_links.add(full_url)
                         
             except Exception as e:
@@ -71,8 +95,8 @@ class UolScraper(BaseScraper):
         logger.info(f"Found {len(links)} article links on UOL page")
         return links
     
-    def _is_valid_uol_article_url(self, url):
-        """Check if URL is a valid UOL article"""
+    def _is_valid_uol_article_url(self, url, section=None):
+        """Check if URL is a valid UOL article with optional section filtering"""
         try:
             parsed = urlparse(url)
             
@@ -83,17 +107,29 @@ class UolScraper(BaseScraper):
             # Should contain news indicators
             path = parsed.path.lower()
             
-            # Valid patterns for UOL articles
-            valid_patterns = [
-                '/noticias/',
-                '/economia/',
-                '/politica/',
-                '/internacional/',
-                '/esporte/futebol/',
-                '/mercado/',
-                '/poder/',
-                '/mundo/'
-            ]
+            # Section-specific patterns for better filtering
+            section_patterns = {
+                'futebol': ['/esporte/futebol/', '/futebol/'],
+                'economia': ['/economia/', '/mercado/'],
+                'politica': ['/politica/', '/poder/'],
+                'mundo': ['/internacional/', '/mundo/']
+            }
+            
+            # If section is specified, only allow articles from that section
+            if section and section in section_patterns:
+                valid_patterns = section_patterns[section]
+            else:
+                # Fallback to all patterns
+                valid_patterns = [
+                    '/noticias/',
+                    '/economia/',
+                    '/politica/',
+                    '/internacional/',
+                    '/esporte/futebol/',
+                    '/mercado/',
+                    '/poder/',
+                    '/mundo/'
+                ]
             
             if any(pattern in path for pattern in valid_patterns):
                 # Exclude non-article pages
@@ -104,11 +140,21 @@ class UolScraper(BaseScraper):
                     '/feed',
                     '/ultimas/',
                     '.rss',
-                    '.xml'
+                    '.xml',
+                    '/times/',  # Team pages, not articles
+                    '/tabela',  # League tables
+                    '/classificacao'  # Standings
                 ]
                 
                 if any(pattern in path for pattern in exclude_patterns):
                     return False
+                
+                # Additional section-specific exclusions
+                if section == 'futebol':
+                    # Exclude non-football URLs when scraping football
+                    non_football_patterns = ['/politica/', '/economia/', '/internacional/', '/poder/', '/mercado/', '/mundo/']
+                    if any(pattern in path for pattern in non_football_patterns):
+                        return False
                 
                 return True
             

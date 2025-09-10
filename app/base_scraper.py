@@ -50,7 +50,7 @@ class BaseScraper(ABC):
         pass
     
     @abstractmethod
-    def extract_article_links(self, html, base_url):
+    def extract_article_links(self, html, base_url, section=None):
         """Extract article links from a listing page HTML"""
         pass
     
@@ -111,7 +111,7 @@ class BaseScraper(ABC):
             logger.error(f"Error fetching {url}: {e}")
             raise
     
-    def list_pages(self, start_url, max_pages=3):
+    def list_pages(self, start_url, max_pages=3, section=None):
         """Get article links from multiple pages starting from start_url"""
         all_links = []
         current_url = start_url
@@ -126,7 +126,7 @@ class BaseScraper(ABC):
                     break
                 
                 # Extract article links from current page
-                page_links = self.extract_article_links(html, current_url)
+                page_links = self.extract_article_links(html, current_url, section=section)
                 if not page_links:
                     logger.warning(f"No article links found on page {page_num + 1}")
                     break
