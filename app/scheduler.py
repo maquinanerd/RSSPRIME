@@ -88,10 +88,7 @@ class FeedScheduler:
             
             # Perform scraping from multiple sources - mais páginas para pegar notícias mais recentes
             start_urls = [
-                'https://www.lance.com.br/mais-noticias',
-                'https://www.lance.com.br/brasileirao',
-                'https://www.lance.com.br/futebol-nacional',
-                'https://www.lance.com.br/futebol-internacional'
+                'https://www.lance.com.br/mais-noticias'
             ]
             new_articles = self.scraper.scrape_and_store(
                 start_urls=start_urls,
