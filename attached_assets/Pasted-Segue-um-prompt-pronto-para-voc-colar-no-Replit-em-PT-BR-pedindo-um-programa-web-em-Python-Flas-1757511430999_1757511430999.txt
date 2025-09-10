@@ -1,0 +1,286 @@
+Segue um prompt pronto para você colar no Replit (em PT-BR), pedindo um programa web em Python (Flask) que varre o LANCE!, extrai metadados via JSON-LD, segue a paginação de /mais-noticias, e gera RSS/Atom. É só copiar e colar como instrução para o Replit AI:
+
+PROMPT PARA O REPLIT — GERADOR DE RSS/ATOM (LANCE!)
+
+Quero um app web em Python (Flask) que gere feeds RSS e Atom não-oficiais do site LANCE!, seguindo as regras abaixo. Entregue um projeto completo, pronto para rodar no Replit (com requirements.txt, estrutura de pastas, Procfile e instruções de uso).
+
+Contexto do site e estratégia
+
+O site é Next.js/React e não expõe <link rel="alternate" type="application/rss+xml">.
+
+Há paginação canônica por link[rel="next"] começando em https://www.lance.com.br/mais-noticias, avançando para /mais-noticias/2, /3, …
+
+O HTML de listagem tem links absolutos para matérias (ex.: “Mais lidas”).
+
+Nas páginas de artigo, existe JSON-LD (<script type="application/ld+json">) com headline, description, image, datePublished, dateModified, author. Pode vir objeto único ou @graph.
+
+Requisitos funcionais
+
+Varredura das listas
+
+Partir de https://www.lance.com.br/mais-noticias.
+
+Coletar todos os <a> cujos href comecem por https://www.lance.com.br/ e terminem com .html.
+
+Seguir a paginação via link[rel="next"] até um limite configurável (MAX_PAGES, padrão 3).
+
+Enriquecimento por JSON-LD
+
+Para cada URL de matéria encontrada, abrir a página e extrair o JSON-LD.
+
+Suportar:
+
+objeto único
+
+lista de objetos
+
+@graph
+
+Considerar tipos Article, NewsArticle ou BlogPosting.
+
+Campos a coletar: headline (title), description, image (string ou objeto com url), datePublished, dateModified, author (nome, se vier como objeto).
+
+Fallbacks: se faltar título, usar <title>; se faltar imagem, deixar vazio.
+
+Geração de feeds
+
+Usar Feedgen.
+
+Expor endpoints:
+
+GET /feeds/lance/rss.xml
+
+GET /feeds/lance/atom.xml
+
+Campos por item:
+
+title (headline)
+
+link (URL do artigo)
+
+summary/description (description)
+
+pubDate/updated (usar datePublished e dateModified, normalizando para RFC 2822/ISO)
+
+guid (a própria URL)
+
+enclosure da imagem (se disponível). Se o tamanho for desconhecido, usar length=0 e type inferido (image/jpeg/image/png por extensão/MIME).
+
+Limites e filtros via querystring:
+
+?limit=20 (padrão: 30)
+
+?pages=3 (padrão: 3)
+
+?q=palavra|regex para filtrar por título/descrição (suportar regex, com URL-encode).
+
+?source_url=https://www.lance.com.br/mais-noticias (permite trocar a origem se necessário).
+
+Ordenar por datePublished desc, quando disponível.
+
+Persistência e deduplicação
+
+Banco SQLite local (data/app.db) com tabela articles (url UNIQUE, title, description, image, published, modified, author, fetched_at).
+
+Deduplicar por URL (não repetir itens em execuções futuras).
+
+TTL/refresh: revalidar artigos antigos quando revarrer (se dateModified mudar, atualizar).
+
+Agendador (opcional, mas incluído)
+
+APScheduler para atualizar a cada 15 minutos em background.
+
+Também permitir atualização on-demand via GET /admin/refresh?key=SECRETA (usar variável de ambiente ADMIN_KEY).
+
+Respeito a robots e educação
+
+Checar robots.txt com urllib.robotparser.
+
+Definir User-Agent identificável (ex.: Mozilla/5.0; LanceFeedBot/1.0 (contato: seu_email)).
+
+time.sleep entre requisições (ex.: 0.8–1.2s).
+
+Retries com backoff exponencial (usar tenacity).
+
+Logs e healthcheck
+
+Logging estruturado (nível INFO/ERROR).
+
+Endpoint GET /health retornando JSON {status: "ok", items: <contagem>, last_refresh: "..."}
+
+Endpoint GET / com mini landing explicando uso dos endpoints e parâmetros.
+
+Requisitos técnicos do projeto
+
+Estrutura sugerida
+
+app/
+  __init__.py
+  server.py          # cria o Flask app e rotas
+  scraper.py         # lógica de listagem, paginação e parse de artigos
+  feeds.py           # montagem de RSS/Atom com feedgen
+  store.py           # SQLite (CRUD, migrações simples)
+  utils.py           # datas, MIME, robots, UA, filtros
+  scheduler.py       # APScheduler (job de refresh)
+data/
+  app.db             # criado em runtime
+requirements.txt
+Procfile             # web: gunicorn -w 2 -k gthread app.server:app
+runtime.txt          # python-3.12
+README.md
+
+
+Bibliotecas
+
+Flask
+
+gunicorn
+
+requests
+
+beautifulsoup4
+
+lxml
+
+feedgen
+
+python-dateutil
+
+tenacity
+
+readability-lxml (como fallback de texto, opcional)
+
+sqlite3 (nativo)
+
+Configuração via env
+
+ADMIN_KEY (opcional, para /admin/refresh)
+
+MAX_PAGES (default 3)
+
+DEFAULT_LIMIT (default 30)
+
+REQUEST_DELAY_MS (default 900)
+
+Desempenho e robustez
+
+Cache simples em memória durante a requisição atual.
+
+Normalizar datas (dateutil.parser.parse) e converter para RFC-2822 no RSS.
+
+Tratar image do JSON-LD como string ou objeto {url: ...}.
+
+Suportar JSON-LD em lista, objeto único e @graph.
+
+Rotas detalhadas
+
+GET /
+Página HTML simples com:
+
+descrição do serviço
+
+exemplos de uso
+
+links para /feeds/lance/rss.xml e /feeds/lance/atom.xml
+
+parâmetros aceitos
+
+GET /feeds/lance/rss.xml
+Query params: limit, pages, q, source_url
+Retorna application/rss+xml.
+
+GET /feeds/lance/atom.xml
+Mesmos parâmetros. Retorna application/atom+xml.
+
+GET /health
+Retorna JSON com status e métricas básicas.
+
+GET /admin/refresh?key=...
+Dispara atualização imediata (se ADMIN_KEY bater). Retorna JSON com contagens adicionadas/atualizadas.
+
+Implementação esperada (resumo)
+
+scraper.list_pages(source_url, max_pages)
+
+Baixa a página, parseia com BS4, coleta <a> terminando em .html.
+
+Encontra link[rel="next"] e itera.
+
+Aplica atraso entre requisições e verifica robots.
+
+scraper.parse_article(url)
+
+Baixa a página, encontra todos <script type="application/ld+json">, tenta:
+
+objeto único → validar tipo
+
+lista de objetos → iterar
+
+@graph → iterar
+
+Extrai headline, description, image (string/objeto), datePublished, dateModified, author.
+
+Fallback de <title> se não houver headline.
+
+Retorna dicionário padronizado.
+
+feeds.build_rss(items) e feeds.build_atom(items)
+
+Usar feedgen para montar feed com id, title, link, self, description.
+
+Para cada item, setar id, title, link, description, published/updated.
+
+Se houver imagem, adicionar enclosure com tipo inferido.
+
+Ordenar por data desc.
+
+store
+
+init_db(), upsert_article(item), recent_articles(limit, q_regex).
+
+scheduler
+
+APScheduler job a cada 15 min → roda crawl_and_update():
+
+varre listagem
+
+enriquece artigos
+
+faz upsert no SQLite
+
+loga contagens
+
+Segurança e legal
+
+Respeitar robots.txt.
+
+User-Agent claro e contato (deixe string fácil de alterar).
+
+Intervalos e retries “educados”.
+
+Entregáveis
+
+Projeto gerado no Replit, rodando com:
+
+Run: gunicorn -w 2 -k gthread app.server:app
+(ou comando equivalente configurado no botão Run do Replit)
+
+README.md com:
+
+Como rodar localmente
+
+Endpoints e exemplos de query
+
+Variáveis de ambiente
+
+Avisos de uso responsável
+
+Exemplo de uso (coloque no README):
+
+https://<seu-app>.repl.co/feeds/lance/rss.xml?limit=20&pages=4
+
+...?q=Flamengo|Corinthians
+
+...?source_url=https://www.lance.com.br/mais-noticias
+
+Observação: Se o Replit travar com lxml, habilite “Nix”/Replit-native build (ou use wheels compatíveis). Se readability-lxml dificultar deploy, deixá-la opcional.
