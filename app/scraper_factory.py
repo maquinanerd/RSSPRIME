@@ -6,6 +6,7 @@ import logging
 from .lance_scraper import LanceScraper
 from .uol_scraper import UolScraper  
 from .folha_scraper import FolhaScraper
+from .gazeta_scraper import GazetaScraper
 from .sources_config import SOURCES_CONFIG
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,8 @@ class ScraperFactory:
         scraper_classes = {
             'LanceScraper': LanceScraper,
             'UolScraper': UolScraper,
-            'FolhaScraper': FolhaScraper
+            'FolhaScraper': FolhaScraper,
+            'GazetaScraper': GazetaScraper
         }
         
         scraper_class = scraper_classes.get(scraper_class_name)

@@ -3,11 +3,37 @@ Configuration for multiple news sources and their sections
 """
 
 SOURCES_CONFIG = {
+    'gazeta': {
+        'name': 'Gazeta Esportiva',
+        'base_url': 'https://www.gazetaesportiva.com',
+        'scraper_class': 'GazetaScraper',
+        'language': 'pt-BR',
+        'sections': {
+            'todas-noticias': {
+                'name': 'Todas as Notícias',
+                'description': 'Todas as notícias da Gazeta Esportiva',
+                'start_urls': ['https://www.gazetaesportiva.com/todas-as-noticias/'],
+                'filters': {}
+            },
+            'futebol': {
+                'name': 'Futebol',
+                'description': 'Notícias de futebol da Gazeta Esportiva',
+                'start_urls': ['https://www.gazetaesportiva.com/futebol/'],
+                'filters': {}
+            },
+            'brasileirao': {
+                'name': 'Brasileirão',
+                'description': 'Notícias do Campeonato Brasileiro',
+                'start_urls': ['https://www.gazetaesportiva.com/brasileirao/'],
+                'filters': {}
+            }
+        }
+    },
     'lance': {
         'name': 'LANCE!',
         'base_url': 'https://www.lance.com.br',
-        'language': 'pt-BR',
         'scraper_class': 'LanceScraper',
+        'language': 'pt-BR',
         'sections': {
             'futebol-nacional': {
                 'name': 'Futebol Nacional',
