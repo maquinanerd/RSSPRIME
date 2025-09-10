@@ -92,9 +92,9 @@ class FeedGenerator:
             fg.link(href='https://lance-feeds.repl.co/feeds/lance/rss.xml', rel='self')
             fg.ttl(15)  # 15 minutes TTL
             
-            # Add articles
+            # Add articles (reverse order so newest appear first in feed)
             added_count = 0
-            for article in articles:
+            for article in reversed(articles):
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
@@ -114,9 +114,9 @@ class FeedGenerator:
             fg.link(href='https://lance-feeds.repl.co/feeds/lance/atom.xml', rel='self')
             fg.updated(datetime.now(timezone.utc))
             
-            # Add articles
+            # Add articles (reverse order so newest appear first in feed)
             added_count = 0
-            for article in articles:
+            for article in reversed(articles):
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             

@@ -1,0 +1,256 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+  <channel>
+    <title>LANCE! - Feed não oficial</title>
+    <link>https://lance-feeds.repl.co/feeds/lance/rss.xml</link>
+    <description>Feed RSS/Atom não oficial do LANCE! - Notícias de futebol e esportes</description>
+    <atom:link href="https://lance-feeds.repl.co/feeds/lance/rss.xml" rel="self"/>
+    <docs>http://www.rssboard.org/rss-specification</docs>
+    <generator>Lance Feed Generator v1.0</generator>
+    <language>pt-BR</language>
+    <lastBuildDate>Wed, 10 Sep 2025 14:11:30 +0000</lastBuildDate>
+    <managingEditor>noreply@lance-feeds.repl.co (Lance Feed Bot)</managingEditor>
+    <ttl>15</ttl>
+    <webMaster>noreply@lance-feeds.repl.co (Lance Feed Bot)</webMaster>
+    <item>
+      <title>Primeiro jogador estrangeiro do Grêmio; veja quem foi e o ano</title>
+      <link>https://www.lance.com.br/lancepedia/primeiro-jogador-estrangeiro-do-gremio.html</link>
+      <description>Descubra José Leandro Andrade, o uruguaio que foi o primeiro jogador estrangeiro do Grêmio Foot-Ball Porto Alegrense em 1935.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/lancepedia/primeiro-jogador-estrangeiro-do-gremio.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/Torcida-Gremio-Gre-Nal-447-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 07:48:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Após jogo do Brasil, Fabrício Bruno cita Cruzeiro e admite estar 'tranquilão'</title>
+      <link>https://www.lance.com.br/selecao-brasileira/fabricio-bruno-cita-cruzeiro-e-admite-estar-tranquilao-apos-jogo-da-selecao.html</link>
+      <description>Em entrevista pós- jogo da Seleção Brasileira em El Alto, na Bolívia, o zagueiro do Cruzeiro deu um relato que fugiu do esperado.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/selecao-brasileira/fabricio-bruno-cita-cruzeiro-e-admite-estar-tranquilao-apos-jogo-da-selecao.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/54749417804_54ea76cf0a_c-1-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 07:58:40 -0300</pubDate>
+    </item>
+    <item>
+      <title>As duas pessoas fundamentais para a ida de Willian ao Grêmio</title>
+      <link>https://www.lance.com.br/gremio/as-duas-pessoas-que-foram-fundamentais-para-a-ida-de-willian-ao-gremio.html</link>
+      <description>Em sua entrevista coletiva de apresentação, Willian citou duas pessoas que foram fundamentais para sua ida ao Grêmio</description>
+      <guid isPermaLink="true">https://www.lance.com.br/gremio/as-duas-pessoas-que-foram-fundamentais-para-a-ida-de-willian-ao-gremio.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/Willian-Gremio-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 08:00:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Casares dispara sobre Marcos Leonardo no São Paulo: 'Vazamento inadequado'</title>
+      <link>https://www.lance.com.br/sao-paulo/casares-abre-o-jogo-sobre-marcos-leonardo-no-sao-paulo-e-dispara-vazamento-inadequado.html</link>
+      <description>O presidente do São Paulo explicou a negociação frustrada com Marcos Leonardo no São Paulo. Casares criticou vazamentos.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/sao-paulo/casares-abre-o-jogo-sobre-marcos-leonardo-no-sao-paulo-e-dispara-vazamento-inadequado.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/casares-2-aspect-ratio-512-320-1.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 08:00:26 -0300</pubDate>
+    </item>
+    <item>
+      <title>Saiba o valor de Alisson, destaque do Brasil contra a Bolívia</title>
+      <link>https://www.lance.com.br/lancebiz/saiba-o-valor-de-alisson-destaque-do-brasil-contra-a-bolivia.html</link>
+      <description>Saiba o valor de Alisson, destaque do Brasil contra a Bolívia; goleiro defende o Liverpool (ING), mas passou pela Roma e foi revelado pelo Internacional</description>
+      <guid isPermaLink="true">https://www.lance.com.br/lancebiz/saiba-o-valor-de-alisson-destaque-do-brasil-contra-a-bolivia.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/53333187235_bbbf487432_k-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 08:10:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Altitude? São Paulo terá logística especial para jogo na Libertadores</title>
+      <link>https://www.lance.com.br/sao-paulo/altitude-sao-paulo-tera-logistica-especial-para-jogo-na-libertadores.html</link>
+      <description>O São Paulo desenhou uma logística diferente para enfrentar a LDU pelas quartas de final da Copa Libertadores.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/sao-paulo/altitude-sao-paulo-tera-logistica-especial-para-jogo-na-libertadores.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/54732398636_ed796bf3a9_k-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 08:30:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Galvão Bueno critica Globo e se revolta após jogo da Seleção: 'Vergonha'</title>
+      <link>https://www.lance.com.br/fora-de-campo/galvao-bueno-critica-globo-e-se-revolta-apos-jogo-da-selecao-vergonha.html</link>
+      <description>Foi em clima de revolta que o Galvão Bueno analisou as nuances do jogo da Seleção Brasileira. Sobrou até para a TV Globo...</description>
+      <guid isPermaLink="true">https://www.lance.com.br/fora-de-campo/galvao-bueno-critica-globo-e-se-revolta-apos-jogo-da-selecao-vergonha.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/Captura-de-tela-2025-07-15-092512-aspect-ratio-512-320-1.png" length="0" type="image/png"/>
+      <pubDate>Wed, 10 Sep 2025 08:44:29 -0300</pubDate>
+    </item>
+    <item>
+      <title>Ramires, ex-Chelsea, pede retorno de Pedro, do Flamengo, à Seleção Brasileira</title>
+      <link>https://www.lance.com.br/flamengo/ramires-ex-chelsea-pede-retorno-de-pedro-do-flamengo-a-selecao-brasileira.html</link>
+      <description>O Flamengo vive um grande momento na temporada. Além da liderança no Campeonato Brasileiro, o time carioca está nas quartas</description>
+      <guid isPermaLink="true">https://www.lance.com.br/flamengo/ramires-ex-chelsea-pede-retorno-de-pedro-do-flamengo-a-selecao-brasileira.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/Pedro-Flamengo-Vitoria-2-scaled-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 08:50:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Gerente do Atlético-MG detalha perfil de elenco feminino</title>
+      <link>https://www.lance.com.br/futebol-feminino/gerente-atletico-mg-perfil-elenco-feminino.html</link>
+      <description>O Atlético-MG vive um processo de reconstrução no futebol feminino e conseguiu retornar à primeira divisão após ser semifinalista da Série A2.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/futebol-feminino/gerente-atletico-mg-perfil-elenco-feminino.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/gerente-futebol-feminino-atletico-mg-aspect-ratio-512-320.jpeg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:00:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Presidente do São Paulo explica vendas de Henrique Carmo e promessas de Cotia</title>
+      <link>https://www.lance.com.br/sao-paulo/presidente-do-sao-paulo-explica-vendas-de-henrique-carmo-e-promessas-de-cotia.html</link>
+      <description>O presidente do São Paulo explicou o porquê das negociações de algumas promessas de Cotia terem acontecido.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/sao-paulo/presidente-do-sao-paulo-explica-vendas-de-henrique-carmo-e-promessas-de-cotia.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/WhatsApp-Image-2024-12-11-at-21.06.05-aspect-ratio-512-320-2.jpeg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:07:58 -0300</pubDate>
+    </item>
+    <item>
+      <title>Jean Silva e Diego Lopes quase brigam nos bastidores do UFC</title>
+      <link>https://www.lance.com.br/mais-esportes/jean-silva-diego-lopes-quase-brigam-bastidores-ufc-noche.html</link>
+      <description>Brasileiros Jean Silva e Diego Lopes se enfrentam na luta principal do UFC Noche, mas quase anteciparam o confronto no hotel</description>
+      <guid isPermaLink="true">https://www.lance.com.br/mais-esportes/jean-silva-diego-lopes-quase-brigam-bastidores-ufc-noche.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/jean-silva-diego-lopes-ufc-noche-fight-night-edited-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:15:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Internacional procura parcerias para CT na cidade de Guaíba</title>
+      <link>https://www.lance.com.br/internacional/internacional-procura-parcerias-para-erguer-ct-na-cidade-de-guaiba.html</link>
+      <description>Sem condições de bancar o projeto, o Internacional procura parcerias para erguer o CT em terreno doado pelo governo do Estado.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/internacional/internacional-procura-parcerias-para-erguer-ct-na-cidade-de-guaiba.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/CIDADEINTER.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:15:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Astro da Premier League vira assunto após jogo do Brasil: 'Me poupe'</title>
+      <link>https://www.lance.com.br/fora-de-campo/astro-da-premier-league-vira-assunto-apos-jogo-da-selecao-me-poupe.html</link>
+      <description>As Eliminatórias de diversos continentes afastaram seus astros de seus clubes, incluindo a Premier League, Brasileirão, La Liga, Série A...</description>
+      <guid isPermaLink="true">https://www.lance.com.br/fora-de-campo/astro-da-premier-league-vira-assunto-apos-jogo-da-selecao-me-poupe.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/AFP__20250825__72F93PE__v1__HighRes__FblEngPrNewcastleLiverpool-scaled-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:29:18 -0300</pubDate>
+    </item>
+    <item>
+      <title>Campeão olímpico desabafa contra Hall da Fama: 'Se fôssemos americanos...'</title>
+      <link>https://www.lance.com.br/mais-esportes/campeao-olimpico-desabafa-contra-hall-da-fama-se-fossemos-americanos.html</link>
+      <description>Heróis que venceram astros da NBA se revoltam com o Hall da Fama. Pepe Sanchez cobra justiça para a Argentina de 2004</description>
+      <guid isPermaLink="true">https://www.lance.com.br/mais-esportes/campeao-olimpico-desabafa-contra-hall-da-fama-se-fossemos-americanos.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/WhatsApp-Image-2025-09-09-at-22.10.25-1-aspect-ratio-512-320.jpeg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:30:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Atacante pode trocar o Internacional pelo México</title>
+      <link>https://www.lance.com.br/internacional/atacante-pode-trocar-o-internacional-pelo-mexico.html</link>
+      <description>O atacante Enner Valencia pode trocar o Internacional pelo México, que encerra seu período de negócios apenas na sexta-feira (12).</description>
+      <guid isPermaLink="true">https://www.lance.com.br/internacional/atacante-pode-trocar-o-internacional-pelo-mexico.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/VALENCIA-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:30:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Marcus D'Almeida se vinga de algoz e avança no Mundial de tiro com arco</title>
+      <link>https://www.lance.com.br/mais-esportes/marcus-dalmeida-se-vinga-de-algoz-e-avanca-no-mundial-de-tiro-com-arco.html</link>
+      <description>O brasileiro Marcus D'Almeida, principal representante do país no tiro com arco, garantiu a classificação às oitavas de final do Mundial</description>
+      <guid isPermaLink="true">https://www.lance.com.br/mais-esportes/marcus-dalmeida-se-vinga-de-algoz-e-avanca-no-mundial-de-tiro-com-arco.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/marquinhos-mundial-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:32:41 -0300</pubDate>
+    </item>
+    <item>
+      <title>Veja o valor de Miguelito, herói da Bolívia contra o Brasil</title>
+      <link>https://www.lance.com.br/lancebiz/veja-o-valor-de-miguelito-heroi-da-bolivia-contra-o-brasil.html</link>
+      <description>Veja o valor de Miguelito, herói da Bolívia contra o Brasil; meia pertence ao Santos, mas está emprestado ao América-MG</description>
+      <guid isPermaLink="true">https://www.lance.com.br/lancebiz/veja-o-valor-de-miguelito-heroi-da-bolivia-contra-o-brasil.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/WhatsApp-Image-2025-09-09-at-10.11.46-aspect-ratio-512-320-2.jpeg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:40:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>São Paulo atualiza quadro de lesionados</title>
+      <link>https://www.lance.com.br/sao-paulo/sao-paulo-atualiza-quadro-de-lesionados.html</link>
+      <description>O São Paulo informou algumas novidades em quadros de atletas como Arboleda e Marcos Antonio, que estavam no departamento médico.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/sao-paulo/sao-paulo-atualiza-quadro-de-lesionados.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/54769454824_ef591d2716_o-scaled-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 09:47:18 -0300</pubDate>
+    </item>
+    <item>
+      <title>Romário comete gafe ao vivo e gera climão em programa: 'No pulo'</title>
+      <link>https://www.lance.com.br/fora-de-campo/romario-comete-gafe-ao-vivo-e-gera-climao-em-programa-pegaram-no-pulo.html</link>
+      <description>O ex-jogador Romário foi surpreendido durante sua participação no programa Panela SporTV, quando um vídeo de arquivo o contradisse</description>
+      <guid isPermaLink="true">https://www.lance.com.br/fora-de-campo/romario-comete-gafe-ao-vivo-e-gera-climao-em-programa-pegaram-no-pulo.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/Romario-aspect-ratio-512-320.png" length="0" type="image/png"/>
+      <pubDate>Wed, 10 Sep 2025 09:58:32 -0300</pubDate>
+    </item>
+    <item>
+      <title>A jornada do Flamengo em busca do tricampeonato mundial</title>
+      <link>https://www.lance.com.br/mais-esportes/a-jornada-do-flamengo-em-busca-do-tricampeonato-mundial.html</link>
+      <description>Relembre os títulos mundiais do Flamengo no basquete e acompanhe a campanha do time em Singapura na busca pela glória</description>
+      <guid isPermaLink="true">https://www.lance.com.br/mais-esportes/a-jornada-do-flamengo-em-busca-do-tricampeonato-mundial.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/Gavea-aspect-ratio-512-320.jpeg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:00:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Internacional promove dinâmica de grupo visando retomada</title>
+      <link>https://www.lance.com.br/internacional/internacional-promove-dinamica-de-grupo-visando-retomada.html</link>
+      <description>Comum em grandes corporações, uma dinâmica de integração de grupo entrou na receita do Internacional, reunindo o departamento de futebol.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/internacional/internacional-promove-dinamica-de-grupo-visando-retomada.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/ROGER-1-scaled-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:00:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Jornalista elege pior em campo na derrota da Seleção Brasileira</title>
+      <link>https://www.lance.com.br/fora-de-campo/jornalista-elege-pior-em-campo-na-derrota-da-selecao-brasileira.html</link>
+      <description>A Seleção Brasileira perdeu para a Bolívia, por 1 a 0, nesta terça-feira (9), no último jogo válido pelas Eliminatórias da Copa do Mundo.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/fora-de-campo/jornalista-elege-pior-em-campo-na-derrota-da-selecao-brasileira.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/Selecao-Brasileira-4-scaled-aspect-ratio-512-320-2.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:20:46 -0300</pubDate>
+    </item>
+    <item>
+      <title>Em goleada por 11 x 1, Haaland manda recado para goleiro rival</title>
+      <link>https://www.lance.com.br/futebol-internacional/em-goleada-por-11-x-1-haaland-manda-recado-para-goleiro-rival.html</link>
+      <description>Com direito a cinco gols e duas assistências do craque Erling Haaland, os nórdicos aplicaram uma goleada por 11 a 1</description>
+      <guid isPermaLink="true">https://www.lance.com.br/futebol-internacional/em-goleada-por-11-x-1-haaland-manda-recado-para-goleiro-rival.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/AFP__20250909__73XQ6F6__v1__HighRes__Football2026WorldCupQualifiersEuropeZone1stRoun-scaled-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:26:03 -0300</pubDate>
+    </item>
+    <item>
+      <title>Hugo Souza chega a São Paulo e deve reforçar o Corinthians contra o Athletico</title>
+      <link>https://www.lance.com.br/corinthians/hugo-souza-desembarca-em-sao-paulo-e-deve-reforcar-o-corinthians-contra-o-athletico.html</link>
+      <description>O goleiro Hugo Souza, do Corinthians, está em São Paulo e à disposição do técnico Dorival Júnior para o duelo diante do Athletico-PR.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/corinthians/hugo-souza-desembarca-em-sao-paulo-e-deve-reforcar-o-corinthians-contra-o-athletico.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/AGIF24112418255787-scaled-aspect-ratio-512-320-1.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:32:41 -0300</pubDate>
+    </item>
+    <item>
+      <title>Real Betis prepara homenagem a Antony após retorno</title>
+      <link>https://www.lance.com.br/futebol-internacional/real-betis-prepara-homenagem-a-antony-apos-retorno.html</link>
+      <description>Em homenagem ao retorno de Antony ao Real Betis, o CEO do clube planeja lançar uma linha de roupas com referência ao jogador.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/futebol-internacional/real-betis-prepara-homenagem-a-antony-apos-retorno.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/Antony-posa-com-a-camisa-do-Betis-apos-ser-contratado-em-definitivo-scaled-aspect-ratio-512-320-1.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:33:39 -0300</pubDate>
+    </item>
+    <item>
+      <title>Botafogo x Vasco: Veja quais reforços estão regularizados para o duelo na Copa do Brasil</title>
+      <link>https://www.lance.com.br/futebol-nacional/botafogo-x-vasco-veja-quais-reforcos-estao-regularizados-para-o-duelo-na-copa-do-brasil.html</link>
+      <description>Após empatarem em 1 a 1 no jogo de ida, Botafogo e Vasco voltam a se encontrar em mais um clássico decisivo pela Copa do Brasil...</description>
+      <guid isPermaLink="true">https://www.lance.com.br/futebol-nacional/botafogo-x-vasco-veja-quais-reforcos-estao-regularizados-para-o-duelo-na-copa-do-brasil.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/Marinakis-e-Textor-aspect-ratio-512-320.png" length="0" type="image/png"/>
+      <pubDate>Wed, 10 Sep 2025 10:39:48 -0300</pubDate>
+    </item>
+    <item>
+      <title>Seleção africana se aproxima de primeira Copa do Mundo</title>
+      <link>https://www.lance.com.br/futebol-internacional/selecao-africana-se-aproxima-de-primeira-participacao-em-copa-do-mundo.html</link>
+      <description>O continente da África está perto de ganhar um participante inédito para a Copa do Mundo. Trata-se da seleção de Cabo Verde...</description>
+      <guid isPermaLink="true">https://www.lance.com.br/futebol-internacional/selecao-africana-se-aproxima-de-primeira-participacao-em-copa-do-mundo.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/Cabo-Verde-antes-do-confronto-contra-Camaroes-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:42:10 -0300</pubDate>
+    </item>
+    <item>
+      <title>Em entrevista, Romário confessa: 'prefiro jogar pela Argentina.'</title>
+      <link>https://www.lance.com.br/futebol-internacional/em-entrevista-romario-confessa-prefiro-jogar-pela-argentina.html</link>
+      <description>Romário é conhecido por suas frases polêmicas. Ao ser questionado sobre em qual rival jogaria, o baixinho soltou o verbo.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/futebol-internacional/em-entrevista-romario-confessa-prefiro-jogar-pela-argentina.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,background=white,fit=pad/uploads/2025/09/romario2-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:47:04 -0300</pubDate>
+    </item>
+    <item>
+      <title>Com Ingrid Martins e Laura Pigossi, veja o chaveamento do 3° dia de SP Open</title>
+      <link>https://www.lance.com.br/tenis/com-ingrid-martins-e-laura-pigossi-veja-o-chaveamento-do-3-dia-de-sp-open.html</link>
+      <description>O terceiro dia de SP Open terá duelos das quartas de final de duplas e da chave de simples, nesta quarta-feira (10), a partir das 15h</description>
+      <guid isPermaLink="true">https://www.lance.com.br/tenis/com-ingrid-martins-e-laura-pigossi-veja-o-chaveamento-do-3-dia-de-sp-open.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/laura-pigossi-aspect-ratio-512-320.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 10:54:22 -0300</pubDate>
+    </item>
+    <item>
+      <title>Torcida do Flamengo defende jogador criticado nas Eliminatórias: 'Triste'</title>
+      <link>https://www.lance.com.br/fora-de-campo/torcedores-do-flamengo-saem-em-defesa-de-jogador-criticado-nas-eliminatorias.html</link>
+      <description>Muitos torcedores do Flamengo saíram em defesa de um joador que foi duramente criticado nas Eliminatórias da Copa do Mundo.</description>
+      <guid isPermaLink="true">https://www.lance.com.br/fora-de-campo/torcedores-do-flamengo-saem-em-defesa-de-jogador-criticado-nas-eliminatorias.html</guid>
+      <enclosure url="https://lncimg.lance.com.br/uploads/2025/09/AFP__20250620__638A86D__v1__HighRes__FblWcClub2025Match22FlamengoChelseaFans-scaled-aspect-ratio-512-320-1.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 10 Sep 2025 11:01:00 -0300</pubDate>
+    </item>
+  </channel>
+</rss>
