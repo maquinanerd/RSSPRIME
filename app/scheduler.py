@@ -90,8 +90,11 @@ class FeedScheduler:
             total_new_articles = 0
             source = 'lance'
 
-            from .sources_config import get_source_sections
-            sections = get_source_sections(source)
+            from .sources_config import SOURCES_CONFIG
+            from .scraper_factory import ScraperFactory
+            
+            source_config = SOURCES_CONFIG.get(source, {})
+            sections = source_config.get('sections', {}).keys()
 
             for section in sections:
                 try:

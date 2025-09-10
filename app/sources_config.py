@@ -32,73 +32,18 @@ SOURCES_CONFIG = {
     'lance': {
         'name': 'LANCE!',
         'base_url': 'https://www.lance.com.br',
-        'scraper_class': 'LanceScraper',
         'language': 'pt-BR',
+        'scraper_class': 'LanceScraper',
         'sections': {
-            'futebol-nacional': {
-                'name': 'Futebol Nacional',
-                'start_urls': ['https://www.lance.com.br/futebol-nacional/mais-noticias'],
-                'description': 'Notícias do futebol brasileiro',
-                'filters': {}
-            },
-            'futebol-internacional': {
-                'name': 'Futebol Internacional',
-                'start_urls': ['https://www.lance.com.br/futebol-internacional/mais-noticias'],
-                'description': 'Notícias do futebol internacional',
-                'filters': {}
-            },
-            'libertadores': {
-                'name': 'Libertadores',
-                'start_urls': ['https://www.lance.com.br/libertadores/mais-noticias'],
-                'description': 'Notícias da Copa Libertadores',
-                'filters': {}
-            },
-            'copa-do-mundo': {
-                'name': 'Copa do Mundo',
-                'start_urls': ['https://www.lance.com.br/copa-do-mundo/mais-noticias'],
-                'description': 'Notícias da Copa do Mundo',
-                'filters': {}
-            },
-            'champions-league': {
-                'name': 'Champions League',
-                'start_urls': ['https://www.lance.com.br/champions-league/mais-noticias'],
-                'description': 'Notícias da Liga dos Campeões',
-                'filters': {}
-            },
-            'premier-league': {
-                'name': 'Premier League',
-                'start_urls': ['https://www.lance.com.br/premier-league/mais-noticias'],
-                'description': 'Notícias da Premier League inglesa',
-                'filters': {}
-            },
-            'la-liga': {
-                'name': 'La Liga',
-                'start_urls': ['https://www.lance.com.br/la-liga/mais-noticias'],
-                'description': 'Notícias do Campeonato Espanhol',
-                'filters': {}
-            },
-            'bundesliga': {
-                'name': 'Bundesliga',
-                'start_urls': ['https://www.lance.com.br/bundesliga/mais-noticias'],
-                'description': 'Notícias do Campeonato Alemão',
-                'filters': {}
-            },
-            'campeonato-italiano': {
-                'name': 'Campeonato Italiano',
-                'start_urls': ['https://www.lance.com.br/tudo-sobre/campeonato-italiano'],
-                'description': 'Notícias da Serie A italiana',
-                'filters': {}
-            },
-            'ligue-1': {
-                'name': 'Ligue 1',
-                'start_urls': ['https://www.lance.com.br/ligue-1/mais-noticias'],
-                'description': 'Notícias do Campeonato Francês',
-                'filters': {}
-            },
             'futebol': {
-                'name': 'Futebol Geral',
-                'start_urls': ['https://www.lance.com.br/mais-noticias'],
-                'description': 'Notícias gerais de futebol e esportes',
+                'name': 'Futebol',
+                'start_urls': [
+                    'https://www.lance.com.br/mais-noticias',
+                    'https://www.lance.com.br/brasileirao',
+                    'https://www.lance.com.br/futebol-nacional',
+                    'https://www.lance.com.br/futebol-internacional'
+                ],
+                'description': 'Notícias de futebol e esportes',
                 'filters': {}
             }
         }
