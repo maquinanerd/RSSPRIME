@@ -74,7 +74,7 @@ class FeedScheduler:
             logger.error(f"Error in initial refresh: {e}")
     
     def _refresh_job(self):
-        """Background job to refresh feeds"""
+        """Background job to refresh feeds from multiple sources"""
         with self.lock:
             if self.is_running_flag:
                 logger.warning("Refresh job already running, skipping")
@@ -83,22 +83,48 @@ class FeedScheduler:
             self.is_running_flag = True
         
         try:
-            logger.info("Starting scheduled feed refresh")
+            logger.info("Starting multi-source feed refresh")
             start_time = datetime.utcnow()
             
-            # Perform scraping from single source - mais-noticias has all the news
-            start_url = 'https://www.lance.com.br/mais-noticias'
-            new_articles = self.scraper.scrape_and_store(
-                start_urls=start_url,
-                max_pages=1  # Only 1 page needed from mais-noticias
-            )
+            # Import ScraperFactory for multi-source support
+            from .scraper_factory import ScraperFactory
+            from .sources_config import get_source_config
+            
+            total_new_articles = 0
+            
+            # Refresh each source and section
+            for source_name, source_config in get_source_config().items():
+                for section in source_config.get('sections', []):
+                    try:
+                        logger.info(f"Refreshing {source_name}/{section}")
+                        
+                        # Use reduced limits for background processing
+                        new_articles = ScraperFactory.scrape_source_section(
+                            source=source_name,
+                            section=section,
+                            max_pages=1,  # Reduced for background job
+                            max_articles=10  # Reduced for background job
+                        )
+                        
+                        processed_count = len(new_articles) if new_articles else 0
+                        total_new_articles += processed_count
+                        
+                        logger.info(f"Processed {processed_count} articles from {source_name}/{section}")
+                        
+                        # Add delay between sources to be respectful
+                        import time
+                        time.sleep(1.0)
+                        
+                    except Exception as e:
+                        logger.warning(f"Failed to refresh {source_name}/{section}: {e}")
+                        continue
             
             # Update last run time
             self.last_run = datetime.utcnow()
             
             # Log results
             duration = (self.last_run - start_time).total_seconds()
-            logger.info(f"Feed refresh completed in {duration:.1f}s - {len(new_articles)} new articles")
+            logger.info(f"Multi-source feed refresh completed in {duration:.1f}s - {total_new_articles} new articles")
             
             # Optional: cleanup old articles (keep last 30 days)
             try:
