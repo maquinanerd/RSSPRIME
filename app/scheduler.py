@@ -86,38 +86,29 @@ class FeedScheduler:
             logger.info("Starting multi-source feed refresh")
             start_time = datetime.utcnow()
 
-            # Import ScraperFactory for multi-source support
-            from .scraper_factory import ScraperFactory
-            from .sources_config import get_source_config
-
+            # Refresh all configured LANCE! sections
             total_new_articles = 0
+            source = 'lance'
 
-            # Refresh each source and section
-            for source_name, source_config in get_source_config().items():
-                for section in source_config.get('sections', []):
-                    try:
-                        logger.info(f"Refreshing {source_name}/{section}")
+            from .sources_config import get_source_sections
+            sections = get_source_sections(source)
 
-                        # Use reduced limits for background processing
-                        new_articles = ScraperFactory.scrape_source_section(
-                            source=source_name,
-                            section=section,
-                            max_pages=1,  # Reduced for background job
-                            max_articles=10  # Reduced for background job
-                        )
+            for section in sections:
+                try:
+                    logger.info(f"Refreshing {source}/{section}")
+                    new_articles = ScraperFactory.scrape_source_section(
+                        source, section, self.store, 
+                        max_pages=1, max_articles=5, request_delay=0.5
+                    )
+                    total_new_articles += len(new_articles)
+                    logger.info(f"Added {len(new_articles)} new articles for {source}/{section}")
 
-                        processed_count = len(new_articles) if new_articles else 0
-                        total_new_articles += processed_count
+                    # Small delay between sections to be nice to servers
+                    time.sleep(2)
 
-                        logger.info(f"Processed {processed_count} articles from {source_name}/{section}")
-
-                        # Add delay between sources to be respectful
-                        import time
-                        time.sleep(1.0)
-
-                    except Exception as e:
-                        logger.warning(f"Failed to refresh {source_name}/{section}: {e}")
-                        continue
+                except Exception as e:
+                    logger.error(f"Error refreshing {source}/{section}: {e}")
+                    continue
 
             # Update last run time
             self.last_run = datetime.utcnow()

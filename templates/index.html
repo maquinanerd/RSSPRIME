@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="dark">
 <head>
@@ -67,69 +66,244 @@
                 Feeds Disponíveis por Fonte
             </h2>
 
-            <!-- LANCE! -->
+            <!-- LANCE! Feeds -->
             <div class="mb-4">
-                <h3 class="h4 text-primary mb-3">
+                <h3 class="h4 text-warning mb-3">
                     <i class="fas fa-futbol me-2"></i>
-                    LANCE! - Futebol
+                    LANCE! - Categorias
                 </h3>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="card bg-dark border-primary">
-                            <div class="card-header bg-primary">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-rss me-2"></i>
-                                    RSS Feed
-                                </h5>
+
+                <!-- Futebol Nacional -->
+                <h5 class="text-info mb-2">Futebol Nacional</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-2">
+                        <div class="card bg-dark border-primary" style="height: 120px;">
+                            <div class="card-header bg-primary py-2">
+                                <h6 class="mb-0"><i class="fas fa-rss me-1"></i> RSS</h6>
                             </div>
-                            <div class="card-body">
-                                <div class="input-group mb-2">
+                            <div class="card-body py-2">
+                                <div class="input-group input-group-sm mb-1">
                                     <input type="text" class="form-control" 
-                                           value="{{ request.url_root }}feeds/lance/futebol/rss" 
-                                           readonly id="lance-futebol-rss">
-                                    <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard('lance-futebol-rss')">
+                                           value="{{ request.url_root }}feeds/lance/futebol-nacional/rss" 
+                                           readonly id="lance-nacional-rss">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard('lance-nacional-rss')">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <div class="d-flex gap-2">
-                                    <a href="/feeds/lance/futebol/rss" class="btn btn-sm btn-primary" target="_blank">
-                                        <i class="fas fa-external-link-alt me-1"></i>
-                                        Abrir RSS
-                                    </a>
-                                    <a href="/feeds/lance/futebol/rss?refresh=1" class="btn btn-sm btn-outline-primary" target="_blank">
-                                        <i class="fas fa-sync me-1"></i>
-                                        Atualizar
-                                    </a>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/lance/futebol-nacional/rss" class="btn btn-sm btn-primary flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/futebol-nacional/rss?refresh=1" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">Atualizar</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="card bg-dark border-success">
-                            <div class="card-header bg-success">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-atom me-2"></i>
-                                    Atom Feed
-                                </h5>
+                    <div class="col-md-6 mb-2">
+                        <div class="card bg-dark border-success" style="height: 120px;">
+                            <div class="card-header bg-success py-2">
+                                <h6 class="mb-0"><i class="fas fa-atom me-1"></i> Atom</h6>
                             </div>
-                            <div class="card-body">
-                                <div class="input-group mb-2">
+                            <div class="card-body py-2">
+                                <div class="input-group input-group-sm mb-1">
                                     <input type="text" class="form-control" 
-                                           value="{{ request.url_root }}feeds/lance/futebol/atom" 
-                                           readonly id="lance-futebol-atom">
-                                    <button class="btn btn-outline-success" type="button" onclick="copyToClipboard('lance-futebol-atom')">
+                                           value="{{ request.url_root }}feeds/lance/futebol-nacional/atom" 
+                                           readonly id="lance-nacional-atom">
+                                    <button class="btn btn-outline-success btn-sm" onclick="copyToClipboard('lance-nacional-atom')">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <div class="d-flex gap-2">
-                                    <a href="/feeds/lance/futebol/atom" class="btn btn-sm btn-success" target="_blank">
-                                        <i class="fas fa-external-link-alt me-1"></i>
-                                        Abrir Atom
-                                    </a>
-                                    <a href="/feeds/lance/futebol/atom?refresh=1" class="btn btn-sm btn-outline-success" target="_blank">
-                                        <i class="fas fa-sync me-1"></i>
-                                        Atualizar
-                                    </a>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/lance/futebol-nacional/atom" class="btn btn-sm btn-success flex-fill" target="_blank">Atom</a>
+                                    <a href="/feeds/lance/futebol-nacional/atom?refresh=1" class="btn btn-sm btn-outline-success flex-fill" target="_blank">Atualizar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Futebol Internacional -->
+                <h5 class="text-info mb-2">Futebol Internacional</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-2">
+                        <div class="card bg-dark border-primary" style="height: 120px;">
+                            <div class="card-header bg-primary py-2">
+                                <h6 class="mb-0"><i class="fas fa-rss me-1"></i> RSS</h6>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="input-group input-group-sm mb-1">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/futebol-internacional/rss" 
+                                           readonly id="lance-inter-rss">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard('lance-inter-rss')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/lance/futebol-internacional/rss" class="btn btn-sm btn-primary flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/futebol-internacional/rss?refresh=1" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">Atualizar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="card bg-dark border-success" style="height: 120px;">
+                            <div class="card-header bg-success py-2">
+                                <h6 class="mb-0"><i class="fas fa-atom me-1"></i> Atom</h6>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="input-group input-group-sm mb-1">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/futebol-internacional/atom" 
+                                           readonly id="lance-inter-atom">
+                                    <button class="btn btn-outline-success btn-sm" onclick="copyToClipboard('lance-inter-atom')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/lance/futebol-internacional/atom" class="btn btn-sm btn-success flex-fill" target="_blank">Atom</a>
+                                    <a href="/feeds/lance/futebol-internacional/atom?refresh=1" class="btn btn-sm btn-outline-success flex-fill" target="_blank">Atualizar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competições -->
+                <h5 class="text-info mb-2">Competições</h5>
+                <div class="row mb-3">
+                    <!-- Libertadores -->
+                    <div class="col-md-3 mb-2">
+                        <div class="card bg-dark border-warning" style="height: 140px;">
+                            <div class="card-header bg-warning text-dark py-1">
+                                <h6 class="mb-0 small">Libertadores</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/libertadores/rss" class="btn btn-sm btn-warning text-dark flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/libertadores/atom" class="btn btn-sm btn-outline-warning flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Copa do Mundo -->
+                    <div class="col-md-3 mb-2">
+                        <div class="card bg-dark border-info" style="height: 140px;">
+                            <div class="card-header bg-info text-dark py-1">
+                                <h6 class="mb-0 small">Copa do Mundo</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/copa-do-mundo/rss" class="btn btn-sm btn-info text-dark flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/copa-do-mundo/atom" class="btn btn-sm btn-outline-info flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Champions League -->
+                    <div class="col-md-3 mb-2">
+                        <div class="card bg-dark border-primary" style="height: 140px;">
+                            <div class="card-header bg-primary py-1">
+                                <h6 class="mb-0 small text-white">Champions</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/champions-league/rss" class="btn btn-sm btn-primary flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/champions-league/atom" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Futebol Geral -->
+                    <div class="col-md-3 mb-2">
+                        <div class="card bg-dark border-secondary" style="height: 140px;">
+                            <div class="card-header bg-secondary py-1">
+                                <h6 class="mb-0 small">Futebol Geral</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/futebol/rss" class="btn btn-sm btn-secondary flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/futebol/atom" class="btn btn-sm btn-outline-secondary flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campeonatos Europeus -->
+                <h5 class="text-info mb-2">Campeonatos Europeus</h5>
+                <div class="row mb-3">
+                    <!-- Premier League -->
+                    <div class="col-md-2 mb-2">
+                        <div class="card bg-dark border-success" style="height: 140px;">
+                            <div class="card-header bg-success py-1">
+                                <h6 class="mb-0 small">Premier League</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/premier-league/rss" class="btn btn-sm btn-success flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/premier-league/atom" class="btn btn-sm btn-outline-success flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- La Liga -->
+                    <div class="col-md-2 mb-2">
+                        <div class="card bg-dark border-danger" style="height: 140px;">
+                            <div class="card-header bg-danger py-1">
+                                <h6 class="mb-0 small">La Liga</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/la-liga/rss" class="btn btn-sm btn-danger flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/la-liga/atom" class="btn btn-sm btn-outline-danger flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bundesliga -->
+                    <div class="col-md-2 mb-2">
+                        <div class="card bg-dark border-light" style="height: 140px;">
+                            <div class="card-header bg-light text-dark py-1">
+                                <h6 class="mb-0 small">Bundesliga</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/bundesliga/rss" class="btn btn-sm btn-light text-dark flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/bundesliga/atom" class="btn btn-sm btn-outline-light flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Serie A -->
+                    <div class="col-md-3 mb-2">
+                        <div class="card bg-dark border-primary" style="height: 140px;">
+                            <div class="card-header bg-primary py-1">
+                                <h6 class="mb-0 small">Serie A Italiana</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/campeonato-italiano/rss" class="btn btn-sm btn-primary flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/campeonato-italiano/atom" class="btn btn-sm btn-outline-primary flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ligue 1 -->
+                    <div class="col-md-3 mb-2">
+                        <div class="card bg-dark border-info" style="height: 140px;">
+                            <div class="card-header bg-info text-dark py-1">
+                                <h6 class="mb-0 small">Ligue 1</h6>
+                            </div>
+                            <div class="card-body py-1">
+                                <div class="d-flex gap-1 mb-1">
+                                    <a href="/feeds/lance/ligue-1/rss" class="btn btn-sm btn-info text-dark flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/lance/ligue-1/atom" class="btn btn-sm btn-outline-info flex-fill" target="_blank">Atom</a>
                                 </div>
                             </div>
                         </div>
@@ -625,16 +799,16 @@
             element.select();
             element.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(element.value);
-            
+
             // Show feedback
             const button = element.nextElementSibling;
             const originalHTML = button.innerHTML;
             button.innerHTML = '<i class="fas fa-check"></i>';
-            
+
             // Get original button classes
             const originalClasses = [...button.classList];
             button.className = 'btn btn-success btn-sm';
-            
+
             setTimeout(() => {
                 button.innerHTML = originalHTML;
                 button.className = originalClasses.join(' ');
