@@ -29,7 +29,7 @@ SOURCES_CONFIG = {
         'scraper_class': 'UolScraper',
         'sections': {
             'economia': {
-                'name': 'Economia', 
+                'name': 'Economia',
                 'start_urls': ['https://www.uol.com.br/'],
                 'description': 'Notícias de economia do UOL',
                 'filters': {}

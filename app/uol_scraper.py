@@ -5,12 +5,68 @@ UOL-specific scraper implementation
 import logging
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
+import requests
+from tenacity import retry, wait_exponential, stop_after_attempt
 from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
 class UolScraper(BaseScraper):
     """Scraper specifically designed for UOL news sites"""
+    
+    def __init__(self, store, request_delay=1.0):
+        super().__init__(store, request_delay)
+        # Use standard browser User-Agent for UOL to avoid blocking
+        self.browser_headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Referer': 'https://www.uol.com.br/',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+        }
+        self.session.headers.update(self.browser_headers)
+        
+    @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=5))
+    def _fetch_page(self, url):
+        """Override to use enhanced browser headers for UOL requests"""
+        if not self.can_fetch(url):
+            logger.warning(f"Robots.txt disallows fetching {url}")
+            return None
+        
+        # Enhanced browser headers for anti-bot protection
+        enhanced_headers = {
+            **self.browser_headers,
+            'sec-ch-ua': '"Chromium";v="91", " Not A;Brand";v="99"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'upgrade-insecure-requests': '1',
+            'accept-encoding': 'gzip, deflate, br',
+            'cache-control': 'max-age=0'
+        }
+        
+        try:
+            response = self.session.get(url, headers=enhanced_headers, timeout=15)
+            response.raise_for_status()
+            return response.text
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 403:
+                # Try AMP version as fallback
+                if '/amp' not in url and '?amp' not in url:
+                    try:
+                        amp_url = url.rstrip('/') + '/amp'
+                        logger.info(f"Trying AMP version: {amp_url}")
+                        response = self.session.get(amp_url, headers=enhanced_headers, timeout=15)
+                        response.raise_for_status()
+                        return response.text
+                    except:
+                        pass
+            logger.error(f"Error fetching {url}: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Error fetching {url}: {e}")
+            raise
     
     def get_site_domain(self):
         """Return the main domain for UOL"""
@@ -28,6 +84,8 @@ class UolScraper(BaseScraper):
                 'a[href*="/futebol/"]'
             ],
             'economia': [
+                'a[href*="economia.uol.com.br"]',
+                'a[href*="/play/videos/economia/"]',
                 'a[href*="/economia/"]',
                 'a[href*="/mercado/"]'
             ],
@@ -136,6 +194,26 @@ class UolScraper(BaseScraper):
                 'mundo': ['/internacional/', '/mundo/']
             }
             
+            # Special handling for economia section - accept economia subdomain but avoid listing pages
+            if section == 'economia' and 'economia.uol.com.br' in parsed.netloc:
+                # Exclude home, listing, and non-article pages
+                exclude_patterns = [
+                    '/busca/', '/arquivo/', '/rss', '/feed', '/ultimas/', '.rss', '.xml',
+                    '/$',  # Home page
+                    '/temas/', '/podcast/', '/guia-de-', '/cotacoes/', '/empregos-e-carreiras/',
+                    '/dinheiro-e-renda/', '/empresas-e-negocios/', '/imposto-de-renda/'
+                ]
+                # Only accept URLs that look like actual articles (with dates or specific patterns)
+                if (any(pattern in path for pattern in exclude_patterns) or 
+                    path.count('/') < 2 or  # Too shallow, likely listing page
+                    not any(char.isdigit() for char in path)):  # No dates/numbers, likely listing
+                    return False
+                return True
+            
+            # Also accept UOL Play economia videos
+            if section == 'economia' and 'play.uol.com.br' in parsed.netloc and '/economia/' in path:
+                return True
+            
             # If section is specified, only allow articles from that section
             if section and section in section_patterns:
                 valid_patterns = section_patterns[section]
@@ -175,6 +253,11 @@ class UolScraper(BaseScraper):
                     # Exclude non-football URLs when scraping football
                     non_football_patterns = ['/politica/', '/economia/', '/internacional/', '/poder/', '/mercado/', '/mundo/']
                     if any(pattern in path for pattern in non_football_patterns):
+                        return False
+                elif section == 'economia':
+                    # Exclude non-economy URLs when scraping economy
+                    non_economy_patterns = ['/politica/', '/futebol/', '/internacional/', '/poder/', '/mundo/']
+                    if any(pattern in path for pattern in non_economy_patterns):
                         return False
                 
                 return True

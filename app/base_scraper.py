@@ -112,10 +112,10 @@ class BaseScraper(ABC):
             if rp is None:
                 return True
             
-            user_agent = get_user_agent()
+            user_agent = self.session.headers.get('User-Agent', get_user_agent())
             can_fetch = rp.can_fetch(user_agent, url)
             
-            logger.debug(f"Robots check for {url} with UA '{user_agent}': {can_fetch}")
+            logger.debug(f"Robots check for {url} with UA '{user_agent[:50]}...': {can_fetch}")
             
             # If robots.txt says no but we know the site allows scraping, proceed with caution
             if not can_fetch:
