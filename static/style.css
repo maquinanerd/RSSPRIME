@@ -1,0 +1,89 @@
+/* Custom styles for Lance Feed Generator */
+
+body {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    min-height: 100vh;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.input-group .form-control {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+code {
+    background-color: var(--bs-gray-800);
+    color: var(--bs-cyan);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.table code {
+    background-color: var(--bs-gray-700);
+    color: var(--bs-warning);
+}
+
+.bg-secondary {
+    background-color: var(--bs-gray-800) !important;
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: var(--bs-warning);
+}
+
+.list-group-item:hover {
+    background-color: var(--bs-gray-700) !important;
+}
+
+/* Animation for copy button */
+.btn.btn-success {
+    transition: all 0.3s ease;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+    
+    .input-group .form-control {
+        font-size: 0.8rem;
+    }
+}
+
+/* Loading animation */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Custom scrollbar for better dark theme consistency */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-gray-900);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-gray-600);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-gray-500);
+}
