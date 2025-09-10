@@ -18,22 +18,27 @@ class FeedGenerator:
             'generator': 'Lance Feed Generator v1.0'
         }
     
-    def _create_base_feed(self):
-        """Create base feed with common metadata"""
+    def _create_base_feed(self, source='lance', section='futebol', feed_format='rss'):
+        """Create base feed with source-specific metadata"""
         fg = FG()
         
-        # Basic feed information
-        fg.id(self.base_info['id'])
-        fg.title(self.base_info['title'])
-        fg.link(href=self.base_info['link']['href'], rel=self.base_info['link']['rel'])
-        fg.description(self.base_info['description'])
-        fg.language(self.base_info['language'])
-        fg.generator(self.base_info['generator'])
+        # Get source configuration
+        source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
+        section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
+        
+        # Basic feed information with unique IDs
+        unique_id = f"https://lance-feeds.repl.co/feeds/{source}/{section}/{feed_format}"
+        fg.id(unique_id)
+        fg.title(f"{source_config['name']} - {section_config['name']} - Feed não oficial")
+        fg.link(href=source_config['base_url'], rel='alternate')
+        fg.description(section_config['description'])
+        fg.language(source_config.get('language', 'pt-BR'))
+        fg.generator('Multi-Source Feed Generator v1.0')
         
         # Additional metadata
         fg.lastBuildDate(datetime.now(timezone.utc))
-        fg.managingEditor('noreply@lance-feeds.repl.co (Lance Feed Bot)')
-        fg.webMaster('noreply@lance-feeds.repl.co (Lance Feed Bot)')
+        fg.managingEditor('noreply@lance-feeds.repl.co (Multi-Source Feed Bot)')
+        fg.webMaster('noreply@lance-feeds.repl.co (Multi-Source Feed Bot)')
         
         return fg
     
@@ -91,12 +96,7 @@ class FeedGenerator:
             source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
             section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
             
-            fg = self._create_base_feed()
-            
-            # Update feed metadata for specific source
-            fg.title(f"{source_config['name']} - {section_config['name']} - Feed não oficial")
-            fg.description(section_config['description'])
-            fg.language(source_config['language'])
+            fg = self._create_base_feed(source=source, section=section, feed_format='rss')
             
             # RSS-specific settings
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self')
@@ -122,12 +122,7 @@ class FeedGenerator:
             source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
             section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
             
-            fg = self._create_base_feed()
-            
-            # Update feed metadata for specific source
-            fg.title(f"{source_config['name']} - {section_config['name']} - Feed não oficial")
-            fg.description(section_config['description'])
-            fg.language(source_config['language'])
+            fg = self._create_base_feed(source=source, section=section, feed_format='atom')
             
             # Atom-specific settings
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self')
