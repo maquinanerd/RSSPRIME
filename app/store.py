@@ -137,7 +137,7 @@ class ArticleStore:
                 if where_clauses:
                     base_query += ' WHERE ' + ' AND '.join(where_clauses)
                 
-                base_query += ' ORDER BY COALESCE(date_published, fetched_at) DESC LIMIT ?'
+                base_query += ' ORDER BY COALESCE(date_published, created_at, fetched_at) DESC LIMIT ?'
                 params.append(limit)
                 
                 cursor = conn.execute(base_query, params)
