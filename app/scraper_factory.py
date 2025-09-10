@@ -3,7 +3,7 @@ Factory for creating scrapers for different news sources
 """
 
 import logging
-from .scraper import LanceScraper
+from .lance_scraper import LanceScraper
 from .uol_scraper import UolScraper  
 from .folha_scraper import FolhaScraper
 from .sources_config import SOURCES_CONFIG
