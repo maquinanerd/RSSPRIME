@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 from feedgen.feed import FeedGenerator as FG
 from .utils import extract_mime_type
@@ -30,7 +30,7 @@ class FeedGenerator:
         fg.generator(self.base_info['generator'])
         
         # Additional metadata
-        fg.lastBuildDate(datetime.utcnow())
+        fg.lastBuildDate(datetime.now(timezone.utc))
         fg.managingEditor('noreply@lance-feeds.repl.co (Lance Feed Bot)')
         fg.webMaster('noreply@lance-feeds.repl.co (Lance Feed Bot)')
         
@@ -56,7 +56,11 @@ class FeedGenerator:
             elif article['date_published']:
                 fe.updated(article['date_published'])
             else:
-                fe.updated(article['fetched_at'])
+                # Ensure fetched_at has timezone info
+                fetched_at = article['fetched_at']
+                if fetched_at and hasattr(fetched_at, 'tzinfo') and fetched_at.tzinfo is None:
+                    fetched_at = fetched_at.replace(tzinfo=timezone.utc)
+                fe.updated(fetched_at)
             
             # Author
             if article['author']:
@@ -108,7 +112,7 @@ class FeedGenerator:
             
             # Atom-specific settings
             fg.link(href='https://lance-feeds.repl.co/feeds/lance/atom.xml', rel='self')
-            fg.updated(datetime.utcnow())
+            fg.updated(datetime.now(timezone.utc))
             
             # Add articles
             added_count = 0

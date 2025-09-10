@@ -1,6 +1,6 @@
 import re
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 from dateutil import parser as date_parser
 
@@ -11,16 +11,24 @@ def get_user_agent():
     return "Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https://lance-feeds.repl.co/)"
 
 def normalize_date(date_string):
-    """Normalize various date formats to datetime object"""
+    """Normalize various date formats to datetime object with UTC timezone"""
     if not date_string:
         return None
     
     try:
         if isinstance(date_string, datetime):
+            # If already a datetime, ensure it has timezone info
+            if date_string.tzinfo is None:
+                return date_string.replace(tzinfo=timezone.utc)
             return date_string
         
         # Parse the date string
         parsed_date = date_parser.parse(date_string)
+        
+        # Ensure timezone info is present
+        if parsed_date.tzinfo is None:
+            parsed_date = parsed_date.replace(tzinfo=timezone.utc)
+        
         return parsed_date
         
     except (ValueError, TypeError) as e:
