@@ -319,12 +319,28 @@ class LanceScraper:
             logger.error(f"Error parsing article {url}: {e}")
             return None
     
-    def scrape_and_store(self, start_url, max_pages=3):
+    def scrape_and_store(self, start_urls, max_pages=3):
         """Main scraping method that collects and stores articles"""
-        logger.info(f"Starting scrape from {start_url}")
+        # Handle both single URL and list of URLs
+        if isinstance(start_urls, str):
+            start_urls = [start_urls]
         
-        # Get article links from listing pages
-        article_urls = self.list_pages(start_url, max_pages)
+        logger.info(f"Starting scrape from {len(start_urls)} source(s): {start_urls}")
+        
+        # Get article links from all listing pages
+        all_article_urls = []
+        for start_url in start_urls:
+            logger.info(f"Scraping from: {start_url}")
+            article_urls = self.list_pages(start_url, max_pages)
+            all_article_urls.extend(article_urls)
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        article_urls = []
+        for url in all_article_urls:
+            if url not in seen:
+                seen.add(url)
+                article_urls.append(url)
         
         if not article_urls:
             logger.warning("No article URLs found")

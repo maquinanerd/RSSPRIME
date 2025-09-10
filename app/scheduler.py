@@ -86,9 +86,13 @@ class FeedScheduler:
             logger.info("Starting scheduled feed refresh")
             start_time = datetime.utcnow()
             
-            # Perform scraping
+            # Perform scraping from multiple sources
+            start_urls = [
+                'https://www.lance.com.br/mais-noticias',
+                'https://www.lance.com.br/brasileirao'
+            ]
             new_articles = self.scraper.scrape_and_store(
-                start_url='https://www.lance.com.br/mais-noticias',
+                start_urls=start_urls,
                 max_pages=3
             )
             

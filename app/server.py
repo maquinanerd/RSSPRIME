@@ -53,27 +53,32 @@ def rss_feed():
         limit = min(int(request.args.get('limit', DEFAULT_LIMIT)), 100)
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
-        source_url = request.args.get('source_url', 'https://www.lance.com.br/mais-noticias')
-        
+        # Multiple source URLs to scrape from
+        default_sources = [
+            'https://www.lance.com.br/mais-noticias',
+            'https://www.lance.com.br/brasileirao'
+        ]
+        source_url = request.args.get('source_url', default_sources[0])
+
         logger.info(f"RSS feed requested: limit={limit}, pages={pages}, q='{q}'")
-        
+
         # Get articles from database
         query_filter = parse_query_filter(q) if q else None
         articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
-        
+
         # If no recent articles or forced refresh, scrape new content
         if not articles or request.args.get('refresh') == '1':
             logger.info("Triggering fresh scrape for RSS feed")
             new_articles = scraper.scrape_and_store(source_url, max_pages=pages)
             articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
-        
+
         # Generate RSS feed
         rss_content = feed_generator.generate_rss(articles)
-        
+
         response = Response(rss_content, mimetype='application/rss+xml')
         response.headers['Cache-Control'] = 'public, max-age=900'  # 15 minutes cache
         return response
-        
+
     except Exception as e:
         logger.error(f"Error generating RSS feed: {e}")
         return jsonify({'error': 'Failed to generate RSS feed'}), 500
@@ -86,27 +91,32 @@ def atom_feed():
         limit = min(int(request.args.get('limit', DEFAULT_LIMIT)), 100)
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
-        source_url = request.args.get('source_url', 'https://www.lance.com.br/mais-noticias')
-        
+        # Multiple source URLs to scrape from
+        default_sources = [
+            'https://www.lance.com.br/mais-noticias',
+            'https://www.lance.com.br/brasileirao'
+        ]
+        source_url = request.args.get('source_url', default_sources[0])
+
         logger.info(f"Atom feed requested: limit={limit}, pages={pages}, q='{q}'")
-        
+
         # Get articles from database
         query_filter = parse_query_filter(q) if q else None
         articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
-        
+
         # If no recent articles or forced refresh, scrape new content
         if not articles or request.args.get('refresh') == '1':
             logger.info("Triggering fresh scrape for Atom feed")
             new_articles = scraper.scrape_and_store(source_url, max_pages=pages)
             articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
-        
+
         # Generate Atom feed
         atom_content = feed_generator.generate_atom(articles)
-        
+
         response = Response(atom_content, mimetype='application/atom+xml')
         response.headers['Cache-Control'] = 'public, max-age=900'  # 15 minutes cache
         return response
-        
+
     except Exception as e:
         logger.error(f"Error generating Atom feed: {e}")
         return jsonify({'error': 'Failed to generate Atom feed'}), 500
@@ -139,24 +149,29 @@ def admin_refresh():
         provided_key = request.args.get('key', '')
         if not validate_admin_key(provided_key, ADMIN_KEY):
             return jsonify({'error': 'Invalid admin key'}), 401
-        
+
         # Parse parameters
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
-        source_url = request.args.get('source_url', 'https://www.lance.com.br/mais-noticias')
-        
+        # Multiple source URLs to scrape from
+        default_sources = [
+            'https://www.lance.com.br/mais-noticias',
+            'https://www.lance.com.br/brasileirao'
+        ]
+        source_url = request.args.get('source_url', default_sources[0])
+
         logger.info(f"Manual refresh triggered: pages={pages}")
-        
+
         # Perform scraping
         new_articles = scraper.scrape_and_store(source_url, max_pages=pages)
         stats = store.get_stats()
-        
+
         return jsonify({
             'status': 'success',
             'new_articles': len(new_articles),
             'total_articles': stats['total_articles'],
             'timestamp': datetime.utcnow().isoformat()
         })
-        
+
     except Exception as e:
         logger.error(f"Admin refresh error: {e}")
         return jsonify({
@@ -172,10 +187,10 @@ def admin_stats():
         provided_key = request.args.get('key', '')
         if not validate_admin_key(provided_key, ADMIN_KEY):
             return jsonify({'error': 'Invalid admin key'}), 401
-        
+
         detailed_stats = store.get_detailed_stats()
         return jsonify(detailed_stats)
-        
+
     except Exception as e:
         logger.error(f"Admin stats error: {e}")
         return jsonify({'error': str(e)}), 500
