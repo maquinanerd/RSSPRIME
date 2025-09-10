@@ -31,11 +31,30 @@ class ArticleStore:
                         date_modified TIMESTAMP,
                         fetched_at TIMESTAMP NOT NULL,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        source TEXT DEFAULT 'lance',
+                        section TEXT DEFAULT 'futebol',
+                        site TEXT DEFAULT 'lance.com.br'
                     )
                 ''')
                 
-                # Create indexes for performance
+                # Add new columns to existing table if they don't exist
+                try:
+                    conn.execute('ALTER TABLE articles ADD COLUMN source TEXT DEFAULT "lance"')
+                except:
+                    pass  # Column already exists
+                
+                try:
+                    conn.execute('ALTER TABLE articles ADD COLUMN section TEXT DEFAULT "futebol"')
+                except:
+                    pass  # Column already exists
+                
+                try:
+                    conn.execute('ALTER TABLE articles ADD COLUMN site TEXT DEFAULT "lance.com.br"')
+                except:
+                    pass  # Column already exists
+                
+                # Create indexes for performance (after columns exist)
                 conn.execute('''
                     CREATE INDEX IF NOT EXISTS idx_articles_date_published 
                     ON articles(date_published DESC)
@@ -44,6 +63,16 @@ class ArticleStore:
                 conn.execute('''
                     CREATE INDEX IF NOT EXISTS idx_articles_fetched_at 
                     ON articles(fetched_at DESC)
+                ''')
+                
+                conn.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_articles_source_section 
+                    ON articles(source, section, COALESCE(date_published, fetched_at) DESC)
+                ''')
+                
+                conn.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_articles_author 
+                    ON articles(author)
                 ''')
                 
                 conn.commit()
@@ -58,7 +87,8 @@ class ArticleStore:
         if not row:
             return None
         
-        return {
+        # Handle both old and new schema
+        result = {
             'url': row[0],
             'title': row[1],
             'description': row[2],
@@ -70,6 +100,19 @@ class ArticleStore:
             'created_at': datetime.fromisoformat(row[8]) if row[8] else None,
             'updated_at': datetime.fromisoformat(row[9]) if row[9] else None
         }
+        
+        # Add new fields if they exist in the row
+        if len(row) > 10:
+            result['source'] = row[10] or 'lance'
+            result['section'] = row[11] or 'futebol'
+            result['site'] = row[12] or 'lance.com.br'
+        else:
+            # Default values for backward compatibility
+            result['source'] = 'lance'
+            result['section'] = 'futebol'
+            result['site'] = 'lance.com.br'
+        
+        return result
     
     def has_article(self, url):
         """Check if article already exists in database"""
@@ -90,20 +133,44 @@ class ArticleStore:
                 date_modified = article['date_modified'].isoformat() if article['date_modified'] else None
                 fetched_at = article['fetched_at'].isoformat()
                 
-                conn.execute('''
-                    INSERT OR REPLACE INTO articles 
-                    (url, title, description, image, author, date_published, date_modified, fetched_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-                ''', (
-                    article['url'],
-                    article['title'],
-                    article['description'],
-                    article['image'],
-                    article['author'],
-                    date_published,
-                    date_modified,
-                    fetched_at
-                ))
+                # Check if new columns exist
+                cursor = conn.execute("PRAGMA table_info(articles)")
+                columns = [row[1] for row in cursor.fetchall()]
+                
+                if 'source' in columns:
+                    conn.execute('''
+                        INSERT OR REPLACE INTO articles 
+                        (url, title, description, image, author, date_published, date_modified, fetched_at, updated_at, source, section, site)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)
+                    ''', (
+                        article['url'],
+                        article['title'],
+                        article['description'],
+                        article['image'],
+                        article['author'],
+                        date_published,
+                        date_modified,
+                        fetched_at,
+                        article.get('source', 'lance'),
+                        article.get('section', 'futebol'),
+                        article.get('site', 'lance.com.br')
+                    ))
+                else:
+                    # Use old schema
+                    conn.execute('''
+                        INSERT OR REPLACE INTO articles 
+                        (url, title, description, image, author, date_published, date_modified, fetched_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                    ''', (
+                        article['url'],
+                        article['title'],
+                        article['description'],
+                        article['image'],
+                        article['author'],
+                        date_published,
+                        date_modified,
+                        fetched_at
+                    ))
                 
                 conn.commit()
                 logger.debug(f"Article upserted: {article['url']}")
@@ -113,17 +180,29 @@ class ArticleStore:
             logger.error(f"Error upserting article {article['url']}: {e}")
             return False
     
-    def get_recent_articles(self, limit=30, query_filter=None):
+    def get_recent_articles(self, limit=30, query_filter=None, source=None, section=None, exclude_authors=None):
         """Get recent articles with optional filtering"""
         try:
             with sqlite3.connect(self.db_path) as conn:
-                # Build query
-                base_query = '''
-                    SELECT url, title, description, image, author, 
-                           date_published, date_modified, fetched_at,
-                           created_at, updated_at
-                    FROM articles
-                '''
+                # Build query with dynamic column selection
+                # Check if new columns exist first
+                cursor = conn.execute("PRAGMA table_info(articles)")
+                columns = [row[1] for row in cursor.fetchall()]
+                
+                if 'source' in columns:
+                    base_query = '''
+                        SELECT url, title, description, image, author, 
+                               date_published, date_modified, fetched_at,
+                               created_at, updated_at, source, section, site
+                        FROM articles
+                    '''
+                else:
+                    base_query = '''
+                        SELECT url, title, description, image, author, 
+                               date_published, date_modified, fetched_at,
+                               created_at, updated_at
+                        FROM articles
+                    '''
                 
                 params = []
                 where_clauses = []
@@ -132,6 +211,22 @@ class ArticleStore:
                 if query_filter:
                     where_clauses.append('(title LIKE ? OR description LIKE ?)')
                     params.extend([f'%{query_filter}%', f'%{query_filter}%'])
+                
+                # Add source filter if provided
+                if source:
+                    where_clauses.append('source = ?')
+                    params.append(source)
+                
+                # Add section filter if provided
+                if section:
+                    where_clauses.append('section = ?')
+                    params.append(section)
+                
+                # Add author exclusion filter if provided
+                if exclude_authors:
+                    for author in exclude_authors:
+                        where_clauses.append('(author IS NULL OR author NOT LIKE ?)')
+                        params.append(f'%{author}%')
                 
                 # Combine query parts
                 if where_clauses:
