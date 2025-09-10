@@ -15,7 +15,7 @@ class FeedScheduler:
         self.is_running_flag = False
         self.last_run = None
         self.lock = threading.Lock()
-    
+
     def start(self):
         """Start the background scheduler"""
         try:
@@ -28,10 +28,10 @@ class FeedScheduler:
                 replace_existing=True,
                 max_instances=1  # Prevent overlapping runs
             )
-            
+
             self.scheduler.start()
             logger.info(f"Scheduler started - refresh every {self.refresh_interval_minutes} minutes")
-            
+
             # Run initial refresh in background
             self.scheduler.add_job(
                 func=self._initial_refresh,
@@ -41,10 +41,10 @@ class FeedScheduler:
                 name='Initial Refresh',
                 max_instances=1
             )
-            
+
         except Exception as e:
             logger.error(f"Error starting scheduler: {e}")
-    
+
     def stop(self):
         """Stop the background scheduler"""
         try:
@@ -53,51 +53,51 @@ class FeedScheduler:
                 logger.info("Scheduler stopped")
         except Exception as e:
             logger.error(f"Error stopping scheduler: {e}")
-    
+
     def is_running(self):
         """Check if scheduler is running"""
         return self.scheduler.running if self.scheduler else False
-    
+
     def _initial_refresh(self):
         """Initial refresh on startup"""
         try:
             # Check if we have any articles in the database
             stats = self.store.get_stats()
-            
+
             if stats['total_articles'] == 0:
                 logger.info("No articles in database, performing initial scrape")
                 self._refresh_job()
             else:
                 logger.info(f"Database has {stats['total_articles']} articles, skipping initial scrape")
-                
+
         except Exception as e:
             logger.error(f"Error in initial refresh: {e}")
-    
+
     def _refresh_job(self):
         """Background job to refresh feeds from multiple sources"""
         with self.lock:
             if self.is_running_flag:
                 logger.warning("Refresh job already running, skipping")
                 return
-            
+
             self.is_running_flag = True
-        
+
         try:
             logger.info("Starting multi-source feed refresh")
             start_time = datetime.utcnow()
-            
+
             # Import ScraperFactory for multi-source support
             from .scraper_factory import ScraperFactory
             from .sources_config import get_source_config
-            
+
             total_new_articles = 0
-            
+
             # Refresh each source and section
             for source_name, source_config in get_source_config().items():
                 for section in source_config.get('sections', []):
                     try:
                         logger.info(f"Refreshing {source_name}/{section}")
-                        
+
                         # Use reduced limits for background processing
                         new_articles = ScraperFactory.scrape_source_section(
                             source=source_name,
@@ -105,27 +105,27 @@ class FeedScheduler:
                             max_pages=1,  # Reduced for background job
                             max_articles=10  # Reduced for background job
                         )
-                        
+
                         processed_count = len(new_articles) if new_articles else 0
                         total_new_articles += processed_count
-                        
+
                         logger.info(f"Processed {processed_count} articles from {source_name}/{section}")
-                        
+
                         # Add delay between sources to be respectful
                         import time
                         time.sleep(1.0)
-                        
+
                     except Exception as e:
                         logger.warning(f"Failed to refresh {source_name}/{section}: {e}")
                         continue
-            
+
             # Update last run time
             self.last_run = datetime.utcnow()
-            
+
             # Log results
             duration = (self.last_run - start_time).total_seconds()
             logger.info(f"Multi-source feed refresh completed in {duration:.1f}s - {total_new_articles} new articles")
-            
+
             # Optional: cleanup old articles (keep last 30 days)
             try:
                 deleted_count = self.store.cleanup_old_articles(days_to_keep=30)
@@ -133,13 +133,13 @@ class FeedScheduler:
                     logger.info(f"Cleaned up {deleted_count} old articles")
             except Exception as e:
                 logger.warning(f"Error during cleanup: {e}")
-                
+
         except Exception as e:
             logger.error(f"Error in refresh job: {e}")
         finally:
             with self.lock:
                 self.is_running_flag = False
-    
+
     def trigger_refresh(self):
         """Manually trigger a refresh (for admin endpoint)"""
         try:
@@ -156,7 +156,7 @@ class FeedScheduler:
         except Exception as e:
             logger.error(f"Error triggering manual refresh: {e}")
             return False
-    
+
     def get_status(self):
         """Get scheduler status information"""
         return {
@@ -166,7 +166,7 @@ class FeedScheduler:
             'is_job_running': self.is_running_flag,
             'next_run': self._get_next_run_time()
         }
-    
+
     def _get_next_run_time(self):
         """Get next scheduled run time"""
         try:

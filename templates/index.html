@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="dark">
 <head>
@@ -53,66 +54,438 @@
                     <div class="card-body text-center">
                         <i class="fas fa-sync fa-2x text-warning mb-2"></i>
                         <h5 class="card-title">Atualização Automática</h5>
-                        <p class="text-warning mb-0">A cada 15 minutos</p>
+                        <p class="text-warning mb-0">A cada 10 minutos</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Feed URLs -->
+        <!-- Feed URLs por Fonte -->
         <section class="mb-5">
             <h2 class="h3 mb-4">
                 <i class="fas fa-link me-2"></i>
-                URLs dos Feeds
+                Feeds Disponíveis por Fonte
             </h2>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="card bg-dark border-secondary">
-                        <div class="card-header bg-primary">
-                            <h5 class="mb-0">
-                                <i class="fas fa-rss me-2"></i>
-                                RSS 2.0
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-group">
-                                <input type="text" class="form-control" 
-                                       value="{{ request.url_root }}feeds/lance/rss.xml" 
-                                       readonly id="rss-url">
-                                <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard('rss-url')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
+
+            <!-- LANCE! -->
+            <div class="mb-4">
+                <h3 class="h4 text-primary mb-3">
+                    <i class="fas fa-futbol me-2"></i>
+                    LANCE! - Futebol
+                </h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-dark border-primary">
+                            <div class="card-header bg-primary">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-rss me-2"></i>
+                                    RSS Feed
+                                </h5>
                             </div>
-                            <div class="mt-2">
-                                <a href="/feeds/lance/rss.xml" class="btn btn-sm btn-primary" target="_blank">
-                                    <i class="fas fa-external-link-alt me-1"></i>
-                                    Abrir RSS
-                                </a>
+                            <div class="card-body">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/futebol/rss" 
+                                           readonly id="lance-futebol-rss">
+                                    <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard('lance-futebol-rss')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="/feeds/lance/futebol/rss" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-external-link-alt me-1"></i>
+                                        Abrir RSS
+                                    </a>
+                                    <a href="/feeds/lance/futebol/rss?refresh=1" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-sync me-1"></i>
+                                        Atualizar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-dark border-success">
+                            <div class="card-header bg-success">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-atom me-2"></i>
+                                    Atom Feed
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/futebol/atom" 
+                                           readonly id="lance-futebol-atom">
+                                    <button class="btn btn-outline-success" type="button" onclick="copyToClipboard('lance-futebol-atom')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="/feeds/lance/futebol/atom" class="btn btn-sm btn-success" target="_blank">
+                                        <i class="fas fa-external-link-alt me-1"></i>
+                                        Abrir Atom
+                                    </a>
+                                    <a href="/feeds/lance/futebol/atom?refresh=1" class="btn btn-sm btn-outline-success" target="_blank">
+                                        <i class="fas fa-sync me-1"></i>
+                                        Atualizar
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card bg-dark border-secondary">
-                        <div class="card-header bg-success">
-                            <h5 class="mb-0">
-                                <i class="fas fa-atom me-2"></i>
-                                Atom 1.0
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-group">
-                                <input type="text" class="form-control" 
-                                       value="{{ request.url_root }}feeds/lance/atom.xml" 
-                                       readonly id="atom-url">
-                                <button class="btn btn-outline-success" type="button" onclick="copyToClipboard('atom-url')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
+            </div>
+
+            <!-- UOL -->
+            <div class="mb-4">
+                <h3 class="h4 text-info mb-3">
+                    <i class="fas fa-newspaper me-2"></i>
+                    UOL - Notícias
+                </h3>
+                <div class="row">
+                    <!-- UOL Economia -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card bg-dark border-info">
+                            <div class="card-header bg-info text-dark">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    Economia
+                                </h6>
                             </div>
-                            <div class="mt-2">
-                                <a href="/feeds/lance/atom.xml" class="btn btn-sm btn-success" target="_blank">
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small">RSS:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/economia/rss" 
+                                               readonly id="uol-economia-rss">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-economia-rss')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Atom:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/economia/atom" 
+                                               readonly id="uol-economia-atom">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-economia-atom')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/uol/economia/rss" class="btn btn-sm btn-info flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/uol/economia/atom" class="btn btn-sm btn-outline-info flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UOL Política -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card bg-dark border-info">
+                            <div class="card-header bg-info text-dark">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-landmark me-1"></i>
+                                    Política
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small">RSS:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/politica/rss" 
+                                               readonly id="uol-politica-rss">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-politica-rss')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Atom:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/politica/atom" 
+                                               readonly id="uol-politica-atom">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-politica-atom')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/uol/politica/rss" class="btn btn-sm btn-info flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/uol/politica/atom" class="btn btn-sm btn-outline-info flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UOL Mundo -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card bg-dark border-info">
+                            <div class="card-header bg-info text-dark">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-globe me-1"></i>
+                                    Mundo
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small">RSS:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/mundo/rss" 
+                                               readonly id="uol-mundo-rss">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-mundo-rss')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Atom:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/mundo/atom" 
+                                               readonly id="uol-mundo-atom">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-mundo-atom')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/uol/mundo/rss" class="btn btn-sm btn-info flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/uol/mundo/atom" class="btn btn-sm btn-outline-info flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UOL Futebol -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card bg-dark border-info">
+                            <div class="card-header bg-info text-dark">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-futbol me-1"></i>
+                                    Futebol
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small">RSS:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/futebol/rss" 
+                                               readonly id="uol-futebol-rss">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-futebol-rss')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Atom:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/uol/futebol/atom" 
+                                               readonly id="uol-futebol-atom">
+                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="copyToClipboard('uol-futebol-atom')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/uol/futebol/rss" class="btn btn-sm btn-info flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/uol/futebol/atom" class="btn btn-sm btn-outline-info flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Folha de S.Paulo -->
+            <div class="mb-4">
+                <h3 class="h4 text-warning mb-3">
+                    <i class="fas fa-newspaper me-2"></i>
+                    Folha de S.Paulo
+                </h3>
+                <div class="row">
+                    <!-- Folha Política -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card bg-dark border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-landmark me-1"></i>
+                                    Política
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small">RSS:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/folha/politica/rss" 
+                                               readonly id="folha-politica-rss">
+                                        <button class="btn btn-outline-warning btn-sm" type="button" onclick="copyToClipboard('folha-politica-rss')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Atom:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/folha/politica/atom" 
+                                               readonly id="folha-politica-atom">
+                                        <button class="btn btn-outline-warning btn-sm" type="button" onclick="copyToClipboard('folha-politica-atom')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/folha/politica/rss" class="btn btn-sm btn-warning flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/folha/politica/atom" class="btn btn-sm btn-outline-warning flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Folha Economia -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card bg-dark border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    Economia
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small">RSS:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/folha/economia/rss" 
+                                               readonly id="folha-economia-rss">
+                                        <button class="btn btn-outline-warning btn-sm" type="button" onclick="copyToClipboard('folha-economia-rss')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Atom:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/folha/economia/atom" 
+                                               readonly id="folha-economia-atom">
+                                        <button class="btn btn-outline-warning btn-sm" type="button" onclick="copyToClipboard('folha-economia-atom')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/folha/economia/rss" class="btn btn-sm btn-warning flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/folha/economia/atom" class="btn btn-sm btn-outline-warning flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Folha Mundo -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card bg-dark border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-globe me-1"></i>
+                                    Mundo
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small">RSS:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/folha/mundo/rss" 
+                                               readonly id="folha-mundo-rss">
+                                        <button class="btn btn-outline-warning btn-sm" type="button" onclick="copyToClipboard('folha-mundo-rss')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small">Atom:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" 
+                                               value="{{ request.url_root }}feeds/folha/mundo/atom" 
+                                               readonly id="folha-mundo-atom">
+                                        <button class="btn btn-outline-warning btn-sm" type="button" onclick="copyToClipboard('folha-mundo-atom')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a href="/feeds/folha/mundo/rss" class="btn btn-sm btn-warning flex-fill" target="_blank">RSS</a>
+                                    <a href="/feeds/folha/mundo/atom" class="btn btn-sm btn-outline-warning flex-fill" target="_blank">Atom</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feeds Legados (LANCE!) -->
+            <div class="mb-4">
+                <h3 class="h4 text-secondary mb-3">
+                    <i class="fas fa-clock me-2"></i>
+                    Feeds Legados (Compatibilidade)
+                </h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header bg-secondary">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-rss me-2"></i>
+                                    RSS Legado
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/rss.xml" 
+                                           readonly id="legacy-rss">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('legacy-rss')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <a href="/feeds/lance/rss.xml" class="btn btn-sm btn-secondary" target="_blank">
                                     <i class="fas fa-external-link-alt me-1"></i>
-                                    Abrir Atom
+                                    Abrir RSS Legado
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header bg-secondary">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-atom me-2"></i>
+                                    Atom Legado
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/atom.xml" 
+                                           readonly id="legacy-atom">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('legacy-atom')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <a href="/feeds/lance/atom.xml" class="btn btn-sm btn-secondary" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Abrir Atom Legado
                                 </a>
                             </div>
                         </div>
@@ -147,22 +520,10 @@
                                     <td><code>?limit=20</code></td>
                                 </tr>
                                 <tr>
-                                    <td><code>pages</code></td>
-                                    <td>Páginas para varrer</td>
-                                    <td>3</td>
-                                    <td><code>?pages=5</code></td>
-                                </tr>
-                                <tr>
                                     <td><code>q</code></td>
                                     <td>Filtrar por termo no título/descrição</td>
                                     <td>-</td>
                                     <td><code>?q=Flamengo</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>source_url</code></td>
-                                    <td>URL de origem alternativa</td>
-                                    <td>/mais-noticias</td>
-                                    <td><code>?source_url=...</code></td>
                                 </tr>
                                 <tr>
                                     <td><code>refresh</code></td>
@@ -185,27 +546,27 @@
             </h2>
             <div class="row">
                 <div class="col-md-6">
-                    <h5>RSS com 20 artigos</h5>
+                    <h5>RSS do UOL Economia com 20 artigos</h5>
                     <div class="bg-secondary p-3 rounded mb-3">
-                        <code>{{ request.url_root }}feeds/lance/rss.xml?limit=20</code>
+                        <code>{{ request.url_root }}feeds/uol/economia/rss?limit=20</code>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <h5>Atom filtrado por "Flamengo"</h5>
+                    <h5>Atom da Folha filtrado por "Lula"</h5>
                     <div class="bg-secondary p-3 rounded mb-3">
-                        <code>{{ request.url_root }}feeds/lance/atom.xml?q=Flamengo</code>
+                        <code>{{ request.url_root }}feeds/folha/politica/atom?q=Lula</code>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <h5>RSS com 5 páginas</h5>
+                    <h5>RSS do LANCE! filtrado por "Flamengo"</h5>
                     <div class="bg-secondary p-3 rounded mb-3">
-                        <code>{{ request.url_root }}feeds/lance/rss.xml?pages=5</code>
+                        <code>{{ request.url_root }}feeds/lance/futebol/rss?q=Flamengo</code>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <h5>Atom com atualização forçada</h5>
+                    <h5>UOL Mundo com atualização forçada</h5>
                     <div class="bg-secondary p-3 rounded mb-3">
-                        <code>{{ request.url_root }}feeds/lance/atom.xml?refresh=1</code>
+                        <code>{{ request.url_root }}feeds/uol/mundo/atom?refresh=1</code>
                     </div>
                 </div>
             </div>
@@ -240,7 +601,7 @@
                 </h5>
                 <p class="mb-0">
                     Este é um projeto educativo. Respeita robots.txt e implementa delays entre requisições.
-                    Não deve ser usado para fins comerciais. Todo o conteúdo pertence ao portal LANCE!
+                    Não deve ser usado para fins comerciais. Todo o conteúdo pertence aos respectivos portais.
                 </p>
             </div>
         </section>
@@ -250,9 +611,9 @@
             <p>
                 <i class="fas fa-code me-1"></i>
                 Desenvolvido para fins educativos | 
-                <a href="https://www.lance.com.br/" target="_blank" class="text-muted">
-                    Portal LANCE! oficial
-                </a>
+                <a href="https://www.lance.com.br/" target="_blank" class="text-muted">LANCE!</a> |
+                <a href="https://www.uol.com.br/" target="_blank" class="text-muted">UOL</a> |
+                <a href="https://www1.folha.uol.com.br/" target="_blank" class="text-muted">Folha</a>
             </p>
         </footer>
     </div>
@@ -269,17 +630,14 @@
             const button = element.nextElementSibling;
             const originalHTML = button.innerHTML;
             button.innerHTML = '<i class="fas fa-check"></i>';
-            button.classList.add('btn-success');
-            button.classList.remove('btn-outline-primary', 'btn-outline-success');
+            
+            // Get original button classes
+            const originalClasses = [...button.classList];
+            button.className = 'btn btn-success btn-sm';
             
             setTimeout(() => {
                 button.innerHTML = originalHTML;
-                button.classList.remove('btn-success');
-                if (elementId === 'rss-url') {
-                    button.classList.add('btn-outline-primary');
-                } else {
-                    button.classList.add('btn-outline-success');
-                }
+                button.className = originalClasses.join(' ');
             }, 1000);
         }
 
