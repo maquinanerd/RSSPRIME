@@ -180,7 +180,7 @@ class ArticleStore:
             logger.error(f"Error upserting article {article['url']}: {e}")
             return False
 
-    def get_recent_articles(self, limit=30, hours=24, query_filter=None, source=None, section=None):
+    def get_recent_articles(self, limit=30, hours=24, query_filter=None, source=None, section=None, exclude_authors=None):
         """Get recent articles from the database with optional source/section filtering"""
         try:
             cutoff_time = datetime.utcnow() - timedelta(hours=hours)
@@ -198,6 +198,13 @@ class ArticleStore:
             if section:
                 where_conditions.append("section = ?")
                 params.append(section)
+
+            # Add exclude_authors filter if provided
+            if exclude_authors:
+                # Create NOT IN condition for excluded authors
+                placeholders = ','.join(['?' for _ in exclude_authors])
+                where_conditions.append(f"(author IS NULL OR author NOT IN ({placeholders}))")
+                params.extend(exclude_authors)
 
             if query_filter:
                 # Build search query
