@@ -56,13 +56,22 @@ class UolScraper(BaseScraper):
         
         # Add generic layout selectors
         selectors.extend([
+            'h1 a[href]',
             'h2 a[href]',
             'h3 a[href]',
+            'h4 a[href]',
             '.manchete a[href]',
             '.chamada a[href]',
             '.card a[href]',
             '.item a[href]',
-            '.news-item a[href]'
+            '.news-item a[href]',
+            '.lista-noticias a[href]',
+            '.conteudo-destaque a[href]',
+            '.box-noticia a[href]',
+            '.destaque a[href]',
+            '.thumb-materia a[href]',
+            'article a[href]',
+            '.artigo a[href]'
         ])
         
         found_links = set()
@@ -100,8 +109,20 @@ class UolScraper(BaseScraper):
         try:
             parsed = urlparse(url)
             
-            # Must be UOL domain
-            if 'uol.com.br' not in parsed.netloc:
+            # Must be UOL domain (not Folha)
+            valid_uol_domains = [
+                'www.uol.com.br',
+                'economia.uol.com.br', 
+                'noticias.uol.com.br',
+                'esporte.uol.com.br',
+                'play.uol.com.br'
+            ]
+            
+            if not any(domain in parsed.netloc for domain in valid_uol_domains):
+                return False
+                
+            # Explicitly exclude Folha domains
+            if 'folha.uol.com.br' in parsed.netloc:
                 return False
             
             # Should contain news indicators
