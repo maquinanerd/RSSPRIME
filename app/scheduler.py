@@ -1,5 +1,6 @@
 import logging
 import threading
+import time
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -86,32 +87,32 @@ class FeedScheduler:
             logger.info("Starting multi-source feed refresh")
             start_time = datetime.utcnow()
 
-            # Refresh all configured LANCE! sections
             total_new_articles = 0
-            source = 'lance'
-
             from .sources_config import SOURCES_CONFIG
             from .scraper_factory import ScraperFactory
             
-            source_config = SOURCES_CONFIG.get(source, {})
-            sections = source_config.get('sections', {}).keys()
-
-            for section in sections:
-                try:
-                    logger.info(f"Refreshing {source}/{section}")
-                    new_articles = ScraperFactory.scrape_source_section(
-                        source, section, self.store, 
-                        max_pages=1, max_articles=5, request_delay=0.5
-                    )
-                    total_new_articles += len(new_articles)
-                    logger.info(f"Added {len(new_articles)} new articles for {source}/{section}")
-
-                    # Small delay between sections to be nice to servers
-                    time.sleep(2)
-
-                except Exception as e:
-                    logger.error(f"Error refreshing {source}/{section}: {e}")
+            # Iterate over all configured sources, not just 'lance'
+            for source, source_config in SOURCES_CONFIG.items():
+                if not source_config or 'sections' not in source_config:
                     continue
+
+                sections = source_config.get('sections', {}).keys()
+                for section in sections:
+                    try:
+                        logger.info(f"Refreshing {source}/{section}")
+                        new_articles = ScraperFactory.scrape_source_section(
+                            source, section, self.store, 
+                            max_pages=1, max_articles=5, request_delay=0.5
+                        )
+                        total_new_articles += len(new_articles)
+                        logger.info(f"Added {len(new_articles)} new articles for {source}/{section}")
+
+                        # Small delay between sections to be nice to servers
+                        time.sleep(2)
+
+                    except Exception as e:
+                        logger.error(f"Error refreshing {source}/{section}: {e}")
+                        continue
 
             # Update last run time
             self.last_run = datetime.utcnow()
