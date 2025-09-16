@@ -1,0 +1,11 @@
+Flask
+beautifulsoup4
+lxml
+requests
+tenacity
+feedgen
+APScheduler
+gunicorn
+python-dateutil
+psycopg2-binary
+Flask-SQLAlchemy
