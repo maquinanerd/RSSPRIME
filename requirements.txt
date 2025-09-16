@@ -8,4 +8,5 @@ APScheduler
 gunicorn
 python-dateutil
 psycopg2-binary
-Flask-SQLAlchemy
+Flask-SQLAlchemy    
+Flask-Migrate
