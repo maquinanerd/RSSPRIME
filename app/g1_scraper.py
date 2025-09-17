@@ -55,23 +55,25 @@ class G1Scraper(BaseScraper):
             return False
 
         if section:
-            if section == 'agronegocios':
-                if '/economia/agronegocios/' not in path: return False
-            elif section == 'economia':
-                if '/economia/agronegocios/' in path: return False
-                if '/economia/' not in path: return False
-            elif f'/{section}/' not in path:
+            # Check if the path correctly corresponds to the section.
+            # The path should start with the section name.
+            # Example: /economia/noticia/... for section 'economia'
+            
+            path_segments = path.strip('/').split('/')
+            if not path_segments:
                 return False
+
+            # Handle special case for 'agronegocios' which is a sub-section of 'economia'
+            if section == 'agronegocios' and (len(path_segments) < 2 or path_segments[0] != 'economia' or path_segments[1] != 'agronegocios'):
+                return False
+            elif section == 'economia' and (path_segments[0] != 'economia' or (len(path_segments) > 1 and path_segments[1] == 'agronegocios')):
+                return False # Must be 'economia' but not 'agronegocios'
+            elif section not in ['economia', 'agronegocios'] and path_segments[0] != section:
+                return False # For other sections like 'politica'
         
         return True
 
     def find_next_page_url(self, html, current_url):
-        """Find next page URL for pagination on G1"""
-        soup = BeautifulSoup(html, 'lxml')
-        
-        next_link = soup.select_one('.load-more-ajax a')
-        if next_link and next_link.get('href'):
-            href = next_link.get('href')
-            return urljoin(current_url, href)
-
+        """G1 uses a JSON endpoint for pagination, which is not supported. Disable it."""
+        logger.debug("G1 pagination is not supported (uses JSON). Scraping first page only.")
         return None
