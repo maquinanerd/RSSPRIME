@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from urllib.parse import urlparse
 from feedgen.feed import FeedGenerator as FG
 from .utils import extract_mime_type
@@ -17,6 +18,7 @@ class FeedGenerator:
             'language': 'pt-BR',
             'generator': 'Lance Feed Generator v1.0'
         }
+        self.brasilia_tz = ZoneInfo("America/Sao_Paulo")
     
     def _create_base_feed(self, source='lance', section='futebol', feed_format='rss'):
         """Create base feed with source-specific metadata"""
@@ -36,7 +38,7 @@ class FeedGenerator:
         fg.generator('Multi-Source Feed Generator v1.0')
         
         # Additional metadata
-        fg.lastBuildDate(datetime.now(timezone.utc))
+        fg.lastBuildDate(datetime.now(timezone.utc).astimezone(self.brasilia_tz))
         fg.managingEditor('noreply@lance-feeds.repl.co (Multi-Source Feed Bot)')
         fg.webMaster('noreply@lance-feeds.repl.co (Multi-Source Feed Bot)')
         
@@ -57,13 +59,14 @@ class FeedGenerator:
             # Use date_published, but fallback to other dates to ensure pubDate is always present.
             pub_date = article.get('date_published') or article.get('date_modified') or article.get('fetched_at')
             if pub_date:
-                fe.published(pub_date)
+                fe.published(pub_date.astimezone(self.brasilia_tz))
             
             if article['date_modified']:
-                fe.updated(article['date_modified'])
+                fe.updated(article['date_modified'].astimezone(self.brasilia_tz))
             else:
                 # Fallback to published or fetched date for the 'updated' tag
-                fe.updated(article.get('date_published') or article.get('fetched_at'))
+                fallback_date = article.get('date_published') or article.get('fetched_at')
+                fe.updated(fallback_date.astimezone(self.brasilia_tz))
             
             # Author
             if article['author']:
@@ -110,7 +113,7 @@ class FeedGenerator:
                 newest_article = articles[0] # Query is sorted DESC
                 pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
                 if pub_date:
-                    fg.lastBuildDate(pub_date)
+                    fg.lastBuildDate(pub_date.astimezone(self.brasilia_tz))
 
             logger.info(f"Generated RSS feed with {added_count} articles")
             return fg.rss_str(pretty=True).decode('utf-8')
@@ -130,7 +133,7 @@ class FeedGenerator:
             
             # Atom-specific settings
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self')
-            fg.updated(datetime.now(timezone.utc))
+            fg.updated(datetime.now(timezone.utc).astimezone(self.brasilia_tz))
             
             # Add articles (reverse order so newest appear first in feed)
             added_count = 0
@@ -143,7 +146,7 @@ class FeedGenerator:
                 newest_article = articles[0] # Query is sorted DESC
                 pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
                 if pub_date:
-                    fg.updated(pub_date)
+                    fg.updated(pub_date.astimezone(self.brasilia_tz))
 
             logger.info(f"Generated Atom feed with {added_count} articles")
             return fg.atom_str(pretty=True).decode('utf-8')
