@@ -1,7 +1,7 @@
 import sqlite3
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -183,11 +183,11 @@ class ArticleStore:
     def get_recent_articles(self, limit=30, hours=24, query_filter=None, source=None, section=None, exclude_authors=None):
         """Get recent articles from the database with optional source/section filtering"""
         try:
-            cutoff_time = datetime.utcnow() - timedelta(hours=hours)
+            cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
             # Build base WHERE conditions
             where_conditions = ["fetched_at >= ?"]
-            params = [cutoff_time]
+            params = [cutoff_time.isoformat()]
 
             # Add source filter if provided
             if source:
@@ -256,14 +256,14 @@ class ArticleStore:
             return None
         try:
             # Attempt to parse as ISO format first
-            return datetime.fromisoformat(date_str)
-        except ValueError:
-            try:
-                # Fallback for other potential formats if needed, though ISO is preferred
-                # Example: return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-                return None # Or handle other formats as necessary
-            except ValueError:
-                return None
+            dt = datetime.fromisoformat(date_str)
+            # If the parsed datetime is naive, assume it's UTC.
+            if dt.tzinfo is None:
+                return dt.replace(tzinfo=timezone.utc)
+            return dt
+        except (ValueError, TypeError):
+            # Fallback for other potential formats if needed
+            return None
 
     def get_stats(self):
         """Get basic statistics about stored articles"""
@@ -302,7 +302,7 @@ class ArticleStore:
                 stats['total_articles'] = cursor.fetchone()[0]
 
                 # Articles by date ranges
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 day_ago = now - timedelta(days=1)
                 week_ago = now - timedelta(days=7)
 
@@ -360,7 +360,7 @@ class ArticleStore:
     def cleanup_old_articles(self, days_to_keep=30):
         """Remove articles older than specified days"""
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days_to_keep)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_to_keep)
 
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.execute('''
