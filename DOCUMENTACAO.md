@@ -13,6 +13,7 @@ Criar feeds RSS/Atom não oficiais para portais de notícias esportivas que não
 
 ### 1. **Coleta de Dados (Web Scraping)**
 - **Frequência**: A cada 10 minutos
+- **Frequência**: A cada 5 minutos
 - **Método**: Web scraping responsável com delays entre requisições
 - **Respeito ao robots.txt**: Verificação automática de permissões
 - **Extração de metadados**: Utiliza JSON-LD estruturado quando disponível
@@ -125,7 +126,7 @@ https://[SEU-DOMINIO]/feeds/globo/internacional/atom
 
 ### Agendador (Scheduler)
 - **Biblioteca**: APScheduler
-- **Intervalo**: 10 minutos
+- **Intervalo**: 5 minutos
 - **Proteção**: Mutex para evitar execuções simultâneas
 - **Logs**: Registro detalhado de todas as operações
 

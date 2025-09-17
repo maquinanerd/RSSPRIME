@@ -1,7 +1,7 @@
 import logging
 import threading
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
@@ -36,8 +36,8 @@ class FeedScheduler:
             # Run initial refresh in background
             self.scheduler.add_job(
                 func=self._initial_refresh,
-                trigger='date',
-                run_date=datetime.now(),
+                trigger='date', # Run immediately
+                run_date=datetime.now(timezone.utc),
                 id='initial_refresh',
                 name='Initial Refresh',
                 max_instances=1
@@ -85,7 +85,7 @@ class FeedScheduler:
 
         try:
             logger.info("Starting multi-source feed refresh")
-            start_time = datetime.utcnow()
+            start_time = datetime.now(timezone.utc)
 
             total_new_articles = 0
             from .sources_config import SOURCES_CONFIG
@@ -115,7 +115,7 @@ class FeedScheduler:
                         continue
 
             # Update last run time
-            self.last_run = datetime.utcnow()
+            self.last_run = datetime.now(timezone.utc)
 
             # Log results
             duration = (self.last_run - start_time).total_seconds()
@@ -142,7 +142,7 @@ class FeedScheduler:
             self.scheduler.add_job(
                 func=self._refresh_job,
                 trigger='date',
-                run_date=datetime.now(),
+                run_date=datetime.now(timezone.utc),
                 id=f'manual_refresh_{datetime.now().timestamp()}',
                 name='Manual Refresh',
                 max_instances=1

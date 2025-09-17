@@ -3,7 +3,7 @@ import json
 import time
 import urllib.robotparser
 from urllib.parse import urljoin, urlparse
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import requests
 from bs4 import BeautifulSoup

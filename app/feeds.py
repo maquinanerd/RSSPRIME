@@ -61,14 +61,9 @@ class FeedGenerator:
             
             if article['date_modified']:
                 fe.updated(article['date_modified'])
-            elif article['date_published']:
-                fe.updated(article['date_published'])
             else:
-                # Ensure fetched_at has timezone info
-                fetched_at = article['fetched_at']
-                if fetched_at and hasattr(fetched_at, 'tzinfo') and fetched_at.tzinfo is None:
-                    fetched_at = fetched_at.replace(tzinfo=timezone.utc)
-                fe.updated(fetched_at)
+                # Fallback to published or fetched date for the 'updated' tag
+                fe.updated(article.get('date_published') or article.get('fetched_at'))
             
             # Author
             if article['author']:
@@ -110,6 +105,13 @@ class FeedGenerator:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
+            # Set lastBuildDate to the date of the newest article, if available
+            if articles:
+                newest_article = articles[0] # Query is sorted DESC
+                pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
+                if pub_date:
+                    fg.lastBuildDate(pub_date)
+
             logger.info(f"Generated RSS feed with {added_count} articles")
             return fg.rss_str(pretty=True).decode('utf-8')
             
@@ -136,6 +138,13 @@ class FeedGenerator:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
+            # Set the main feed 'updated' tag to the date of the newest article
+            if articles:
+                newest_article = articles[0] # Query is sorted DESC
+                pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
+                if pub_date:
+                    fg.updated(pub_date)
+
             logger.info(f"Generated Atom feed with {added_count} articles")
             return fg.atom_str(pretty=True).decode('utf-8')
             

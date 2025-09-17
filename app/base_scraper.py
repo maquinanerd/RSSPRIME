@@ -8,7 +8,7 @@ import json
 from urllib.robotparser import RobotFileParser
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timezone
 from tenacity import retry, stop_after_attempt, wait_exponential
 from .utils import normalize_date, extract_mime_type, get_user_agent
 
