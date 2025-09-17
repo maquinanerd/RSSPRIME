@@ -120,32 +120,30 @@ class G1Scraper(BaseScraper):
         except Exception:
             return False
 
-        if 'g1.globo.com' not in url and not url.startswith('/'):
+        if 'g1.globo.com' not in parsed_url.netloc and not url.startswith('/'):
             return False
 
-        exclude_patterns = ['/video/', '/ao-vivo/', '/index.ghtml', 'javascript:', 'mailto:', '#']
+        # Exclude non-article pages like videos, live streams, and index pages
+        exclude_patterns = ['/video/', '/ao-vivo/', '/index.ghtml', '/index/', 'javascript:', 'mailto:', '#']
         if any(pattern in url for pattern in exclude_patterns):
             return False
         
         if not path.endswith('.ghtml'):
             return False
 
+        # Section-specific validation logic
         if section:
-            # Check if the path correctly corresponds to the section.
-            # The path should start with the section name.
-            # Example: /economia/noticia/... for section 'economia'
-            
-            path_segments = path.strip('/').split('/')
-            if not path_segments:
+            # Special case: 'agronegocios' is a sub-section of 'economia'
+            if section == 'agronegocios':
+                if '/economia/agronegocios/' not in path:
+                    return False
+            # For 'economia', we want '/economia/' but NOT '/economia/agronegocios/'
+            elif section == 'economia':
+                if '/economia/' not in path or '/economia/agronegocios/' in path:
+                    return False
+            # For all other sections, the path must start with the section name
+            elif not path.startswith(f'/{section}/'):
                 return False
-
-            # Handle special case for 'agronegocios' which is a sub-section of 'economia'
-            if section == 'agronegocios' and (len(path_segments) < 2 or path_segments[0] != 'economia' or path_segments[1] != 'agronegocios'):
-                return False
-            elif section == 'economia' and (path_segments[0] != 'economia' or (len(path_segments) > 1 and path_segments[1] == 'agronegocios')):
-                return False # Must be 'economia' but not 'agronegocios'
-            elif section not in ['economia', 'agronegocios'] and path_segments[0] != section:
-                return False # For other sections like 'politica'
         
         return True
 
