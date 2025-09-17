@@ -105,6 +105,12 @@ SOURCES_CONFIG = {
                 'start_urls': ['https://www1.folha.uol.com.br/mundo/'],
                 'description': 'Notícias internacionais da Folha',
                 'filters': {}
+            },
+            'equilibrioesaude': {
+                'name': 'Equilíbrio e Saúde',
+                'start_urls': ['https://www1.folha.uol.com.br/equilibrioesaude/'],
+                'description': 'Notícias sobre saúde da Folha',
+                'filters': {}
             }
         }
     },
