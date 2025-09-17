@@ -2,6 +2,7 @@
 G1 (g1.globo.com) scraper
 """
 
+import json
 import logging
 import requests
 from urllib.parse import urljoin, urlparse
@@ -53,13 +54,46 @@ class G1Scraper(BaseScraper):
 
     def extract_article_links(self, html, base_url, section=None):
         """Extract article links from G1 pages"""
+        if not html:
+            logger.warning("HTML content is empty, cannot extract links.")
+            return []
+
         links = []
         soup = BeautifulSoup(html, 'lxml')
         seen = set()
 
-        # Broaden the search to all links and rely on the validation function.
-        # The 'feed-post-link' class might not be present on all article links
-        # or in the version of the page fetched by the scraper.
+        # --- METHOD 1: JSON-LD (Most Reliable) ---
+        # G1 provides a structured data script which is the best source for links.
+        json_ld_scripts = soup.find_all('script', type='application/ld+json')
+        for script in json_ld_scripts:
+            try:
+                data = json.loads(script.string)
+                # Data can be a single object or a list of objects. Find the ItemList.
+                item_list_data = None
+                if isinstance(data, list):
+                    item_list_data = next((item for item in data if item.get('@type') == 'ItemList'), None)
+                elif isinstance(data, dict) and data.get('@type') == 'ItemList':
+                    item_list_data = data
+
+                if item_list_data and 'itemListElement' in item_list_data:
+                    for item in item_list_data['itemListElement']:
+                        url = item.get('url')
+                        if url and self._is_valid_article_url(url, section):
+                            full_url = urljoin(base_url, url)
+                            if full_url not in seen:
+                                links.append(full_url)
+                                seen.add(full_url)
+                    
+                    if links:
+                        logger.info(f"Found {len(links)} links via JSON-LD for section '{section}'.")
+                        return links  # Success!
+
+            except (json.JSONDecodeError, AttributeError) as e:
+                logger.warning(f"Could not parse JSON-LD script: {e}. Trying next script or falling back.")
+                continue
+
+        # --- METHOD 2: HTML Fallback (Less Reliable) ---
+        logger.warning(f"JSON-LD method failed for section '{section}'. Falling back to broad HTML link search.")
         for element in soup.find_all('a', href=True):
             href = element.get('href')
             if href and self._is_valid_article_url(href, section):
@@ -69,9 +103,9 @@ class G1Scraper(BaseScraper):
                     seen.add(full_url)
 
         if not links:
-            logger.warning(f"No valid article links found on G1 page for section '{section}'. The page structure might have changed or the scraper is being blocked.")
+            logger.error(f"FATAL: No links found for G1 section '{section}' using any method. The scraper is likely blocked or the page structure has completely changed.")
         else:
-            logger.info(f"Found {len(links)} article links on G1 page for section '{section}'")
+            logger.info(f"Found {len(links)} links via HTML fallback for section '{section}'")
 
         return links
 
