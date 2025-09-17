@@ -137,6 +137,8 @@ class BaseScraper(ABC):
         try:
             response = self.session.get(url, timeout=15)  # Reduced timeout
             response.raise_for_status()
+            # Force UTF-8 encoding to prevent character issues like 'Ã©'
+            response.encoding = 'utf-8'
             return response.text
         except Exception as e:
             logger.error(f"Error fetching {url}: {e}")
