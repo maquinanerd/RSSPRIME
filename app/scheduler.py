@@ -102,7 +102,7 @@ class FeedScheduler:
                         logger.info(f"Refreshing {source}/{section}")
                         new_articles = ScraperFactory.scrape_source_section(
                             source, section, self.store, 
-                            max_pages=1, max_articles=5, request_delay=0.5
+                            max_pages=1, max_articles=15, request_delay=0.5
                         )
                         total_new_articles += len(new_articles)
                         logger.info(f"Added {len(new_articles)} new articles for {source}/{section}")
