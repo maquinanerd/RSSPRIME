@@ -145,6 +145,38 @@ SOURCES_CONFIG = {
                 'filters': {}
             }
         }
+    },
+    'g1': {
+        'name': 'G1',
+        'base_url': 'https://g1.globo.com',
+        'language': 'pt-BR',
+        'scraper_class': 'G1Scraper',
+        'sections': {
+            'economia': {
+                'name': 'Economia',
+                'start_urls': ['https://g1.globo.com/economia/'],
+                'description': 'Notícias de economia do G1',
+                'filters': {}
+            },
+            'agronegocios': {
+                'name': 'Agronegócios',
+                'start_urls': ['https://g1.globo.com/economia/agronegocios/'],
+                'description': 'Notícias de agronegócios do G1',
+                'filters': {}
+            },
+            'politica': {
+                'name': 'Política',
+                'start_urls': ['https://g1.globo.com/politica/'],
+                'description': 'Notícias de política do G1',
+                'filters': {}
+            },
+            'trabalho-e-carreira': {
+                'name': 'Trabalho e Carreira',
+                'start_urls': ['https://g1.globo.com/trabalho-e-carreira/'],
+                'description': 'Notícias sobre trabalho e carreira do G1',
+                'filters': {}
+            }
+        }
     }
 }
 
