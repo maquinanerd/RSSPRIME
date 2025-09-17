@@ -343,6 +343,20 @@ class ArticleStore:
             logger.error(f"Error getting detailed stats: {e}")
             return {}
 
+    def get_last_update_for_section(self, source, section):
+        """Get the last update time for a specific source and section."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute(
+                    'SELECT MAX(fetched_at) FROM articles WHERE source = ? AND section = ?',
+                    (source, section)
+                )
+                last_update = cursor.fetchone()[0]
+                return self._parse_date(last_update)
+        except Exception as e:
+            logger.error(f"Error getting last update for {source}/{section}: {e}")
+            return None
+
     def cleanup_old_articles(self, days_to_keep=30):
         """Remove articles older than specified days"""
         try:

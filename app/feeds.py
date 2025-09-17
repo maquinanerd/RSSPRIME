@@ -54,8 +54,10 @@ class FeedGenerator:
             fe.description(article['description'] or article['title'])
             
             # Dates
-            if article['date_published']:
-                fe.published(article['date_published'])
+            # Use date_published, but fallback to other dates to ensure pubDate is always present.
+            pub_date = article.get('date_published') or article.get('date_modified') or article.get('fetched_at')
+            if pub_date:
+                fe.published(pub_date)
             
             if article['date_modified']:
                 fe.updated(article['date_modified'])

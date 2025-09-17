@@ -305,7 +305,7 @@ class LanceScraper:
                 'author': metadata.get('author', '').strip(),
                 'date_published': normalize_date(metadata.get('date_published')),
                 'date_modified': normalize_date(metadata.get('date_modified')),
-                'fetched_at': datetime.utcnow()
+                'fetched_at': datetime.now(timezone.utc)
             }
 
             # Skip articles without title

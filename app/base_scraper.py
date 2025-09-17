@@ -326,7 +326,7 @@ class BaseScraper(ABC):
                 'author': metadata.get('author', '').strip(),
                 'date_published': normalize_date(metadata.get('date_published')),
                 'date_modified': normalize_date(metadata.get('date_modified')),
-                'fetched_at': datetime.utcnow(),
+                'fetched_at': datetime.now(timezone.utc),
                 'source': source or 'unknown',
                 'section': section or 'general',
                 'site': self.get_site_domain()

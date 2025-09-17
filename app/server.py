@@ -1,7 +1,7 @@
 import os
 import logging
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify, render_template, Response
 from .scraper import LanceScraper
 from .feeds import FeedGenerator
@@ -37,7 +37,7 @@ ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
 store = ArticleStore()
 scraper = LanceScraper(store, request_delay=REQUEST_DELAY_MS/1000.0)
 feed_generator = FeedGenerator()
-scheduler = FeedScheduler(scraper, store)
+scheduler = FeedScheduler(scraper, store, refresh_interval_minutes=5)
 
 # Start background scheduler
 scheduler.start()
@@ -86,9 +86,22 @@ def dynamic_feeds(source, section, format):
             exclude_authors=exclude_authors
         )
         
-        # Force refresh if requested and no recent articles
-        if force_refresh or not articles:
+        # Decide if a refresh is needed
+        should_refresh = False
+        if force_refresh:
+            should_refresh = True
             logger.info(f"Force refresh requested for {source}/{section}")
+        elif not articles:
+            should_refresh = True
+            logger.info(f"No articles found for {source}/{section}, triggering refresh.")
+        else:
+            # Refresh if data is older than 5 minutes
+            last_update = store.get_last_update_for_section(source, section)
+            if not last_update or (datetime.now(timezone.utc) - last_update) > timedelta(minutes=5):
+                should_refresh = True
+                logger.info(f"Feed for {source}/{section} is stale (last update: {last_update}), triggering refresh.")
+        
+        if should_refresh:
             # Use ScraperFactory to scrape any source
             new_articles = ScraperFactory.scrape_source_section(
                 source=source, 
