@@ -8,6 +8,7 @@ from .uol_scraper import UolScraper
 from .folha_scraper import FolhaScraper
 from .gazeta_scraper import GazetaScraper
 from .globo_scraper import GloboScraper
+from .g1_scraper import G1Scraper
 from .sources_config import SOURCES_CONFIG
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,8 @@ class ScraperFactory:
             'UolScraper': UolScraper,
             'FolhaScraper': FolhaScraper,
             'GazetaScraper': GazetaScraper,
-            'GloboScraper': GloboScraper
+            'GloboScraper': GloboScraper,
+            'G1Scraper': G1Scraper
         }
         
         scraper_class = scraper_classes.get(scraper_class_name)

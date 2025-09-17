@@ -12,6 +12,16 @@ logger = logging.getLogger(__name__)
 class G1Scraper(BaseScraper):
     """Scraper for G1 (g1.globo.com)"""
 
+    def __init__(self, store, request_delay=1.0):
+        super().__init__(store, request_delay)
+        # Use more browser-like headers for G1 to avoid potential blocks
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+            'Referer': 'https://www.google.com/',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        })
+
     def get_site_domain(self):
         return "g1.globo.com"
 
