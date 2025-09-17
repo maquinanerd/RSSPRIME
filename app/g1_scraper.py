@@ -3,8 +3,10 @@ G1 (g1.globo.com) scraper
 """
 
 import logging
+import requests
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
+from tenacity import retry, stop_after_attempt, wait_exponential
 from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
@@ -24,6 +26,30 @@ class G1Scraper(BaseScraper):
 
     def get_site_domain(self):
         return "g1.globo.com"
+
+    @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=5))
+    def _fetch_page(self, url):
+        """Override to use enhanced browser headers and add resilience for G1."""
+        if not self.can_fetch(url):
+            logger.warning(f"Robots.txt disallows fetching {url}")
+            return None
+        
+        try:
+            # The headers are already in self.session from __init__
+            response = self.session.get(url, timeout=15)
+            response.raise_for_status()
+            
+            # Check for minimal content to detect soft blocks or JS-only pages
+            if not response.text or len(response.text) < 5000: # G1 pages are usually large
+                logger.warning(f"Received minimal content for {url} (len: {len(response.text)}). Possible block or JS-heavy page.")
+            
+            return response.text
+        except requests.exceptions.HTTPError as e:
+            logger.error(f"HTTP error fetching {url}: {e.response.status_code}. The scraper is likely being blocked.")
+            raise
+        except Exception as e:
+            logger.error(f"Error fetching {url}: {e}")
+            raise
 
     def extract_article_links(self, html, base_url, section=None):
         """Extract article links from G1 pages"""
