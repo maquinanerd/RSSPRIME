@@ -21,16 +21,22 @@ class G1Scraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         seen = set()
 
-        # G1 uses a common structure with 'feed-post-link'
-        for element in soup.select('a.feed-post-link'):
+        # Broaden the search to all links and rely on the validation function.
+        # The 'feed-post-link' class might not be present on all article links
+        # or in the version of the page fetched by the scraper.
+        for element in soup.find_all('a', href=True):
             href = element.get('href')
             if href and self._is_valid_article_url(href, section):
                 full_url = urljoin(base_url, href)
                 if full_url not in seen:
                     links.append(full_url)
                     seen.add(full_url)
-        
-        logger.info(f"Found {len(links)} article links on G1 page")
+
+        if not links:
+            logger.warning(f"No valid article links found on G1 page for section '{section}'. The page structure might have changed or the scraper is being blocked.")
+        else:
+            logger.info(f"Found {len(links)} article links on G1 page for section '{section}'")
+
         return links
 
     def _is_valid_article_url(self, url, section=None):
