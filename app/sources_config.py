@@ -1,185 +1,240 @@
-"""
-Configuration for multiple news sources and their sections
-"""
-
-SOURCES_CONFIG = {
-    'gazeta': {
-        'name': 'Gazeta Esportiva',
-        'base_url': 'https://www.gazetaesportiva.com',
-        'scraper_class': 'GazetaScraper',
-        'language': 'pt-BR',
-        'sections': {
-            'todas-noticias': {
-                'name': 'Todas as Notícias',
-                'description': 'Todas as notícias da Gazeta Esportiva',
-                'start_urls': ['https://www.gazetaesportiva.com/todas-as-noticias/'],
-                'filters': {}
-            },
-            'futebol': {
-                'name': 'Futebol',
-                'description': 'Notícias de futebol da Gazeta Esportiva',
-                'start_urls': ['https://www.gazetaesportiva.com/futebol/'],
-                'filters': {}
-            },
-            'brasileirao': {
-                'name': 'Brasileirão',
-                'description': 'Notícias do Campeonato Brasileiro',
-                'start_urls': ['https://www.gazetaesportiva.com/brasileirao/'],
                 'filters': {}
             }
         }
     },
-    'lance': {
-        'name': 'LANCE!',
-        'base_url': 'https://www.lance.com.br',
-        'language': 'pt-BR',
-        'scraper_class': 'LanceScraper',
+    # International Feeds
+    'as_cl': {
+        'name': 'AS Chile',
+        'base_url': 'https://chile.as.com',
+        'language': 'es-CL',
+        'scraper_class': 'ASScraper',
         'sections': {
-            'futebol': {
-                'name': 'Futebol',
-                'start_urls': [
-                    'https://www.lance.com.br/mais-noticias',
-                    'https://www.lance.com.br/brasileirao',
-                    'https://www.lance.com.br/futebol-nacional',
-                    'https://www.lance.com.br/futebol-internacional'
-                ],
-                'description': 'Notícias de futebol e esportes',
+            'futbol': {
+                'name': 'Fútbol',
+                'description': 'Noticias de fútbol de Chile y del mundo.',
+                'start_urls': ['https://chile.as.com/futbol/'],
                 'filters': {}
             }
         }
     },
-    'uol': {
-        'name': 'UOL',
-        'base_url': 'https://www.uol.com.br',
-        'language': 'pt-BR',
-        'scraper_class': 'UolScraper',
+    'as_co': {
+        'name': 'AS Colombia',
+        'base_url': 'https://colombia.as.com',
+        'language': 'es-CO',
+        'scraper_class': 'ASScraper',
         'sections': {
-            'economia': {
-                'name': 'Economia',
-                'start_urls': ['https://www.uol.com.br/'],
-                'description': 'Notícias de economia do UOL',
-                'filters': {}
-            },
-            'politica': {
-                'name': 'Política',
-                'start_urls': ['https://noticias.uol.com.br/politica/'],
-                'description': 'Notícias de política do UOL',
-                'filters': {}
-            },
-            'mundo': {
-                'name': 'Mundo',
-                'start_urls': ['https://noticias.uol.com.br/internacional/'],
-                'description': 'Notícias internacionais do UOL',
-                'filters': {}
-            },
-            'futebol': {
-                'name': 'Futebol',
-                'start_urls': ['https://www.uol.com.br/esporte/futebol/ultimas/'],
-                'description': 'Notícias de futebol do UOL',
-                'filters': {
-                    'exclude_authors': ['Gazeta Esportiva', 'gazeta-esportiva']
-                }
-            }
-        }
-    },
-    'folha': {
-        'name': 'Folha de S.Paulo',
-        'base_url': 'https://www1.folha.uol.com.br',
-        'language': 'pt-BR',
-        'scraper_class': 'FolhaScraper',
-        'sections': {
-            'politica': {
-                'name': 'Política',
-                'start_urls': ['https://www1.folha.uol.com.br/poder/'],
-                'description': 'Notícias de política da Folha',
-                'filters': {}
-            },
-            'economia': {
-                'name': 'Economia',
-                'start_urls': ['https://www1.folha.uol.com.br/mercado/'],
-                'description': 'Notícias de economia da Folha',
-                'filters': {}
-            },
-            'mundo': {
-                'name': 'Mundo',
-                'start_urls': ['https://www1.folha.uol.com.br/mundo/'],
-                'description': 'Notícias internacionais da Folha',
-                'filters': {}
-            },
-            'equilibrioesaude': {
-                'name': 'Equilíbrio e Saúde',
-                'start_urls': ['https://www1.folha.uol.com.br/equilibrioesaude/'],
-                'description': 'Notícias sobre saúde da Folha',
+            'futbol': {
+                'name': 'Fútbol',
+                'description': 'Noticias de fútbol de Colombia y del mundo.',
+                'start_urls': ['https://colombia.as.com/futbol/'],
                 'filters': {}
             }
         }
     },
-    'globo': {
-        'name': 'Globo Esporte',
-        'base_url': 'https://ge.globo.com',
-        'language': 'pt-BR',
-        'scraper_class': 'GloboScraper',
+    'as_mx': {
+        'name': 'AS México',
+        'base_url': 'https://mexico.as.com',
+        'language': 'es-MX',
+        'scraper_class': 'ASScraper',
         'sections': {
-            'geral': {
-                'name': 'Geral',
-                'start_urls': ['https://ge.globo.com/'],
-                'description': 'Notícias gerais do Globo Esporte',
-                'filters': {}
-            },
-            'futebol': {
-                'name': 'Futebol',
-                'start_urls': ['https://ge.globo.com/futebol/'],
-                'description': 'Notícias de futebol do Globo Esporte',
-                'filters': {}
-            },
-            'brasileirao': {
-                'name': 'Brasileirão',
-                'start_urls': ['https://ge.globo.com/futebol/brasileirao-serie-a/'],
-                'description': 'Notícias do Brasileirão',
-                'filters': {}
-            },
-            'libertadores': {
-                'name': 'Libertadores',
-                'start_urls': ['https://ge.globo.com/futebol/libertadores/'],
-                'description': 'Notícias da Copa Libertadores',
-                'filters': {}
-            },
-            'internacional': {
-                'name': 'Internacional',
-                'start_urls': ['https://ge.globo.com/futebol/futebol-internacional/'],
-                'description': 'Notícias de futebol internacional',
+            'futbol': {
+                'name': 'Fútbol',
+                'description': 'Noticias de fútbol de México y del mundo.',
+                'start_urls': ['https://mexico.as.com/futbol/'],
                 'filters': {}
             }
         }
     },
-    'g1': {
-        'name': 'G1',
-        'base_url': 'https://g1.globo.com',
-        'language': 'pt-BR',
-        'scraper_class': 'G1Scraper',
+    'ole': {
+        'name': 'Olé',
+        'base_url': 'https://www.ole.com.ar',
+        'language': 'es-AR',
+        'scraper_class': 'OleScraper',
         'sections': {
-            'economia': {
-                'name': 'Economia',
-                'start_urls': ['https://g1.globo.com/economia/'],
-                'description': 'Notícias de economia do G1',
+            'primera': {
+                'name': 'Fútbol de Primera',
+                'description': 'Noticias de la primera división del fútbol argentino.',
+                'start_urls': ['https://www.ole.com.ar/futbol-primera'],
                 'filters': {}
             },
-            'agronegocios': {
-                'name': 'Agronegócios',
-                'start_urls': ['https://g1.globo.com/economia/agronegocios/'],
-                'description': 'Notícias de agronegócios do G1',
+            'ascenso': {
+                'name': 'Fútbol de Ascenso',
+                'description': 'Noticias del ascenso del fútbol argentino.',
+                'start_urls': ['https://www.ole.com.ar/futbol-ascenso'],
+                'filters': {}
+            }
+        }
+    },
+    'as_es': {
+        'name': 'AS España',
+        'base_url': 'https://as.com',
+        'language': 'es-ES',
+        'scraper_class': 'ASScraper',
+        'sections': {
+            'primera': {
+                'name': 'LaLiga EA Sports',
+                'description': 'Noticias de la primera división de España.',
+                'start_urls': ['https://as.com/futbol/primera/'],
                 'filters': {}
             },
-            'politica': {
-                'name': 'Política',
-                'start_urls': ['https://g1.globo.com/politica/'],
-                'description': 'Notícias de política do G1',
+            'copa_del_rey': {
+                'name': 'Copa del Rey',
+                'description': 'Noticias de la Copa del Rey.',
+                'start_urls': ['https://as.com/futbol/copa_del_rey/'],
                 'filters': {}
             },
-            'trabalho-e-carreira': {
-                'name': 'Trabalho e Carreira',
-                'start_urls': ['https://g1.globo.com/trabalho-e-carreira/'],
-                'description': 'Notícias sobre trabalho e carreira do G1',
+            'segunda': {
+                'name': 'LaLiga Hypermotion',
+                'description': 'Noticias de la segunda división de España.',
+                'start_urls': ['https://as.com/futbol/segunda/'],
+                'filters': {}
+            }
+        }
+    },
+    'marca': {
+        'name': 'Marca',
+        'base_url': 'https://www.marca.com',
+        'language': 'es-ES',
+        'scraper_class': 'MarcaScraper',
+        'sections': {
+            'futbol': {
+                'name': 'Fútbol',
+                'description': 'Noticias de fútbol de Marca.',
+                'start_urls': ['https://www.marca.com/futbol.html'],
+                'filters': {}
+            }
+        }
+    },
+    'theguardian': {
+        'name': 'The Guardian Football',
+        'base_url': 'https://www.theguardian.com',
+        'language': 'en-GB',
+        'scraper_class': 'TheGuardianScraper',
+        'sections': {
+            'football': {
+                'name': 'Football',
+                'description': 'Football news, results, fixtures, blogs and comments.',
+                'start_urls': ['https://www.theguardian.com/football'],
+                'filters': {}
+            }
+        }
+    },
+    'lequipe': {
+        'name': "L'Équipe",
+        'base_url': 'https://www.lequipe.fr',
+        'language': 'fr-FR',
+        'scraper_class': 'LEquipeScraper',
+        'sections': {
+            'football': {
+                'name': 'Football',
+                'description': "L'actualité du football en direct.",
+                'start_urls': ['https://www.lequipe.fr/Football/'],
+                'filters': {}
+            }
+        }
+    },
+    'kicker': {
+        'name': 'Kicker',
+        'base_url': 'https://www.kicker.de',
+        'language': 'de-DE',
+        'scraper_class': 'KickerScraper',
+        'sections': {
+            'bundesliga': {
+                'name': 'Bundesliga',
+                'description': 'Aktuelle Nachrichten, Ergebnisse und Tabellen der Bundesliga.',
+                'start_urls': ['https://www.kicker.de/bundesliga/startseite'],
+                'filters': {}
+            },
+            '2-bundesliga': {
+                'name': '2. Bundesliga',
+                'description': 'Aktuelle Nachrichten, Ergebnisse und Tabellen der 2. Bundesliga.',
+                'start_urls': ['https://www.kicker.de/2-bundesliga/startseite'],
+                'filters': {}
+            }
+        }
+    },
+    'gazzetta': {
+        'name': 'La Gazzetta dello Sport',
+        'base_url': 'https://www.gazzetta.it',
+        'language': 'it-IT',
+        'scraper_class': 'GazzettaScraper',
+        'sections': {
+            'calcio': {
+                'name': 'Calcio',
+                'description': 'Notizie di calcio: scoop, risultati, classifiche.',
+                'start_urls': ['https://www.gazzetta.it/Calcio/'],
+                'filters': {}
+            }
+        }
+    },
+    'abola': {
+        'name': 'A Bola',
+        'base_url': 'https://www.abola.pt',
+        'language': 'pt-PT',
+        'scraper_class': 'ABolaScraper',
+        'sections': {
+            'ultimas': {
+                'name': 'Últimas Notícias',
+                'description': 'Todas as notícias de desporto.',
+                'start_urls': ['https://www.abola.pt/ultimas-noticias'],
+                'filters': {}
+            }
+        }
+    },
+    'foxsports': {
+        'name': 'Fox Sports',
+        'base_url': 'https://www.foxsports.com',
+        'language': 'en-US',
+        'scraper_class': 'FoxSportsScraper',
+        'sections': {
+            'nfl': {
+                'name': 'NFL News',
+                'description': 'Latest NFL news, rumors, and videos from FOX Sports.',
+                'start_urls': ['https://www.foxsports.com/nfl/news'],
+                'filters': {}
+            },
+            'college-football': {
+                'name': 'College Football News',
+                'description': 'Latest College Football news, rumors, and videos from FOX Sports.',
+                'start_urls': ['https://www.foxsports.com/college-football/news'],
+                'filters': {}
+            },
+            'mlb': {
+                'name': 'MLB News',
+                'description': 'Latest MLB news, rumors, and videos from FOX Sports.',
+                'start_urls': ['https://www.foxsports.com/mlb/news'],
+                'filters': {}
+            }
+        }
+    },
+    'cbssports': {
+        'name': 'CBS Sports',
+        'base_url': 'https://www.cbssports.com',
+        'language': 'en-US',
+        'scraper_class': 'CBSSportsScraper',
+        'sections': {
+            'nfl': {
+                'name': 'NFL',
+                'description': 'Get the latest NFL football news, scores, stats, standings, fantasy games, and more from CBS Sports.',
+                'start_urls': ['https://www.cbssports.com/nfl/'],
+                'filters': {}
+            },
+            'college-football': {
+                'name': 'College Football',
+                'description': 'Get the latest College Football news, scores, stats, standings, fantasy games, and more from CBS Sports.',
+                'start_urls': ['https://www.cbssports.com/college-football/'],
+                'filters': {}
+            },
+            'mlb': {
+                'name': 'MLB',
+                'description': 'Get the latest MLB baseball news, scores, stats, standings, fantasy games, and more from CBS Sports.',
+                'start_urls': ['https://www.cbssports.com/mlb/'],
+                'filters': {}
+            },
+            'nba': {
+                'name': 'NBA',
+                'description': 'Get the latest NBA basketball news, scores, stats, standings, fantasy games, and more from CBS Sports.',
+                'start_urls': ['https://www.cbssports.com/nba/'],
                 'filters': {}
             }
         }
@@ -187,30 +242,7 @@ SOURCES_CONFIG = {
 }
 
 # Alias for easier imports
-SOURCES = SOURCES_CONFIG
-
-def get_source_config(source):
-    """Get configuration for a specific source"""
-    return SOURCES_CONFIG.get(source)
-
-def get_section_config(source, section):
-    """Get configuration for a specific source section"""
-    source_config = get_source_config(source)
-    if not source_config:
-        return None
-    return source_config.get('sections', {}).get(section)
-
-def get_all_sources():
-    """Get list of all available sources"""
-    return list(SOURCES_CONFIG.keys())
-
-def get_source_sections(source):
-    """Get list of all sections for a source"""
-    source_config = get_source_config(source)
-    if not source_config:
-        return []
-    return list(source_config.get('sections', {}).keys())
-
 def validate_source_section(source, section):
     """Validate if source and section combination exists"""
     return get_section_config(source, section) is not None
+

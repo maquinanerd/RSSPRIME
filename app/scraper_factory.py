@@ -131,3 +131,40 @@ class ScraperFactory:
         except Exception as e:
             logger.error(f"Failed to scrape {source}/{section}: {e}")
             return []
+        
+
+from .uol_scraper import UolScraper  
+from .folha_scraper import FolhaScraper
+from .gazeta_scraper import GazetaScraper
+from .as_scraper import ASScraper
+from .ole_scraper import OleScraper
+from .marca_scraper import MarcaScraper
+from .theguardian_scraper import TheGuardianScraper
+from .lequipe_scraper import LEquipeScraper
+from .kicker_scraper import KickerScraper
+from .gazzetta_scraper import GazzettaScraper
+from .abola_scraper import ABolaScraper
+from .foxsports_scraper import FoxSportsScraper
+from .cbssports_scraper import CBSSportsScraper
+from .sources_config import SOURCES_CONFIG
+
+logger = logging.getLogger(__name__)
+
+
+            'UolScraper': UolScraper,
+            'FolhaScraper': FolhaScraper,
+            'GazetaScraper': GazetaScraper,
+            'ASScraper': ASScraper,
+            'OleScraper': OleScraper,
+            'MarcaScraper': MarcaScraper,
+            'TheGuardianScraper': TheGuardianScraper,
+            'LEquipeScraper': LEquipeScraper,
+            'KickerScraper': KickerScraper,
+            'GazzettaScraper': GazzettaScraper,
+            'ABolaScraper': ABolaScraper,
+            'FoxSportsScraper': FoxSportsScraper,
+            'CBSSportsScraper': CBSSportsScraper,
+        }
+        
+        scraper_class = scraper_classes.get(scraper_class_name)
+
