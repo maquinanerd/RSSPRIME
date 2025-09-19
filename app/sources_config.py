@@ -203,6 +203,31 @@
                 'name': 'MLB News',
                 'description': 'Latest MLB news, rumors, and videos from FOX Sports.',
                 'start_urls': ['https://www.foxsports.com/mlb/news'],
+SOURCES_CONFIG = {
+    'lance': {
+        'name': 'Lance!',
+        'base_url': 'https://www.lance.com.br',
+        'language': 'pt-BR',
+        'scraper_class': 'LanceScraper',
+        'sections': {
+            'futebol': {
+                'name': 'Futebol',
+                'description': 'Notícias de futebol do Lance!',
+                'start_urls': ['https://www.lance.com.br/futebol'],
+                'filters': {}
+            }
+        }
+    },
+    'ge': {
+        'name': 'Globo Esporte',
+        'base_url': 'https://ge.globo.com',
+        'language': 'pt-BR',
+        'scraper_class': 'GloboEsporteScraper',
+        'sections': {
+            'futebol': {
+                'name': 'Futebol',
+                'description': 'Notícias de futebol do Globo Esporte.',
+                'start_urls': ['https://ge.globo.com/futebol/'],
                 'filters': {}
             }
         }
@@ -245,4 +270,3 @@
 def validate_source_section(source, section):
     """Validate if source and section combination exists"""
     return get_section_config(source, section) is not None
-
