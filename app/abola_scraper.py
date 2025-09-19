@@ -4,22 +4,22 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-class GazetaScraper:
+class ABolaScraper:
     """
-    Scraper for Gazeta Esportiva news.
+    Scraper for A Bola news.
     This is a placeholder implementation.
     """
 
     def __init__(self, store: Any, request_delay: float = 0.5):
         self.store = store
         self.request_delay = request_delay
-        logger.info("GazetaScraper initialized (placeholder).")
+        logger.info("ABolaScraper initialized (placeholder).")
 
     def list_pages(
         self, start_url: str, max_pages: int = 2, section: Optional[str] = None
     ) -> List[str]:
         logger.warning(
-            f"GazetaScraper.list_pages is not implemented. Returning empty list for {start_url}."
+            f"ABolaScraper.list_pages is not implemented. Returning empty list for {start_url}."
         )
         return []
 
@@ -27,7 +27,7 @@ class GazetaScraper:
         self, url: str, source: Optional[str] = None, section: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
         logger.warning(
-            f"GazetaScraper.parse_article is not implemented. Returning None for {url}."
+            f"ABolaScraper.parse_article is not implemented. Returning None for {url}."
         )
         return None
 
