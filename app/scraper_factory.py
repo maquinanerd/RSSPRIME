@@ -1,141 +1,22 @@
 """
-Factory for creating scrapers for different news sources
+Factory for creating scrapers for different news sources.
 """
 
+from __future__ import annotations
+
 import logging
+import time
+from typing import Dict, List, Type, Any
+
+# --- Scrapers locais ---
 from .lance_scraper import LanceScraper
-from .uol_scraper import UolScraper  
+from .uol_scraper import UolScraper
 from .folha_scraper import FolhaScraper
 from .gazeta_scraper import GazetaScraper
 from .globo_scraper import GloboScraper
 from .g1_scraper import G1Scraper
-from .sources_config import SOURCES_CONFIG
 
-logger = logging.getLogger(__name__)
-
-class ScraperFactory:
-    """Factory for creating appropriate scrapers based on source"""
-    
-    _scrapers = {}
-    
-    @classmethod
-    def get_scraper(cls, source, store, request_delay=1.0):
-        """Get or create a scraper for the specified source"""
-        if source in cls._scrapers:
-            return cls._scrapers[source]
-        
-        source_config = SOURCES_CONFIG.get(source)
-        if not source_config:
-            raise ValueError(f"Unknown source: {source}")
-        
-        scraper_class_name = source_config.get('scraper_class')
-        if not scraper_class_name:
-            raise ValueError(f"No scraper class defined for source: {source}")
-        
-        # Map scraper class names to actual classes
-        scraper_classes = {
-            'LanceScraper': LanceScraper,
-            'UolScraper': UolScraper,
-            'FolhaScraper': FolhaScraper,
-            'GazetaScraper': GazetaScraper,
-            'GloboScraper': GloboScraper,
-            'G1Scraper': G1Scraper
-        }
-        
-        scraper_class = scraper_classes.get(scraper_class_name)
-        if not scraper_class:
-            raise ValueError(f"Unknown scraper class: {scraper_class_name}")
-        
-        # Create and cache scraper instance
-        scraper = scraper_class(store, request_delay=request_delay)
-        cls._scrapers[source] = scraper
-        
-        logger.info(f"Created {scraper_class_name} for source '{source}'")
-        return scraper
-    
-    @classmethod
-    def get_all_scrapers(cls, store, request_delay=1.0):
-        """Get scrapers for all configured sources"""
-        scrapers = {}
-        for source in SOURCES_CONFIG.keys():
-            try:
-                scrapers[source] = cls.get_scraper(source, store, request_delay)
-            except Exception as e:
-                logger.error(f"Failed to create scraper for {source}: {e}")
-        return scrapers
-    
-    @classmethod
-    def clear_cache(cls):
-        """Clear cached scrapers (useful for testing)"""
-        cls._scrapers.clear()
-    
-    @classmethod
-    def scrape_source_section(cls, source, section, store, max_pages=2, max_articles=20, request_delay=0.3):
-        """Scrape a specific source and section with performance optimizations"""
-        try:
-            scraper = cls.get_scraper(source, store, request_delay)
-            source_config = SOURCES_CONFIG[source]
-            section_config = source_config['sections'][section]
-            
-            start_urls = section_config.get('start_urls', [])
-            if not start_urls:
-                logger.warning(f"No start URLs configured for {source}/{section}")
-                return []
-            
-            # For now, scrape the first URL
-            # TODO: Implement multi-URL scraping
-            url = start_urls[0]
-            
-            logger.info(f"Scraping {source}/{section} from {url} (max_articles: {max_articles})")
-            
-            # Use optimized scraping with article limits to prevent timeouts
-            all_article_urls = scraper.list_pages(url, max_pages, section=section)
-            
-            # Limit articles to prevent worker timeouts
-            limited_urls = all_article_urls[:max_articles] if len(all_article_urls) > max_articles else all_article_urls
-            logger.info(f"Processing {len(limited_urls)} articles (found {len(all_article_urls)})")
-            
-            new_articles = []
-            filters = section_config.get('filters', {})
-            
-            for i, article_url in enumerate(limited_urls, 1):
-                try:
-                    logger.info(f"Processing article {i}/{len(limited_urls)}: {article_url}")
-                    
-                    # Parse article
-                    article = scraper.parse_article(article_url, source=source, section=section)
-                    if not article:
-                        continue
-                    
-                    # Apply filters
-                    if filters and scraper.apply_filters(article, filters):
-                        logger.info(f"Article filtered out: {article_url}")
-                        continue
-                    
-                    # Store article
-                    if scraper.store.upsert_article(article):
-                        new_articles.append(article)
-                        logger.info(f"Stored article: {article['title']}")
-                    
-                    # Reduced delay for performance
-                    if i < len(limited_urls):
-                        import time
-                        time.sleep(request_delay)
-                        
-                except Exception as e:
-                    logger.error(f"Error processing article {article_url}: {e}")
-                    continue
-            
-            return new_articles
-            
-        except Exception as e:
-            logger.error(f"Failed to scrape {source}/{section}: {e}")
-            return []
-        
-
-from .uol_scraper import UolScraper  
-from .folha_scraper import FolhaScraper
-from .gazeta_scraper import GazetaScraper
+# --- Scrapers internacionais / extras ---
 from .as_scraper import ASScraper
 from .ole_scraper import OleScraper
 from .marca_scraper import MarcaScraper
@@ -146,25 +27,191 @@ from .gazzetta_scraper import GazzettaScraper
 from .abola_scraper import ABolaScraper
 from .foxsports_scraper import FoxSportsScraper
 from .cbssports_scraper import CBSSportsScraper
+
 from .sources_config import SOURCES_CONFIG
 
 logger = logging.getLogger(__name__)
 
 
-            'UolScraper': UolScraper,
-            'FolhaScraper': FolhaScraper,
-            'GazetaScraper': GazetaScraper,
-            'ASScraper': ASScraper,
-            'OleScraper': OleScraper,
-            'MarcaScraper': MarcaScraper,
-            'TheGuardianScraper': TheGuardianScraper,
-            'LEquipeScraper': LEquipeScraper,
-            'KickerScraper': KickerScraper,
-            'GazzettaScraper': GazzettaScraper,
-            'ABolaScraper': ABolaScraper,
-            'FoxSportsScraper': FoxSportsScraper,
-            'CBSSportsScraper': CBSSportsScraper,
-        }
-        
-        scraper_class = scraper_classes.get(scraper_class_name)
+class ScraperFactory:
+    """Factory para criar scrapers apropriados com base no 'source'."""
 
+    # cache de instâncias por fonte
+    _scrapers: Dict[str, Any] = {}
+
+    # mapa estático de nomes -> classes
+    SCRAPER_CLASSES: Dict[str, Type[Any]] = {
+        # BR / locais
+        "LanceScraper": LanceScraper,
+        "UolScraper": UolScraper,
+        "FolhaScraper": FolhaScraper,
+        "GazetaScraper": GazetaScraper,
+        "GloboScraper": GloboScraper,
+        "G1Scraper": G1Scraper,
+        # Internacionais / extras
+        "ASScraper": ASScraper,
+        "OleScraper": OleScraper,
+        "MarcaScraper": MarcaScraper,
+        "TheGuardianScraper": TheGuardianScraper,
+        "LEquipeScraper": LEquipeScraper,
+        "KickerScraper": KickerScraper,
+        "GazzettaScraper": GazzettaScraper,
+        "ABolaScraper": ABolaScraper,
+        "FoxSportsScraper": FoxSportsScraper,
+        "CBSSportsScraper": CBSSportsScraper,
+    }
+
+    @classmethod
+    def get_scraper(cls, source: str, store: Any, request_delay: float = 1.0) -> Any:
+        """
+        Retorna (ou cria) o scraper para a fonte informada.
+
+        Se já existir em cache, reutiliza. Garante que o .store e o delay
+        sejam atualizados na instância (caso tenham mudado).
+        """
+        source_config = SOURCES_CONFIG.get(source)
+        if not source_config:
+            raise ValueError(f"Unknown source: {source}")
+
+        scraper_class_name = source_config.get("scraper_class")
+        if not scraper_class_name:
+            raise ValueError(f"No scraper class defined for source: {source}")
+
+        scraper_class = cls.SCRAPER_CLASSES.get(scraper_class_name)
+        if not scraper_class:
+            raise ValueError(f"Unknown scraper class: {scraper_class_name}")
+
+        if source in cls._scrapers:
+            scraper = cls._scrapers[source]
+            # atualiza referências se necessário
+            if hasattr(scraper, "store"):
+                scraper.store = store
+            if hasattr(scraper, "request_delay"):
+                scraper.request_delay = request_delay
+            return scraper
+
+        # cria e cacheia
+        scraper = scraper_class(store, request_delay=request_delay)
+        cls._scrapers[source] = scraper
+        logger.info(f"Created {scraper_class_name} for source '{source}'")
+        return scraper
+
+    @classmethod
+    def get_all_scrapers(cls, store: Any, request_delay: float = 1.0) -> Dict[str, Any]:
+        """Cria/retorna scrapers para todas as fontes configuradas em SOURCES_CONFIG."""
+        scrapers: Dict[str, Any] = {}
+        for source in SOURCES_CONFIG.keys():
+            try:
+                scrapers[source] = cls.get_scraper(source, store, request_delay)
+            except Exception as e:
+                logger.error(f"Failed to create scraper for {source}: {e}")
+        return scrapers
+
+    @classmethod
+    def clear_cache(cls) -> None:
+        """Limpa o cache de scrapers (útil em testes)."""
+        cls._scrapers.clear()
+
+    @classmethod
+    def scrape_source_section(
+        cls,
+        source: str,
+        section: str,
+        store: Any,
+        max_pages: int = 2,
+        max_articles: int = 20,
+        request_delay: float = 0.3,
+    ) -> List[dict]:
+        """
+        Faz o scraping de uma fonte/seção específica com limites de performance.
+
+        - Respeita start_urls da seção.
+        - Deduplica URLs.
+        - Limita quantidade de artigos.
+        - Aplica filtros definidos em SOURCES_CONFIG.
+        """
+        try:
+            scraper = cls.get_scraper(source, store, request_delay)
+            source_config = SOURCES_CONFIG.get(source)
+            if not source_config:
+                logger.error(f"Source '{source}' not found in SOURCES_CONFIG.")
+                return []
+
+            sections = source_config.get("sections", {})
+            if section not in sections:
+                logger.error(f"Section '{section}' not configured for source '{source}'.")
+                return []
+
+            section_config = sections[section]
+            start_urls: List[str] = section_config.get("start_urls", [])
+            if not start_urls:
+                logger.warning(f"No start URLs configured for {source}/{section}")
+                return []
+
+            filters = section_config.get("filters", {}) or {}
+
+            # Coleta URLs de artigos de todas as start_urls (com deduplicação)
+            all_article_urls: List[str] = []
+            for start_url in start_urls:
+                logger.info(
+                    f"Listing pages for {source}/{section} from {start_url} (max_pages={max_pages})"
+                )
+                try:
+                    urls = scraper.list_pages(start_url, max_pages, section=section) or []
+                    all_article_urls.extend(urls)
+                except Exception as e:
+                    logger.error(f"Failed listing pages from {start_url}: {e}")
+
+            # Deduplica mantendo ordem
+            seen = set()
+            deduped_urls = []
+            for u in all_article_urls:
+                if u not in seen:
+                    seen.add(u)
+                    deduped_urls.append(u)
+
+            # Limita quantidade
+            limited_urls = deduped_urls[:max_articles]
+            logger.info(
+                f"Scraping {source}/{section}: processing {len(limited_urls)} "
+                f"articles (found {len(deduped_urls)})"
+            )
+
+            new_articles: List[dict] = []
+
+            for i, article_url in enumerate(limited_urls, 1):
+                try:
+                    logger.info(f"[{i}/{len(limited_urls)}] Parsing: {article_url}")
+                    article = scraper.parse_article(article_url, source=source, section=section)
+                    if not article:
+                        continue
+
+                    # Filtros (se o método retornar True = filtrar/descartar)
+                    if filters and getattr(scraper, "apply_filters", None):
+                        if scraper.apply_filters(article, filters):
+                            logger.info(f"Article filtered out: {article_url}")
+                            continue
+
+                    # Upsert no store
+                    stored = getattr(scraper.store, "upsert_article", None)
+                    if callable(stored):
+                        if scraper.store.upsert_article(article):
+                            new_articles.append(article)
+                            logger.info(f"Stored: {article.get('title')}")
+                    else:
+                        # fallback: apenas acumula
+                        new_articles.append(article)
+
+                    if i < len(limited_urls) and request_delay > 0:
+                        time.sleep(request_delay)
+
+                except Exception as e:
+                    logger.error(f"Error processing article {article_url}: {e}")
+                    continue
+
+            return new_articles
+
+        except Exception as e:
+            logger.error(f"Failed to scrape {source}/{section}: {e}")
+            return []
+# --- Fim do arquivo scraper_factory.py ---
