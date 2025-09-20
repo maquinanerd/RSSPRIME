@@ -1,5 +1,6 @@
 import os
 import logging
+import asyncio
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify, render_template, Response
 from .scraper import LanceScraper
@@ -43,11 +44,11 @@ scheduler = FeedScheduler(scraper, store, refresh_interval_minutes=5)
 scheduler.start()
 
 @app.route('/')
-async def index():
+def index():
     """Landing page with feed information and usage examples"""
     try:
         # Use the new safe data fetching service
-        dashboard_data = await get_dashboard_data_safe(request)
+        dashboard_data = asyncio.run(get_dashboard_data_safe(request))
         return render_template('index.html', **dashboard_data)
     except Exception as e:
         logger.exception("Error loading index page")
