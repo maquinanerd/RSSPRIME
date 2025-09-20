@@ -51,7 +51,28 @@ async def safe_get_sources_structure():
                 ]
             },
             {
-                "group_title": "🌎 Feeds Internacionais",
+                "group_title": "🌎 Feeds Internacionais - América Latina",
+                "feeds": [
+                    {"source_key": "ole", "icon": "🇦🇷", "border": "info", "header": "info"},
+                    {"source_key": "as_cl", "icon": "🇨🇱", "border": "danger", "header": "danger"},
+                    {"source_key": "as_co", "icon": "🇨🇴", "border": "warning", "header": "warning"},
+                    {"source_key": "as_mx", "icon": "🇲🇽", "border": "success", "header": "success"},
+                ]
+            },
+            {
+                "group_title": "🇪🇺 Feeds Internacionais - Europa",
+                "feeds": [
+                    {"source_key": "as_es", "icon": "🇪🇸", "border": "danger", "header": "danger"},
+                    {"source_key": "marca", "icon": "🇪🇸", "border": "danger", "header": "danger"},
+                    {"source_key": "theguardian", "icon": "🇬🇧", "border": "dark", "header": "dark"},
+                    {"source_key": "lequipe", "icon": "🇫🇷", "border": "primary", "header": "primary"},
+                    {"source_key": "kicker", "icon": "🇩🇪", "border": "dark", "header": "dark"},
+                    {"source_key": "gazzetta", "icon": "🇮🇹", "border": "success", "header": "success"},
+                    {"source_key": "abola", "icon": "🇵🇹", "border": "danger", "header": "danger"},
+                ]
+            },
+            {
+                "group_title": "🇺🇸 Feeds Internacionais - EUA",
                 "feeds": [
                     {"source_key": "foxsports", "icon": "🇺🇸", "border": "primary", "header": "primary"},
                     {"source_key": "cbssports", "icon": "🇺🇸", "border": "info", "header": "info"},
@@ -61,11 +82,17 @@ async def safe_get_sources_structure():
 
         # Populate with actual data from SOURCES_CONFIG
         for group in structured_sources:
+            # Filter out feeds that are not in SOURCES_CONFIG
+            group["feeds"] = [feed for feed in group["feeds"] if feed["source_key"] in SOURCES_CONFIG]
+
             for feed_meta in group["feeds"]:
                 source_config = SOURCES_CONFIG.get(feed_meta["source_key"])
                 if source_config:
                     feed_meta["source_name"] = source_config.get("name")
                     feed_meta["sections"] = source_config.get("sections")
+
+        # Filter out empty groups
+        structured_sources = [group for group in structured_sources if group["feeds"]]
 
         return structured_sources
     except Exception as e:
