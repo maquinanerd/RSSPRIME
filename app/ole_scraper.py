@@ -1,10 +1,10 @@
 import logging
-from typing import Any, Dict, List, Optional
+from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
 
-class OleScraper:
+class OleScraper(BaseScraper):
     """
     Scraper for Ole.com.ar news.
 
@@ -12,37 +12,18 @@ class OleScraper:
     The actual scraping logic needs to be implemented later.
     """
 
-    def __init__(self, store: Any, request_delay: float = 0.5):
-        """
-        Initializes the scraper.
-        'store' is an object for database interaction.
-        'request_delay' is the time to wait between requests.
-        """
-        self.store = store
-        self.request_delay = request_delay
-        logger.info("OleScraper initialized (placeholder).")
+    def get_site_domain(self):
+        """Return the main domain for this scraper"""
+        return "ole.com.ar"
 
-    def list_pages(
-        self, start_url: str, max_pages: int = 2, section: Optional[str] = None
-    ) -> List[str]:
-        """Lists article URLs from a section page of Ole.com.ar."""
+    def extract_article_links(self, html, base_url, section=None):
+        """Extract article links from Ole listing page HTML"""
         logger.warning(
-            f"OleScraper.list_pages is not implemented. Returning empty list for {start_url}."
+            f"OleScraper.extract_article_links is not implemented for {base_url}. Returning empty list."
         )
         return []
 
-    def parse_article(
-        self, url: str, source: Optional[str] = None, section: Optional[str] = None
-    ) -> Optional[Dict[str, Any]]:
-        """Parses a single article from Ole.com.ar."""
-        logger.warning(
-            f"OleScraper.parse_article is not implemented. Returning None for {url}."
-        )
+    def find_next_page_url(self, html, current_url):
+        """Find the URL for the next page of articles"""
+        logger.info("OleScraper does not support pagination.")
         return None
-
-    def apply_filters(self, article: Dict[str, Any], filters: Dict[str, Any]) -> bool:
-        """
-        Applies custom filters to an article. Returns True if the article should be filtered out.
-        """
-        # Placeholder: no filters are applied.
-        return False

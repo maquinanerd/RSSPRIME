@@ -1,35 +1,27 @@
 import logging
-from typing import Any, Dict, List, Optional
+from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
 
-class LEquipeScraper:
+class LEquipeScraper(BaseScraper):
     """
     Scraper for L'Équipe news.
     This is a placeholder implementation.
     """
 
-    def __init__(self, store: Any, request_delay: float = 0.5):
-        self.store = store
-        self.request_delay = request_delay
-        logger.info("LEquipeScraper initialized (placeholder).")
+    def get_site_domain(self):
+        """Return the main domain for this scraper"""
+        return "lequipe.fr"
 
-    def list_pages(
-        self, start_url: str, max_pages: int = 2, section: Optional[str] = None
-    ) -> List[str]:
+    def extract_article_links(self, html, base_url, section=None):
+        """Extract article links from L'Équipe listing page HTML"""
         logger.warning(
-            f"LEquipeScraper.list_pages is not implemented. Returning empty list for {start_url}."
+            f"LEquipeScraper.extract_article_links is not implemented for {base_url}. Returning empty list."
         )
         return []
 
-    def parse_article(
-        self, url: str, source: Optional[str] = None, section: Optional[str] = None
-    ) -> Optional[Dict[str, Any]]:
-        logger.warning(
-            f"LEquipeScraper.parse_article is not implemented. Returning None for {url}."
-        )
+    def find_next_page_url(self, html, current_url):
+        """Find the URL for the next page of articles"""
+        logger.info("LEquipeScraper does not support pagination.")
         return None
-
-    def apply_filters(self, article: Dict[str, Any], filters: Dict[str, Any]) -> bool:
-        return False

@@ -17,7 +17,7 @@ SOURCES_CONFIG = {
         'name': 'Globo Esporte',
         'base_url': 'https://ge.globo.com',
         'language': 'pt-BR',
-        'scraper_class': 'GloboEsporteScraper',
+        'scraper_class': 'GloboScraper',
         'sections': {
             'futebol': {
                 'name': 'Futebol',

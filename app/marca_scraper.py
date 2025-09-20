@@ -1,48 +1,36 @@
+"""
+Scraper for Marca.com
+"""
+
 import logging
-from typing import Any, Dict, List, Optional
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
+from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
+class MarcaScraper(BaseScraper):
+    """Scraper for Marca.com"""
 
-class MarcaScraper:
-    """
-    Scraper for Marca.com news.
+    def get_site_domain(self):
+        """Return the main domain for this scraper"""
+        return "marca.com"
 
-    This is a placeholder implementation to resolve the ModuleNotFoundError.
-    The actual scraping logic needs to be implemented later.
-    """
+    def extract_article_links(self, html, base_url, section=None):
+        """Extract article links from Marca listing page HTML"""
+        soup = BeautifulSoup(html, 'lxml')
+        links = set()
 
-    def __init__(self, store: Any, request_delay: float = 0.5):
-        """
-        Initializes the scraper.
-        'store' is an object for database interaction.
-        'request_delay' is the time to wait between requests.
-        """
-        self.store = store
-        self.request_delay = request_delay
-        logger.info("MarcaScraper initialized (placeholder).")
+        # Links are in <h2><a> inside <article class="ui-story">
+        for article in soup.find_all('article', class_='ui-story'):
+            link_tag = article.find('h2').find('a', href=True) if article.find('h2') else None
+            if link_tag and 'marca.com' in link_tag['href']:
+                links.add(link_tag['href'])
 
-    def list_pages(
-        self, start_url: str, max_pages: int = 2, section: Optional[str] = None
-    ) -> List[str]:
-        """Lists article URLs from a section page of Marca.com."""
-        logger.warning(
-            f"MarcaScraper.list_pages is not implemented. Returning empty list for {start_url}."
-        )
-        return []
+        logger.info(f"Extracted {len(links)} unique article links from {base_url}")
+        return list(links)
 
-    def parse_article(
-        self, url: str, source: Optional[str] = None, section: Optional[str] = None
-    ) -> Optional[Dict[str, Any]]:
-        """Parses a single article from Marca.com."""
-        logger.warning(
-            f"MarcaScraper.parse_article is not implemented. Returning None for {url}."
-        )
+    def find_next_page_url(self, html, current_url):
+        """Marca.com uses a JS-driven 'ver más' button for pagination."""
+        logger.info("Marca.com scraper does not support pagination (JS-driven).")
         return None
-
-    def apply_filters(self, article: Dict[str, Any], filters: Dict[str, Any]) -> bool:
-        """
-        Applies custom filters to an article. Returns True if the article should be filtered out.
-        """
-        # Placeholder: no filters are applied.
-        return False

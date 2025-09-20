@@ -1,35 +1,46 @@
 import logging
-from typing import Any, Dict, List, Optional
+from urllib.parse import urljoin
+
+from bs4 import BeautifulSoup
+
+from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
 
-class CBSSportsScraper:
+class CBSSportsScraper(BaseScraper):
     """
-    Scraper for CBS Sports news.
-    This is a placeholder implementation.
+    Scraper for CBS Sports (cbssports.com) news.
     """
 
-    def __init__(self, store: Any, request_delay: float = 0.5):
-        self.store = store
-        self.request_delay = request_delay
-        logger.info("CBSSportsScraper initialized (placeholder).")
+    def get_site_domain(self):
+        """Return the main domain for this scraper"""
+        return "cbssports.com"
 
-    def list_pages(
-        self, start_url: str, max_pages: int = 2, section: Optional[str] = None
-    ) -> List[str]:
-        logger.warning(
-            f"CBSSportsScraper.list_pages is not implemented. Returning empty list for {start_url}."
-        )
-        return []
+    def extract_article_links(self, html, base_url, section=None):
+        """Extract article links from CBS Sports listing page HTML"""
+        soup = BeautifulSoup(html, 'lxml')
+        links = set()
 
-    def parse_article(
-        self, url: str, source: Optional[str] = None, section: Optional[str] = None
-    ) -> Optional[Dict[str, Any]]:
-        logger.warning(
-            f"CBSSportsScraper.parse_article is not implemented. Returning None for {url}."
+        # CBS Sports uses several layouts. We'll try a few common selectors.
+        # Selector for main article lists
+        for item in soup.select('.article-list-pack-item, .article-list-item-v2'):
+            link_tag = item.find('a', href=True)
+            if link_tag:
+                href = link_tag['href']
+                # Filter out non-article links
+                if '/video/' not in href and '/live/' not in href:
+                    full_url = urljoin(base_url, href)
+                    links.add(full_url)
+
+        logger.info(f"Extracted {len(links)} unique article links from {base_url}")
+        return list(links)
+
+    def find_next_page_url(self, html, current_url):
+        """Find the URL for the next page of articles"""
+        # CBS Sports often uses a "Load More" button driven by JavaScript.
+        # A simple scraper can't easily follow this.
+        logger.info(
+            "CBSSportsScraper does not support pagination (likely JS-driven 'Load More' button)."
         )
         return None
-
-    def apply_filters(self, article: Dict[str, Any], filters: Dict[str, Any]) -> bool:
-        return False
