@@ -27,6 +27,46 @@ SOURCES_CONFIG = {
             }
         }
     },
+    'g1': {
+        'name': 'G1',
+        'base_url': 'https://g1.globo.com',
+        'language': 'pt-BR',
+        'scraper_class': 'G1Scraper',
+        'sections': {
+            'economia': {
+                'name': 'Economia',
+                'description': 'Notícias de economia do G1.',
+                'start_urls': ['https://g1.globo.com/economia/'],
+                'filters': {}
+            },
+            'politica': {
+                'name': 'Política',
+                'description': 'Notícias de política do G1.',
+                'start_urls': ['https://g1.globo.com/politica/'],
+                'filters': {}
+            }
+        }
+    },
+    'folha': {
+        'name': 'Folha de S.Paulo',
+        'base_url': 'https://www1.folha.uol.com.br',
+        'language': 'pt-BR',
+        'scraper_class': 'FolhaScraper',
+        'sections': {
+            'politica': {
+                'name': 'Política (Poder)',
+                'description': 'Notícias de política da Folha de S.Paulo.',
+                'start_urls': ['https://www1.folha.uol.com.br/poder/'],
+                'filters': {}
+            },
+            'economia': {
+                'name': 'Economia (Mercado)',
+                'description': 'Notícias de economia da Folha de S.Paulo.',
+                'start_urls': ['https://www1.folha.uol.com.br/mercado/'],
+                'filters': {}
+            }
+        }
+    },
     # International Feeds
     'as_cl': {
         'name': 'AS Chile',
