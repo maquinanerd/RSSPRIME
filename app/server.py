@@ -1,6 +1,5 @@
 import os
 import logging
-import json
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify, render_template, Response
 from .scraper import LanceScraper
@@ -10,6 +9,7 @@ from .scheduler import FeedScheduler
 from .utils import validate_admin_key, parse_query_filter
 from .sources_config import SOURCES_CONFIG as SOURCES
 from .scraper_factory import ScraperFactory
+from .dashboard_service import get_dashboard_data_safe
 
 # Configure logging
 logging.basicConfig(
@@ -43,14 +43,16 @@ scheduler = FeedScheduler(scraper, store, refresh_interval_minutes=5)
 scheduler.start()
 
 @app.route('/')
-def index():
+async def index():
     """Landing page with feed information and usage examples"""
     try:
-        stats = store.get_stats()
-        return render_template('index.html', stats=stats)
+        # Use the new safe data fetching service
+        dashboard_data = await get_dashboard_data_safe(request)
+        return render_template('index.html', **dashboard_data)
     except Exception as e:
-        logger.error(f"Error loading index page: {e}")
-        return render_template('index.html', stats={'total_articles': 0, 'last_update': None})
+        logger.exception("Error loading index page")
+        # Render with empty data to avoid a 500 error page
+        return render_template('index.html', stats={'total_articles': 0, 'last_update': 'Erro'}, sources=[], request=request)
 
 @app.route('/feeds/<source>/<section>/<format>')
 def dynamic_feeds(source, section, format):
