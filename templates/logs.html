@@ -194,6 +194,9 @@
                             logFileSelector.appendChild(option);
                         });
                         logSelectorContainer.classList.remove('hidden');
+                        // Automatically select and load the most recent log
+                        logFileSelector.selectedIndex = 1; // Select the first log file (index 0 is the placeholder)
+                        handleLoadSelectedLog(); // Trigger the load
                     } else {
                         alert('Nenhum arquivo de log encontrado no servidor.');
                         logSelectorContainer.classList.add('hidden');
@@ -224,7 +227,7 @@
 
                 } catch (error) {
                     console.error('Failed to load selected log:', error);
-                    alert(`Falha ao carregar os logs do servidor: ${error.message}`);
+                    alert(`Falha ao carregar o log selecionado: ${error.message}`);
                 }
             }
 
