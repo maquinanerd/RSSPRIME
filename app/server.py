@@ -74,7 +74,6 @@ if not ADMIN_KEY:
 
 # Initialize components
 store = store_module.ArticleStore()
-store.populate_feeds_from_config() # Pre-populate feeds table
 
 scraper = LanceScraper(store, request_delay=REQUEST_DELAY_MS/1000.0)
 feed_generator = FeedGenerator()

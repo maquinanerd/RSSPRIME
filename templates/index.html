@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RSS Prime - Dashboard</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         .grid{display:grid; gap:16px}
@@ -26,9 +27,9 @@
         <header class="text-center mb-5">
             <h1 class="display-4 mb-3">
                 <i class="fas fa-rss text-warning me-3"></i>
-                Dashboard de Feeds
+                RSS Prime - Dashboard & Feeds
             </h1>
-            <p class="lead text-muted">Status de atualização dos scrapers</p>
+            <p class="lead text-muted">Dashboard de status e lista de feeds disponíveis</p>
             <div class="badge bg-info fs-6">
                 <i class="fas fa-info-circle me-1"></i>
                 Apenas para fins educativos
@@ -37,7 +38,7 @@
 
         <!-- Feed Status Grid -->
         <section class="mb-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3">
               {% for f in feeds %}
               <div class="card">
                 <div class="card__header">
@@ -74,6 +75,145 @@
             </div>
         </section>
 
+        <!-- Feed URLs por Fonte -->
+        <section class="mb-5">
+            <h2 class="h3 mb-4 mt-5 border-top pt-5">
+                <i class="fas fa-link me-2"></i>
+                Feeds Disponíveis
+            </h2>
+            <div class="row">
+                {% for source_key, source_data in SOURCES_CONFIG.items() %}
+                    {% if source_data.sections %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-secondary">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">{{ source_data.name or source_key }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    {% for section_key, section_data in source_data.sections.items() %}
+                                    <div class="list-group-item bg-dark">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ section_data.name or section_key }}</h6>
+                                            <div>
+                                                <a href="/feeds/{{ source_key }}/{{ section_key }}/rss" class="badge bg-danger rounded-pill text-decoration-none">RSS</a>
+                                                <a href="/feeds/{{ source_key }}/{{ section_key }}/atom" class="badge bg-warning text-dark rounded-pill text-decoration-none ms-1">Atom</a>
+                                            </div>
+                                        </div>
+                                        {% if section_data.description %}<small class="text-muted">{{ section_data.description }}</small>{% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Feeds Legados (LANCE!) -->
+            <div class="mb-4">
+                <h3 class="h4 text-secondary mb-3">
+                    <i class="fas fa-clock me-2"></i>
+                    Feeds Legados (Compatibilidade)
+                </h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header bg-secondary">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-rss me-2"></i>
+                                    RSS Legado
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/rss.xml" 
+                                           readonly id="legacy-rss">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('legacy-rss')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <a href="/feeds/lance/rss.xml" class="btn btn-sm btn-secondary" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Abrir RSS Legado
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header bg-secondary">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-atom me-2"></i>
+                                    Atom Legado
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" 
+                                           value="{{ request.url_root }}feeds/lance/atom.xml" 
+                                           readonly id="legacy-atom">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('legacy-atom')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <a href="/feeds/lance/atom.xml" class="btn btn-sm btn-secondary" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Abrir Atom Legado
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Parameters -->
+        <section class="mb-5">
+            <h2 class="h3 mb-4">
+                <i class="fas fa-sliders-h me-2"></i>
+                Parâmetros Disponíveis
+            </h2>
+            <div class="card bg-dark border-secondary">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Parâmetro</th>
+                                    <th>Descrição</th>
+                                    <th>Padrão</th>
+                                    <th>Exemplo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>limit</code></td>
+                                    <td>Número máximo de artigos</td>
+                                    <td>30</td>
+                                    <td><code>?limit=20</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>q</code></td>
+                                    <td>Filtrar por termo no título/descrição</td>
+                                    <td>-</td>
+                                    <td><code>?q=Flamengo</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>refresh</code></td>
+                                    <td>Forçar nova varredura</td>
+                                    <td>0</td>
+                                    <td><code>?refresh=1</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Endpoints -->
         <section class="mb-5">
             <h2 class="h3 mb-4">
@@ -90,6 +230,16 @@
                         <small class="text-muted">GET /health</small>
                     </div>
                     <p class="mb-1">Status do sistema e métricas básicas</p>
+                </a>
+                <a href="/logs" class="list-group-item list-group-item-action bg-dark border-secondary" target="_blank">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            <i class="fas fa-file-alt text-info me-2"></i>
+                            Log Viewer
+                        </h5>
+                        <small class="text-muted">GET /logs</small>
+                    </div>
+                    <p class="mb-1">Visualizador de logs do servidor.</p>
                 </a>
             </div>
         </section>
@@ -120,4 +270,25 @@
         </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(element.value);
+
+            const button = element.nextElementSibling;
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            button.classList.remove('btn-outline-secondary');
+            button.classList.add('btn-success');
+
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-secondary');
+            }, 1500);
+        }
+    </script>
 </body>

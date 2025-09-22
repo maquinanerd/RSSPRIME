@@ -62,6 +62,7 @@ class ArticleStore:
         if not os.path.exists(self.db_path):
             logger.info(f"Database file not found at {self.db_path}, creating a new one.")
         self._init_db()
+        self.populate_feeds_from_config() # Ensure feeds are populated on startup
 
     def get_conn(self):
         """Returns a new database connection."""
