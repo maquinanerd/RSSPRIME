@@ -20,10 +20,10 @@ class OleScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        # Articles are in <a> tags with class 'card-link' that lead to .html pages
-        for link_tag in soup.select('a.card-link'):
+        # Articles are in <a> tags inside <h2 class="article-card__title">
+        for link_tag in soup.select('article.article-card h2.article-card__title a'):
             href = link_tag.get('href')
-            if href and '.html' in href:
+            if href and href.endswith('.html'):
                 full_url = urljoin(base_url, href)
                 links.add(full_url)
 
