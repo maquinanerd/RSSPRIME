@@ -19,3 +19,21 @@
 {"ts": "2025-09-22 18:01:51,396", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-22 21:01:51 UTC], next run at: 2025-09-22 21:01:51 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
 {"ts": "2025-09-22 18:01:51,411", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
 {"ts": "2025-09-22 18:01:51,413", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:01,425", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:01] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:01,477", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:01] \"\u001b[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1\u001b[0m\" 404 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:01,603", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:01] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:02,543", "level": "INFO", "message": "Atom feed requested: limit=30, pages=3, q=''", "module": "app.server"}
+{"ts": "2025-09-22 18:02:02,548", "level": "ERROR", "message": "Error generating Atom feed: 'ArticleStore' object has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 18:02:02,551", "level": "INFO", "message": "RSS feed requested: limit=30, pages=3, q=''", "module": "app.server"}
+{"ts": "2025-09-22 18:02:02,552", "level": "ERROR", "message": "Error generating RSS feed: 'ArticleStore' object has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 18:02:02,551", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:02] \"\u001b[35m\u001b[1mGET /feeds/lance/atom.xml HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:02,562", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:02] \"\u001b[35m\u001b[1mGET /feeds/lance/rss.xml HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:03,355", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:03] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:03,384", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:03] \"\u001b[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1\u001b[0m\" 404 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:03,405", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:03] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:04,499", "level": "INFO", "message": "RSS feed requested: limit=30, pages=3, q=''", "module": "app.server"}
+{"ts": "2025-09-22 18:02:04,499", "level": "INFO", "message": "Atom feed requested: limit=30, pages=3, q=''", "module": "app.server"}
+{"ts": "2025-09-22 18:02:04,500", "level": "ERROR", "message": "Error generating RSS feed: 'ArticleStore' object has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 18:02:04,500", "level": "ERROR", "message": "Error generating Atom feed: 'ArticleStore' object has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 18:02:04,500", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:04] \"\u001b[35m\u001b[1mGET /feeds/lance/rss.xml HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:02:04,501", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:02:04] \"\u001b[35m\u001b[1mGET /feeds/lance/atom.xml HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
