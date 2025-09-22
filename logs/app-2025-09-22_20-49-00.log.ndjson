@@ -19,3 +19,19 @@
 {"ts": "2025-09-22 17:49:00,056", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-22 20:49:00 UTC], next run at: 2025-09-22 20:49:00 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
 {"ts": "2025-09-22 17:49:00,065", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
 {"ts": "2025-09-22 17:49:00,071", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-22 17:49:59,621", "level": "DEBUG", "message": "Retrieved 0 articles (limit=30, source=ole, section=ascenso)", "module": "app.store"}
+{"ts": "2025-09-22 17:49:59,621", "level": "INFO", "message": "No articles found for ole/ascenso, triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-22 17:49:59,622", "level": "INFO", "message": "Created OleScraper for source 'ole'", "module": "app.scraper_factory"}
+{"ts": "2025-09-22 17:49:59,622", "level": "INFO", "message": "Listing pages for ole/ascenso from https://www.ole.com.ar/futbol-ascenso (max_pages=2)", "module": "app.scraper_factory"}
+{"ts": "2025-09-22 17:49:59,622", "level": "INFO", "message": "Fetching page 1: https://www.ole.com.ar/futbol-ascenso", "module": "app.base_scraper"}
+{"ts": "2025-09-22 17:49:59,764", "level": "DEBUG", "message": "Robots check for https://www.ole.com.ar/futbol-ascenso with UA 'Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https:...': False", "module": "app.base_scraper"}
+{"ts": "2025-09-22 17:49:59,766", "level": "INFO", "message": "Robots parser returned False for ole.com.ar, but robots.txt allows all. Proceeding.", "module": "app.base_scraper"}
+{"ts": "2025-09-22 17:50:00,382", "level": "DEBUG", "message": "Fetched https://www.ole.com.ar/futbol-ascenso - Status: 200, Length: 367216 bytes", "module": "app.base_scraper"}
+{"ts": "2025-09-22 17:50:00,422", "level": "INFO", "message": "Extracted 0 unique article links from https://www.ole.com.ar/futbol-ascenso", "module": "app.ole_scraper"}
+{"ts": "2025-09-22 17:50:00,422", "level": "WARNING", "message": "No article links found on page 1", "module": "app.base_scraper"}
+{"ts": "2025-09-22 17:50:00,422", "level": "INFO", "message": "Total article links collected: 0", "module": "app.base_scraper"}
+{"ts": "2025-09-22 17:50:00,423", "level": "INFO", "message": "Scraping ole/ascenso: processing 0 articles (found 0)", "module": "app.scraper_factory"}
+{"ts": "2025-09-22 17:50:00,423", "level": "INFO", "message": "Scraped 0 new articles for ole/ascenso", "module": "app.server"}
+{"ts": "2025-09-22 17:50:00,539", "level": "DEBUG", "message": "Retrieved 0 articles (limit=30, source=ole, section=ascenso)", "module": "app.store"}
+{"ts": "2025-09-22 17:50:00,539", "level": "INFO", "message": "Generated RSS feed with 0 articles", "module": "app.feeds"}
+{"ts": "2025-09-22 17:50:00,559", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:50:00] \"GET /feeds/ole/ascenso/rss HTTP/1.1\" 200 -", "module": "werkzeug"}
