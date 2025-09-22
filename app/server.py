@@ -1,5 +1,6 @@
 import os
 import logging
+import json
 import asyncio
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify, render_template, Response
@@ -12,10 +13,41 @@ from .sources_config import SOURCES_CONFIG as SOURCES
 from .scraper_factory import ScraperFactory
 from .dashboard_service import get_dashboard_data_safe
 
+class JsonFormatter(logging.Formatter):
+    """Formats log records as a JSON string for NDJSON."""
+    def format(self, record):
+        log_object = {
+            'ts': self.formatTime(record, self.datefmt),
+            'level': record.levelname,
+            'message': record.getMessage(),
+            'module': record.name,
+        }
+        
+        # Add extra attributes passed to the logger if they exist
+        extra_keys = ['httpCode', 'feed', 'url', 'source', 'section']
+        for key in extra_keys:
+            if hasattr(record, key):
+                log_object[key] = getattr(record, key)
+
+        return json.dumps(log_object, ensure_ascii=False)
+
+# Create a logs directory if it doesn't exist
+log_dir = 'logs'
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
 # Configure logging
+log_file_path = os.path.join(log_dir, 'app.log.ndjson')
+file_handler = logging.FileHandler(log_file_path, mode='a', encoding='utf-8')
+file_handler.setFormatter(JsonFormatter())
+
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        file_handler
+    ]
 )
 # Suppress DEBUG logs from urllib3.connectionpool
 logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
@@ -62,6 +94,27 @@ def logs_viewer():
     """Serves the log viewer page."""
     # This route simply renders the static HTML page for the log viewer.
     return render_template('logs.html')
+
+@app.route('/api/logs')
+def get_server_logs():
+    """Returns the content of the server's NDJSON log file."""
+    # Validate admin key
+    provided_key = request.args.get('key', '')
+    if not validate_admin_key(provided_key, ADMIN_KEY):
+        return jsonify({'error': 'Invalid admin key'}), 401
+    
+    try:
+        log_file_path = os.path.join('logs', 'app.log.ndjson')
+        if not os.path.exists(log_file_path):
+            return Response("", mimetype='application/x-ndjson')
+            
+        with open(log_file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        return Response(content, mimetype='application/x-ndjson')
+    except Exception as e:
+        logger.error(f"Error reading log file: {e}", extra={'error_details': str(e)})
+        return jsonify({'error': 'Failed to read log file'}), 500
 
 @app.route('/feeds/<source>/<section>/<format>')
 def dynamic_feeds(source, section, format):
