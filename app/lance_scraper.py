@@ -18,6 +18,13 @@ logger = logging.getLogger(__name__)
 class LanceScraper(BaseScraper):
     """Scraper specifically designed for LANCE! news site"""
     
+    def __init__(self, store, request_delay=1.0):
+        super().__init__(store, request_delay)
+        # Use a more standard browser User-Agent to avoid being blocked.
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+        })
+    
     def get_site_domain(self):
         """Return the main domain for LANCE!"""
         return "lance.com.br"
@@ -50,15 +57,21 @@ class LanceScraper(BaseScraper):
                     if '/galerias/' not in full_url and '/videos/' not in full_url:
                         links.add(full_url)
 
-        # Remove duplicates while preserving order
-        unique_links = []
-        seen = set()
-        for link in links:
-            if link not in seen:
-                unique_links.append(link)
-                seen.add(link)
+        # Fallback to a broader search if specific selectors fail
+        if not links:
+            logger.warning("Specific selectors failed for LANCE!, trying broader search.")
+            for link_tag in soup.find_all('a', href=True):
+                href = link_tag.get('href')
+                if not href:
+                    continue
+                full_url = urljoin(base_url, href)
+                if 'lance.com.br' in full_url and ('.html' in full_url or '.htm' in full_url):
+                    if '/galerias/' not in full_url and '/videos/' not in full_url:
+                        links.add(full_url)
         
-        logger.info(f"Found {len(unique_links)} article links on LANCE! page")
+        # Convert set to list for return
+        unique_links = list(links)
+        logger.info(f"Found {len(unique_links)} unique article links on LANCE! page")
         return unique_links
     
     def find_next_page_url(self, html, current_url):

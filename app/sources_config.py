@@ -8,7 +8,7 @@ SOURCES_CONFIG = {
             'futebol': {
                 'name': 'Futebol',
                 'description': 'Notícias de futebol do Lance!',
-                'start_urls': ['https://www.lance.com.br/futebol/mais-noticias'],
+                'start_urls': ['https://www.lance.com.br/mais-noticias'],
                 'filters': {}
             }
         }
