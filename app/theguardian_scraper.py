@@ -2,6 +2,7 @@ import logging
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -37,5 +38,5 @@ class TheGuardianScraper(BaseScraper):
             return urljoin(current_url, next_link['href'])
         return None
 
-    def apply_filters(self, article: Dict[str, Any], filters: Dict[str, Any]) -> bool:
+    def apply_filters(self, article: Dict[str, Any], filters: Dict[str, Any]) -> bool: # type: ignore
         return False
