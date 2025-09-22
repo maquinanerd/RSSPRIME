@@ -242,8 +242,8 @@ class ArticleStore:
                 )
             ''')
             # Add columns if they are missing from an older schema
-            self._add_column_if_not_exists(cursor, 'articles', 'date_published', 'TEXT')
-            self._add_column_if_not_exists(cursor, 'articles', 'date_modified', 'TEXT')
+            _add_column_if_not_exists(cursor, 'articles', 'date_published', 'TEXT')
+            _add_column_if_not_exists(cursor, 'articles', 'date_modified', 'TEXT')
 
             # Feeds table for stats
             cursor.execute('''
