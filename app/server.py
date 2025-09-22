@@ -66,7 +66,9 @@ if not app.secret_key:
 MAX_PAGES = int(os.environ.get("MAX_PAGES", "3"))
 DEFAULT_LIMIT = int(os.environ.get("DEFAULT_LIMIT", "30"))
 REQUEST_DELAY_MS = int(os.environ.get("REQUEST_DELAY_MS", "900"))
-ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
+ADMIN_KEY = os.environ.get("ADMIN_KEY") # Can be None
+if not ADMIN_KEY:
+    logger.warning("ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.")
 
 # Initialize components
 store = ArticleStore()
@@ -98,10 +100,13 @@ def logs_viewer():
 @app.route('/api/logs')
 def get_server_logs():
     """Returns the content of the server's NDJSON log file."""
+    if not ADMIN_KEY:
+        return jsonify({'error': 'Acesso negado: A chave de administrador (ADMIN_KEY) não foi configurada no servidor.'}), 403
+
     # Validate admin key
     provided_key = request.args.get('key', '')
-    if not validate_admin_key(provided_key, ADMIN_KEY):
-        return jsonify({'error': 'Invalid admin key'}), 401
+    if not validate_admin_key(provided_key, ADMIN_KEY): # type: ignore
+        return jsonify({'error': 'Chave de administrador inválida.'}), 401
     
     try:
         log_file_path = os.path.join('logs', 'app.log.ndjson')
@@ -210,7 +215,7 @@ def rss_feed():
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
         # Fixed source URL for security (no user-controlled URLs)
-        source_url = 'https://www.lance.com.br/mais-noticias'
+        source_url = 'https://www.lance.com.br/futebol'
 
         logger.info(f"RSS feed requested: limit={limit}, pages={pages}, q='{q}'")
 
@@ -244,7 +249,7 @@ def atom_feed():
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
         # Fixed source URL for security
-        source_url = 'https://www.lance.com.br/mais-noticias'
+        source_url = 'https://www.lance.com.br/futebol'
 
         logger.info(f"Atom feed requested: limit={limit}, pages={pages}, q='{q}'")
 
@@ -292,16 +297,19 @@ def health_check():
 @app.route('/admin/refresh')
 def admin_refresh():
     """Manual refresh endpoint (requires admin key)"""
+    if not ADMIN_KEY:
+        return jsonify({'error': 'Acesso negado: A chave de administrador (ADMIN_KEY) não foi configurada no servidor.'}), 403
+
+    # Validate admin key
+    provided_key = request.args.get('key', '')
+    if not validate_admin_key(provided_key, ADMIN_KEY): # type: ignore
+        return jsonify({'error': 'Chave de administrador inválida.'}), 401
     try:
-        # Validate admin key
-        provided_key = request.args.get('key', '')
-        if not validate_admin_key(provided_key, ADMIN_KEY):
-            return jsonify({'error': 'Invalid admin key'}), 401
 
         # Parse parameters
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         # Fixed source URL for security
-        source_url = 'https://www.lance.com.br/mais-noticias'
+        source_url = 'https://www.lance.com.br/futebol'
 
         logger.info(f"Manual refresh triggered: pages={pages}")
 
@@ -327,10 +335,13 @@ def admin_refresh():
 @app.route('/admin/stats')
 def admin_stats():
     """Detailed statistics endpoint"""
+    if not ADMIN_KEY:
+        return jsonify({'error': 'Acesso negado: A chave de administrador (ADMIN_KEY) não foi configurada no servidor.'}), 403
+    
+    provided_key = request.args.get('key', '')
+    if not validate_admin_key(provided_key, ADMIN_KEY): # type: ignore
+        return jsonify({'error': 'Chave de administrador inválida.'}), 401
     try:
-        provided_key = request.args.get('key', '')
-        if not validate_admin_key(provided_key, ADMIN_KEY):
-            return jsonify({'error': 'Invalid admin key'}), 401
 
         detailed_stats = store.get_detailed_stats()
         return jsonify(detailed_stats)
