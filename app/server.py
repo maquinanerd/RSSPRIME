@@ -57,6 +57,12 @@ def index():
         # Render with empty data to avoid a 500 error page
         return render_template('index.html', stats={'total_articles': 0, 'last_update': 'Erro'}, sources=[], request=request)
 
+@app.route('/logs')
+def logs_viewer():
+    """Serves the log viewer page."""
+    # This route simply renders the static HTML page for the log viewer.
+    return render_template('logs.html')
+
 @app.route('/feeds/<source>/<section>/<format>')
 def dynamic_feeds(source, section, format):
     """Dynamic feeds for any source/section/format combination"""
