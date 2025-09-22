@@ -1,0 +1,22 @@
+{"ts": "2025-09-22 17:05:52,712", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-22 17:05:52,712", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-22 17:05:52,714", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-22 17:05:52,715", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-22 17:05:52,719", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-22 17:05:52,720", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,721", "level": "INFO", "message": "Added job \"Feed Refresh Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,722", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,723", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,723", "level": "INFO", "message": "Scheduler started - refresh every 5 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-22 17:05:52,723", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-22 17:10:52.720136-03:00 (in 299.996241 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,725", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,730", "level": "INFO", "message": "Iniciando servidor Flask em http://127.0.0.1:5000 (Debug: True)", "module": "__main__"}
+{"ts": "2025-09-22 17:05:52,731", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,733", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-22 20:05:52 UTC], next run at: 2025-09-22 20:05:52 UTC)\" (scheduled at 2025-09-22 20:05:52.724060+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-22 17:05:52,733", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,734", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-22 17:10:52.720136-03:00 (in 299.986029 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:52,734", "level": "ERROR", "message": "Error in initial refresh: module 'app.store' has no attribute 'get_stats'", "module": "app.scheduler"}
+{"ts": "2025-09-22 17:05:52,736", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-22 20:05:52 UTC], next run at: 2025-09-22 20:05:52 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-22 17:05:52,752", "level": "INFO", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on http://127.0.0.1:5000", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:52,752", "level": "INFO", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:52,754", "level": "INFO", "message": " * Restarting with stat", "module": "werkzeug"}

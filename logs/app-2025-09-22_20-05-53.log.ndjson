@@ -1,0 +1,144 @@
+{"ts": "2025-09-22 17:05:53,513", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-22 17:05:53,514", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-22 17:05:53,515", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-22 17:05:53,516", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-22 17:05:53,520", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-22 17:05:53,521", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,522", "level": "INFO", "message": "Added job \"Feed Refresh Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,523", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,524", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,524", "level": "INFO", "message": "Scheduler started - refresh every 5 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-22 17:05:53,524", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-22 17:10:53.521417-03:00 (in 299.996835 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,525", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,530", "level": "INFO", "message": "Iniciando servidor Flask em http://127.0.0.1:5000 (Debug: True)", "module": "__main__"}
+{"ts": "2025-09-22 17:05:53,531", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,533", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-22 20:05:53 UTC], next run at: 2025-09-22 20:05:53 UTC)\" (scheduled at 2025-09-22 20:05:53.524807+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-22 17:05:53,534", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,535", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-22 17:10:53.521417-03:00 (in 299.986088 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 17:05:53,535", "level": "ERROR", "message": "Error in initial refresh: module 'app.store' has no attribute 'get_stats'", "module": "app.scheduler"}
+{"ts": "2025-09-22 17:05:53,537", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-22 20:05:53 UTC], next run at: 2025-09-22 20:05:53 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-22 17:05:53,549", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:53,552", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:57,361", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:57] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:57,474", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:57] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:58,981", "level": "ERROR", "message": "Error generating rss feed for lance/futebol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:58,983", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:58] \"\u001b[35m\u001b[1mGET /feeds/lance/futebol/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:58,988", "level": "ERROR", "message": "Error generating atom feed for lance/futebol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:58,988", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:58] \"\u001b[35m\u001b[1mGET /feeds/lance/futebol/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:58,995", "level": "ERROR", "message": "Error generating rss feed for ge/futebol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:58,996", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:58] \"\u001b[35m\u001b[1mGET /feeds/ge/futebol/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:58,998", "level": "ERROR", "message": "Error generating atom feed for ge/futebol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,000", "level": "ERROR", "message": "Error generating rss feed for g1/economia: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,001", "level": "ERROR", "message": "Error generating atom feed for g1/economia: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,001", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/ge/futebol/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,003", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/g1/economia/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,003", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/g1/economia/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,005", "level": "ERROR", "message": "Error generating rss feed for g1/politica: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,009", "level": "ERROR", "message": "Error generating atom feed for g1/politica: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,009", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/g1/politica/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,010", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/g1/politica/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,011", "level": "ERROR", "message": "Error generating rss feed for folha/politica: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,017", "level": "ERROR", "message": "Error generating atom feed for folha/politica: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,020", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/folha/politica/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,023", "level": "ERROR", "message": "Error generating rss feed for folha/economia: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,024", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/folha/politica/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,025", "level": "ERROR", "message": "Error generating atom feed for folha/economia: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,025", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/folha/economia/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,028", "level": "ERROR", "message": "Error generating rss feed for as_cl/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,029", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/folha/economia/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,036", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_cl/futbol/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,040", "level": "ERROR", "message": "Error generating atom feed for as_cl/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,041", "level": "ERROR", "message": "Error generating rss feed for as_co/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,042", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_cl/futbol/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,043", "level": "ERROR", "message": "Error generating atom feed for as_co/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,044", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_co/futbol/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,045", "level": "ERROR", "message": "Error generating rss feed for as_mx/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,048", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_co/futbol/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,049", "level": "ERROR", "message": "Error generating atom feed for as_mx/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,051", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_mx/futbol/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,052", "level": "ERROR", "message": "Error generating rss feed for ole/primera: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,054", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_mx/futbol/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,056", "level": "ERROR", "message": "Error generating atom feed for ole/primera: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,057", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/ole/primera/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,058", "level": "ERROR", "message": "Error generating rss feed for ole/ascenso: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,060", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/ole/primera/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,065", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/ole/ascenso/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,066", "level": "ERROR", "message": "Error generating rss feed for as_es/primera: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,062", "level": "ERROR", "message": "Error generating atom feed for ole/ascenso: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,069", "level": "ERROR", "message": "Error generating atom feed for as_es/primera: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,073", "level": "ERROR", "message": "Error generating rss feed for as_es/copa_del_rey: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,073", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_es/primera/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,074", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/ole/ascenso/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,075", "level": "ERROR", "message": "Error generating atom feed for as_es/copa_del_rey: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,076", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_es/primera/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,077", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_es/copa_del_rey/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,078", "level": "ERROR", "message": "Error generating rss feed for as_es/segunda: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,079", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_es/copa_del_rey/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,080", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_es/segunda/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,085", "level": "ERROR", "message": "Error generating atom feed for as_es/segunda: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,086", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/as_es/segunda/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,091", "level": "ERROR", "message": "Error generating rss feed for marca/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,093", "level": "ERROR", "message": "Error generating atom feed for marca/futbol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,094", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/marca/futbol/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,095", "level": "ERROR", "message": "Error generating rss feed for theguardian/football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,096", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/marca/futbol/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,099", "level": "ERROR", "message": "Error generating atom feed for theguardian/football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,101", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/theguardian/football/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,102", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/theguardian/football/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,104", "level": "ERROR", "message": "Error generating rss feed for lequipe/football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,107", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/lequipe/football/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,108", "level": "ERROR", "message": "Error generating atom feed for lequipe/football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,111", "level": "ERROR", "message": "Error generating rss feed for kicker/bundesliga: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,112", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/lequipe/football/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,113", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/kicker/bundesliga/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,114", "level": "ERROR", "message": "Error generating atom feed for kicker/bundesliga: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,118", "level": "ERROR", "message": "Error generating rss feed for kicker/2-bundesliga: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,119", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/kicker/bundesliga/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,120", "level": "ERROR", "message": "Error generating atom feed for kicker/2-bundesliga: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,121", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/kicker/2-bundesliga/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,124", "level": "ERROR", "message": "Error generating rss feed for gazzetta/calcio: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,126", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/kicker/2-bundesliga/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,127", "level": "ERROR", "message": "Error generating atom feed for gazzetta/calcio: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,129", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/gazzetta/calcio/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,130", "level": "ERROR", "message": "Error generating rss feed for abola/ultimas: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,135", "level": "ERROR", "message": "Error generating atom feed for abola/ultimas: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,136", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/gazzetta/calcio/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,137", "level": "ERROR", "message": "Error generating rss feed for foxsports/nfl: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,139", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/abola/ultimas/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,140", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/abola/ultimas/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,141", "level": "ERROR", "message": "Error generating atom feed for foxsports/nfl: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,142", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/foxsports/nfl/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,144", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/foxsports/nfl/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,145", "level": "ERROR", "message": "Error generating rss feed for foxsports/college-football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,148", "level": "ERROR", "message": "Error generating atom feed for foxsports/college-football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,153", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/foxsports/college-football/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,156", "level": "ERROR", "message": "Error generating rss feed for foxsports/mlb: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,157", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/foxsports/college-football/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,158", "level": "ERROR", "message": "Error generating atom feed for foxsports/mlb: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,159", "level": "ERROR", "message": "Error generating rss feed for cbssports/nfl: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,159", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/foxsports/mlb/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,160", "level": "ERROR", "message": "Error generating atom feed for cbssports/nfl: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,162", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/foxsports/mlb/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,162", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/nfl/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,163", "level": "ERROR", "message": "Error generating rss feed for cbssports/college-football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,167", "level": "ERROR", "message": "Error generating atom feed for cbssports/college-football: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,168", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/nfl/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,172", "level": "ERROR", "message": "Error generating rss feed for cbssports/mlb: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,174", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/college-football/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,175", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/college-football/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,175", "level": "ERROR", "message": "Error generating atom feed for cbssports/mlb: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,176", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/mlb/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,177", "level": "ERROR", "message": "Error generating rss feed for cbssports/nba: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,178", "level": "ERROR", "message": "Error generating atom feed for cbssports/nba: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,179", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/mlb/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,183", "level": "INFO", "message": "RSS feed requested: limit=30, pages=3, q=''", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,184", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/nba/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,185", "level": "INFO", "message": "Atom feed requested: limit=30, pages=3, q=''", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,185", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/cbssports/nba/atom HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,186", "level": "ERROR", "message": "Error generating RSS feed: 'ArticleStore' object has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,189", "level": "ERROR", "message": "Error generating Atom feed: 'ArticleStore' object has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:05:59,190", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/lance/rss.xml HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:05:59,190", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:05:59] \"\u001b[35m\u001b[1mGET /feeds/lance/atom.xml HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:06:10,771", "level": "ERROR", "message": "Error generating rss feed for lance/futebol: module 'app.store' has no attribute 'get_recent_articles'", "module": "app.server"}
+{"ts": "2025-09-22 17:06:10,771", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 17:06:10] \"\u001b[35m\u001b[1mGET /feeds/lance/futebol/rss HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 17:09:32,656", "level": "INFO", "message": " * Detected change in 'E:\\\\Área de Trabalho 2\\\\RSS-PRIME\\\\app\\\\feeds.py', reloading", "module": "werkzeug"}

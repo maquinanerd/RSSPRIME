@@ -122,6 +122,8 @@ class FeedGenerator:
                 newest_article = articles[0] # Query is sorted DESC
                 pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
                 if pub_date:
+                    if pub_date.tzinfo is None:
+                        pub_date = pub_date.replace(tzinfo=timezone.utc)
                     fg.lastBuildDate(pub_date.astimezone(self.brasilia_tz))
 
             logger.info(f"Generated RSS feed with {added_count} articles")
@@ -155,6 +157,8 @@ class FeedGenerator:
                 newest_article = articles[0] # Query is sorted DESC
                 pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
                 if pub_date:
+                    if pub_date.tzinfo is None:
+                        pub_date = pub_date.replace(tzinfo=timezone.utc)
                     fg.updated(pub_date.astimezone(self.brasilia_tz))
 
             logger.info(f"Generated Atom feed with {added_count} articles")
