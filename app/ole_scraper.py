@@ -1,4 +1,6 @@
 import logging
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
@@ -7,9 +9,6 @@ logger = logging.getLogger(__name__)
 class OleScraper(BaseScraper):
     """
     Scraper for Ole.com.ar news.
-
-    This is a placeholder implementation to resolve the ModuleNotFoundError.
-    The actual scraping logic needs to be implemented later.
     """
 
     def get_site_domain(self):
@@ -18,10 +17,18 @@ class OleScraper(BaseScraper):
 
     def extract_article_links(self, html, base_url, section=None):
         """Extract article links from Ole listing page HTML"""
-        logger.warning(
-            f"OleScraper.extract_article_links is not implemented for {base_url}. Returning empty list."
-        )
-        return []
+        soup = BeautifulSoup(html, 'lxml')
+        links = set()
+
+        # Articles are in <a> tags with class 'card-link' that lead to .html pages
+        for link_tag in soup.select('a.card-link'):
+            href = link_tag.get('href')
+            if href and '.html' in href:
+                full_url = urljoin(base_url, href)
+                links.add(full_url)
+
+        logger.info(f"Extracted {len(links)} unique article links from {base_url}")
+        return list(links)
 
     def find_next_page_url(self, html, current_url):
         """Find the URL for the next page of articles"""

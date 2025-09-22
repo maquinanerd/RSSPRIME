@@ -21,15 +21,14 @@ class ASScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        # Main article links are in <article> tags with class 's-promo'
-        for article in soup.find_all('article', class_='s-promo'):
-            link_tag = article.find('a', href=True)
-            if link_tag:
+        # Main article links are in <h2><a> tags
+        for link_tag in soup.select('h2.s__tl a'):
+            if link_tag and link_tag.get('href'):
                 href = link_tag['href']
                 full_url = urljoin(base_url, href)
                 
-                # Filter out non-article links like /videos/
-                if '/videos/' not in full_url:
+                # Filter out non-article links like /videos/ or /album/
+                if '/videos/' not in full_url and '/album/' not in full_url:
                     links.add(full_url)
 
         logger.info(f"Extracted {len(links)} unique article links from {base_url}")

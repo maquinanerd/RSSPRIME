@@ -182,6 +182,11 @@ class ScraperFactory:
             for i, article_url in enumerate(limited_urls, 1):
                 try:
                     logger.info(f"[{i}/{len(limited_urls)}] Parsing: {article_url}")
+
+                    # Check if article already exists in the store to prevent re-parsing
+                    if store.has_article(article_url):
+                        logger.debug(f"Article already exists in store, skipping parsing: {article_url}")
+                        continue
                     article = scraper.parse_article(article_url, source=source, section=section)
                     if not article:
                         continue

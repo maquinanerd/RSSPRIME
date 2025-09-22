@@ -25,28 +25,31 @@ class LanceScraper(BaseScraper):
     def extract_article_links(self, html, base_url, section=None):
         """Extract article links from LANCE! listing page HTML"""
         soup = BeautifulSoup(html, 'lxml')
-        links = []
-        
-        # Find all links that point to articles (ending in .html)
-        for link in soup.find_all('a', href=True):
-            href = link.get('href', '')
-            
-            # Convert relative URLs to absolute
-            if href.startswith('/'):
-                href = urljoin(base_url, href)
-            elif not href.startswith(('http://', 'https://')):
-                continue
-                
-            # Only include LANCE! articles
-            if 'lance.com.br' not in href:
-                continue
-                
-            # Filter for article URLs (typically end with .htm or have date patterns)
-            if (href.endswith('.htm') or 
-                href.endswith('.html') or 
-                any(char.isdigit() for char in href.split('/')[-1:])):  # URL has date/ID
-                links.append(href)
-        
+        links = set()
+
+        # More specific selectors for article links on Lance
+        selectors = [
+            'div.item-noticia a',  # Main list items on some pages
+            'a.d-block.chapeu-title-container',  # Featured items
+            'h2.title a',  # Other headline links
+            'div.list-posts-item a' # Common on /mais-noticias
+        ]
+
+        for selector in selectors:
+            for link_tag in soup.select(selector):
+                href = link_tag.get('href')
+                if not href:
+                    continue
+
+                # Convert relative URLs to absolute
+                full_url = urljoin(base_url, href)
+
+                # Only include LANCE! articles that look like articles
+                if 'lance.com.br' in full_url and ('.html' in full_url or '.htm' in full_url):
+                    # Exclude non-article links
+                    if '/galerias/' not in full_url and '/videos/' not in full_url:
+                        links.add(full_url)
+
         # Remove duplicates while preserving order
         unique_links = []
         seen = set()

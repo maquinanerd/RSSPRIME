@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 class FolhaScraper(BaseScraper):
     """Scraper specifically designed for Folha de S.Paulo news sites"""
     
+    _SECTION_TO_PATH = {
+        'politica': 'poder',
+        'economia': 'mercado',
+    }
+
     def get_site_domain(self):
         """Return the main domain for Folha"""
         return "www1.folha.uol.com.br"
@@ -56,10 +61,11 @@ class FolhaScraper(BaseScraper):
 
             # 4. Section-specific validation
             if section:
+                expected_path_prefix = self._SECTION_TO_PATH.get(section, section)
                 # The URL path must start with the section name
-                # e.g., /mundo/2025/09/... for section 'mundo'
+                # e.g., /poder/2024/06/... for section 'politica'
                 path_segments = parsed.path.strip('/').split('/')
-                if not path_segments or path_segments[0] != section:
+                if not path_segments or path_segments[0] != expected_path_prefix:
                     return False
 
             return True

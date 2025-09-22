@@ -17,6 +17,8 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+# Suppress DEBUG logs from urllib3.connectionpool
+logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize Flask app
