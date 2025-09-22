@@ -20,8 +20,8 @@ class OleScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        # Articles are in <a> tags inside <h2 class="article-card__title">
-        for link_tag in soup.select('article.article-card h2.article-card__title a'):
+        # The main article links are <a> tags with the class 'article-card'
+        for link_tag in soup.select('a.article-card'):
             href = link_tag.get('href')
             if href and href.endswith('.html'):
                 full_url = urljoin(base_url, href)
