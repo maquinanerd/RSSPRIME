@@ -31,13 +31,16 @@ class JsonFormatter(logging.Formatter):
 
         return json.dumps(log_object, ensure_ascii=False)
 
+# Generate a timestamp for this server run to create a unique log file
+run_timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d_%H-%M-%S')
+
 # Create a logs directory if it doesn't exist
 log_dir = 'logs'
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
 # Configure logging
-log_file_path = os.path.join(log_dir, 'app.log.ndjson')
+log_file_path = os.path.join(log_dir, f'app-{run_timestamp}.log.ndjson')
 file_handler = logging.FileHandler(log_file_path, mode='a', encoding='utf-8')
 file_handler.setFormatter(JsonFormatter())
 
@@ -100,18 +103,26 @@ def logs_viewer():
 @app.route('/api/logs')
 def get_server_logs():
     """Returns the content of the server's NDJSON log file."""
+    filename = request.args.get('file')
     if not ADMIN_KEY:
         return jsonify({'error': 'Acesso negado: A chave de administrador (ADMIN_KEY) não foi configurada no servidor.'}), 403
+    if not filename:
+        return jsonify({'error': 'Nome do arquivo de log não especificado.'}), 400
 
     # Validate admin key
     provided_key = request.args.get('key', '')
     if not validate_admin_key(provided_key, ADMIN_KEY): # type: ignore
         return jsonify({'error': 'Chave de administrador inválida.'}), 401
     
+    # Security: Prevent directory traversal attacks. Only allow simple filenames.
+    safe_filename = os.path.basename(filename)
+    if safe_filename != filename or not safe_filename.endswith('.ndjson'):
+        return jsonify({'error': 'Nome de arquivo inválido.'}), 400
+
     try:
-        log_file_path = os.path.join('logs', 'app.log.ndjson')
+        log_file_path = os.path.join('logs', safe_filename)
         if not os.path.exists(log_file_path):
-            return Response("", mimetype='application/x-ndjson')
+            return jsonify({'error': f'Arquivo de log "{safe_filename}" não encontrado.'}), 404
             
         with open(log_file_path, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -120,6 +131,28 @@ def get_server_logs():
     except Exception as e:
         logger.error(f"Error reading log file: {e}", extra={'error_details': str(e)})
         return jsonify({'error': 'Failed to read log file'}), 500
+
+@app.route('/api/logs/list')
+def list_server_logs():
+    """Lists all available NDJSON log files."""
+    if not ADMIN_KEY:
+        return jsonify({'error': 'Acesso negado: A chave de administrador (ADMIN_KEY) não foi configurada no servidor.'}), 403
+
+    provided_key = request.args.get('key', '')
+    if not validate_admin_key(provided_key, ADMIN_KEY): # type: ignore
+        return jsonify({'error': 'Chave de administrador inválida.'}), 401
+
+    try:
+        log_dir = 'logs'
+        if not os.path.exists(log_dir):
+            return jsonify([])
+
+        log_files = [f for f in os.listdir(log_dir) if f.endswith('.ndjson')]
+        log_files.sort(reverse=True) # Show newest first
+        return jsonify(log_files)
+    except Exception as e:
+        logger.error(f"Error listing log files: {e}")
+        return jsonify({'error': 'Failed to list log files'}), 500
 
 @app.route('/feeds/<source>/<section>/<format>')
 def dynamic_feeds(source, section, format):
