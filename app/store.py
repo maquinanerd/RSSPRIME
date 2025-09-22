@@ -1,8 +1,9 @@
 import sqlite3
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import pytz
 import os
+import re
 
 from .sources_config import SOURCES_CONFIG
 
@@ -15,6 +16,159 @@ def _now_br_iso():
     """Returns the current time in a readable local ISO format."""
     return datetime.now(TZ).strftime("%Y-%m-%d %H:%M:%S")
 
+def _add_column_if_not_exists(cursor, table_name, column_name, column_type):
+    """Helper to add a column to a table if it doesn't exist."""
+    cursor.execute(f"PRAGMA table_info({table_name})")
+    columns = [info[1] for info in cursor.fetchall()]
+    if column_name not in columns:
+        logger.info(f"Adding column '{column_name}' to table '{table_name}'.")
+        cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}")
+
+def _parse_date(date_str):
+    """Helper to parse date strings, returning a timezone-aware datetime object."""
+    if not date_str:
+        return None
+    try:
+        # fromisoformat correctly handles timezone info if present.
+        dt = datetime.fromisoformat(date_str)
+        # If it's naive (no timezone info in the string), assume it's UTC.
+        if dt.tzinfo is None:
+            return dt.replace(tzinfo=timezone.utc)
+        return dt
+    except (ValueError, TypeError):
+        logger.warning(f"Could not parse date string '{date_str}', returning None.")
+        return None
+
+def get_stats(conn):
+    """Get basic statistics about stored articles."""
+    try:
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM articles')
+        total_articles = cursor.fetchone()[0]
+        cursor.execute('SELECT MAX(scraped_at) FROM articles')
+        last_update = cursor.fetchone()[0]
+        return {
+            'total_articles': total_articles,
+            'last_update': last_update
+        }
+    except Exception as e:
+        logger.error(f"Error getting stats: {e}")
+        return {'total_articles': 0, 'last_update': None}
+
+def has_article(conn, url: str) -> bool:
+    """Check if an article with the given URL already exists."""
+    try:
+        cursor = conn.cursor()
+        cursor.execute('SELECT 1 FROM articles WHERE url = ?', (url,))
+        return cursor.fetchone() is not None
+    except Exception as e:
+        logger.error(f"Error checking for article {url}: {e}")
+        return False
+
+def upsert_article(conn, article: dict) -> bool:
+    """Insert or update an article in the database."""
+    try:
+        cursor = conn.cursor()
+        date_published = article['date_published'].isoformat() if article.get('date_published') else None
+        date_modified = article['date_modified'].isoformat() if article.get('date_modified') else None
+        scraped_at = article['fetched_at'].isoformat()
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO articles 
+            (url, source, section, title, description, image, author, date_published, date_modified, scraped_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            article['url'], article.get('source', 'unknown'), article.get('section', 'general'),
+            article['title'], article['description'], article['image'], article['author'],
+            date_published, date_modified, scraped_at
+        ))
+        conn.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Error upserting article {article.get('url')}: {e}", exc_info=True)
+        return False
+
+def get_recent_articles(conn, limit=30, hours=72, query_filter=None, source=None, section=None, exclude_authors=None):
+    """Get recent articles from the database with optional source/section filtering."""
+    try:
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+        where_conditions = ["scraped_at >= ?"]
+        params = [cutoff_time.isoformat()]
+
+        if source:
+            where_conditions.append("source = ?")
+            params.append(source)
+        if section:
+            where_conditions.append("section = ?")
+            params.append(section)
+        if exclude_authors:
+            placeholders = ','.join(['?' for _ in exclude_authors])
+            where_conditions.append(f"(author IS NULL OR author NOT IN ({placeholders}))")
+            params.extend(exclude_authors)
+        if query_filter:
+            search_terms = query_filter.get('terms', [])
+            if search_terms:
+                like_conditions = []
+                for term in search_terms:
+                    like_conditions.append("(title LIKE ? OR description LIKE ?)")
+                    params.extend([f'%{term}%', f'%{term}%'])
+                where_conditions.append(f"({' OR '.join(like_conditions)})")
+
+        where_clause = ' AND '.join(where_conditions)
+        query = f"""
+            SELECT url, source, section, title, description, image, author, date_published, date_modified, scraped_at as fetched_at
+            FROM articles 
+            WHERE {where_clause}
+            ORDER BY COALESCE(date_published, scraped_at) DESC
+            LIMIT ?
+        """
+        params.append(limit)
+
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+
+        articles = []
+        for row in rows:
+            article = dict(row)
+            article['date_published'] = _parse_date(article['date_published'])
+            article['date_modified'] = _parse_date(article.get('date_modified'))
+            article['fetched_at'] = _parse_date(article['fetched_at'])
+            articles.append(article)
+
+        logger.debug(f"Retrieved {len(articles)} articles (limit={limit}, source={source}, section={section})")
+        return articles
+    except Exception as e:
+        logger.error(f"Error getting recent articles: {e}", exc_info=True)
+        return []
+
+def cleanup_old_articles(conn, days_to_keep=30):
+    """Remove articles older than the specified number of days."""
+    try:
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_to_keep)
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM articles WHERE scraped_at < ?', (cutoff_date.isoformat(),))
+        deleted_count = cursor.rowcount
+        conn.commit()
+        if deleted_count > 0:
+            logger.info(f"Cleaned up {deleted_count} old articles.")
+        return deleted_count
+    except Exception as e:
+        logger.error(f"Error cleaning up old articles: {e}", exc_info=True)
+        return 0
+
+def get_last_update_for_section(conn, source, section):
+    """Gets the last update time for a specific source/section."""
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT MAX(scraped_at) FROM articles WHERE source = ? AND section = ?", (source, section))
+        result = cursor.fetchone()[0]
+        return _parse_date(result) if result else None
+    except Exception as e:
+        logger.error(f"Error getting last update for {source}/{section}: {e}")
+        return None
+
 def update_feed_stats(conn, source: str, path: str, found: int, added: int):
     """Updates the statistics for a specific feed in the database."""
     cur = conn.cursor()
@@ -26,8 +180,6 @@ def update_feed_stats(conn, source: str, path: str, found: int, added: int):
          WHERE source = ? AND path = ?
     """, (_now_br_iso(), found, added, source, path))
     if cur.rowcount == 0:
-        # If the feed doesn't exist, create it.
-        # This is a fallback; the table should be pre-populated.
         display_name = f"{source}/{path}"
         cur.execute("""
             INSERT INTO feeds (source, path, display_name, last_refreshed_at, last_found_count, last_added_count)
@@ -62,33 +214,37 @@ class ArticleStore:
         if not os.path.exists(self.db_path):
             logger.info(f"Database file not found at {self.db_path}, creating a new one.")
         self._init_db()
-        self.populate_feeds_from_config() # Ensure feeds are populated on startup
+        self.populate_feeds_from_config()
 
     def get_conn(self):
         """Returns a new database connection."""
         return sqlite3.connect(self.db_path)
-
-    def _add_column_if_not_exists(self, cursor, table_name, column_name, column_type):
-        """Helper to add a column to a table if it doesn't exist."""
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        columns = [info[1] for info in cursor.fetchall()]
-        if column_name not in columns:
-            logger.info(f"Adding column '{column_name}' to table '{table_name}'.")
-            cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}")
 
     def _init_db(self):
         """Initializes the database tables if they don't exist."""
         conn = self.get_conn()
         try:
             cursor = conn.cursor()
-            # Articles table
+            # Articles table - Standardized Schema
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS articles (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT UNIQUE NOT NULL, source TEXT NOT NULL,
-                    section TEXT, title TEXT NOT NULL, description TEXT, image TEXT, author TEXT,
-                    pub_date TEXT, scraped_at TEXT NOT NULL
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    url TEXT UNIQUE NOT NULL,
+                    source TEXT NOT NULL,
+                    section TEXT,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    image TEXT,
+                    author TEXT,
+                    date_published TEXT,
+                    date_modified TEXT,
+                    scraped_at TEXT NOT NULL
                 )
             ''')
+            # Add columns if they are missing from an older schema
+            self._add_column_if_not_exists(cursor, 'articles', 'date_published', 'TEXT')
+            self._add_column_if_not_exists(cursor, 'articles', 'date_modified', 'TEXT')
+
             # Feeds table for stats
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS feeds (
@@ -97,10 +253,6 @@ class ArticleStore:
                     last_added_count INTEGER DEFAULT 0, PRIMARY KEY (source, path)
                 )
             ''')
-            self._add_column_if_not_exists(cursor, 'feeds', 'last_refreshed_at', 'TEXT')
-            self._add_column_if_not_exists(cursor, 'feeds', 'last_found_count', 'INTEGER DEFAULT 0')
-            self._add_column_if_not_exists(cursor, 'feeds', 'last_added_count', 'INTEGER DEFAULT 0')
-            
             conn.commit()
             logger.info("Database tables initialized successfully.")
         finally:
@@ -121,6 +273,3 @@ class ArticleStore:
             logger.info("Feeds table populated/updated from SOURCES_CONFIG.")
         finally:
             conn.close()
-
-    # Keep other existing methods like get_recent_articles, get_stats, etc.
-    # ... (rest of the class methods from the original file) ...
