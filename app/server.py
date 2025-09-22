@@ -3,15 +3,14 @@ import logging
 import json
 import asyncio
 from datetime import datetime, timedelta, timezone
-from flask import Flask, request, jsonify, render_template, Response
+from flask import Flask, request, jsonify, render_template, Response, g
 from .scraper import LanceScraper
 from .feeds import FeedGenerator
-from .store import ArticleStore
+from . import store as store_module
 from .scheduler import FeedScheduler
 from .utils import validate_admin_key, parse_query_filter
 from .sources_config import SOURCES_CONFIG as SOURCES
 from .scraper_factory import ScraperFactory
-from .dashboard_service import get_dashboard_data_safe
 
 class JsonFormatter(logging.Formatter):
     """Formats log records as a JSON string for NDJSON."""
@@ -74,7 +73,9 @@ if not ADMIN_KEY:
     logger.warning("ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.")
 
 # Initialize components
-store = ArticleStore()
+store = store_module.ArticleStore()
+store.populate_feeds_from_config() # Pre-populate feeds table
+
 scraper = LanceScraper(store, request_delay=REQUEST_DELAY_MS/1000.0)
 feed_generator = FeedGenerator()
 scheduler = FeedScheduler(scraper, store, refresh_interval_minutes=5)
@@ -82,17 +83,23 @@ scheduler = FeedScheduler(scraper, store, refresh_interval_minutes=5)
 # Start background scheduler
 scheduler.start()
 
+def get_db():
+    """Opens a new database connection if there is none yet for the current application context."""
+    if 'db' not in g:
+        g.db = store.get_conn()
+    return g.db
+
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'db'):
+        g.db.close()
+
 @app.route('/')
 def index():
     """Landing page with feed information and usage examples"""
-    try:
-        # Use the new safe data fetching service
-        dashboard_data = asyncio.run(get_dashboard_data_safe(request))
-        return render_template('index.html', **dashboard_data)
-    except Exception as e:
-        logger.exception("Error loading index page")
-        # Render with empty data to avoid a 500 error page
-        return render_template('index.html', stats={'total_articles': 0, 'last_update': 'Erro'}, sources=[], request=request)
+    feeds_with_stats = store_module.get_all_feeds_with_stats(get_db())
+    return render_template('index.html', feeds=feeds_with_stats)
 
 @app.route('/logs')
 def logs_viewer():
@@ -191,7 +198,8 @@ def dynamic_feeds(source, section, format):
         
         if should_refresh:
             # Use ScraperFactory to scrape any source
-            new_articles = ScraperFactory.scrape_source_section(
+            # This now returns a tuple: (new_articles, links_found)
+            new_articles, links_found = ScraperFactory.scrape_source_section(
                 source=source, 
                 section=section, 
                 store=store, 
@@ -199,7 +207,11 @@ def dynamic_feeds(source, section, format):
                 max_articles=20,  # Limit articles to prevent timeouts
                 request_delay=0.3  # Reduced delay for faster scraping
             )
-            logger.info(f"Scraped {len(new_articles)} new articles for {source}/{section}")
+            added_count = len(new_articles)
+            logger.info(f"Scraped {added_count} new articles for {source}/{section}")
+            # Update stats in the database
+            store_module.update_feed_stats(get_db(), source, section, links_found, added_count)
+
             articles = store.get_recent_articles(
                 limit=limit, 
                 query_filter=query_filter,
