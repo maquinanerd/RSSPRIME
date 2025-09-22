@@ -9,10 +9,26 @@ from urllib.robotparser import RobotFileParser
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 from datetime import datetime, timezone
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
 from .utils import normalize_date, extract_mime_type, get_user_agent
 
 logger = logging.getLogger(__name__)
+
+def _should_retry_http_request(exception: BaseException) -> bool:
+    """
+    Predicate for tenacity to decide if a request should be retried.
+    Retries on:
+    - 5xx server errors.
+    - Specific 4xx errors (408 Request Timeout, 429 Too Many Requests).
+    - General connection errors or timeouts.
+    Does NOT retry on other 4xx client errors (e.g., 404, 403, 406).
+    """
+    if isinstance(exception, requests.exceptions.HTTPError):
+        status_code = exception.response.status_code
+        return status_code >= 500 or status_code in [408, 429]
+    elif isinstance(exception, requests.exceptions.RequestException):
+        return True  # Includes ConnectionError, Timeout, etc.
+    return False
 
 def clean_image_url(url: str) -> str:
     """Clean image URL by removing CDN optimization parameters"""
@@ -127,7 +143,11 @@ class BaseScraper(ABC):
             logger.warning(f"Error checking robots.txt for {url}: {e}")
             return True
     
-    @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=5))
+    @retry(
+        stop=stop_after_attempt(2), 
+        wait=wait_exponential(multiplier=1, min=2, max=5),
+        retry=retry_if_exception(_should_retry_http_request)
+    )
     def _fetch_page(self, url):
         """Fetch a single page with retries (optimized for performance)"""
         if not self.can_fetch(url):
@@ -137,11 +157,13 @@ class BaseScraper(ABC):
         try:
             response = self.session.get(url, timeout=15)  # Reduced timeout
             response.raise_for_status()
-            # Force UTF-8 encoding to prevent character issues like 'Ã©'
             response.encoding = 'utf-8'
-            return response.text
-        except Exception as e:
-            logger.error(f"Error fetching {url}: {e}")
+            content = response.text
+            logger.debug(f"Fetched {url} - Status: {response.status_code}, Length: {len(content)} bytes")
+            return content
+        except requests.exceptions.RequestException as e:
+            # This will be caught by tenacity and retried based on _should_retry_http_request
+            logger.error(f"Request error fetching {url}: {e}")
             raise
     
     def list_pages(self, start_url, max_pages=3, section=None):

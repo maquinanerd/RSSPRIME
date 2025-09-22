@@ -21,11 +21,16 @@ class MarcaScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        # Links are in <h2><a> inside <article class="ui-story">
-        for article in soup.find_all('article', class_='ui-story'):
-            link_tag = article.find('h2').find('a', href=True) if article.find('h2') else None
-            if link_tag and 'marca.com' in link_tag['href']:
-                links.add(link_tag['href'])
+        # Common selectors for Marca articles
+        selectors = [
+            'h2.ue-c-cover-content__headline a',
+            'a.ue-c-cover-content__link',
+        ]
+
+        for selector in selectors:
+            for link_tag in soup.select(selector):
+                if link_tag and link_tag.get('href') and 'marca.com' in link_tag['href']:
+                    links.add(link_tag['href'])
 
         logger.info(f"Extracted {len(links)} unique article links from {base_url}")
         return list(links)

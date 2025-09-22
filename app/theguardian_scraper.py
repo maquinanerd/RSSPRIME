@@ -1,34 +1,40 @@
 import logging
-from typing import Any, Dict, List, Optional
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
+from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
 
-class TheGuardianScraper:
+class TheGuardianScraper(BaseScraper):
     """
     Scraper for The Guardian news.
-    This is a placeholder implementation.
     """
 
-    def __init__(self, store: Any, request_delay: float = 0.5):
-        self.store = store
-        self.request_delay = request_delay
-        logger.info("TheGuardianScraper initialized (placeholder).")
+    def get_site_domain(self):
+        """Return the main domain for this scraper"""
+        return "theguardian.com"
 
-    def list_pages(
-        self, start_url: str, max_pages: int = 2, section: Optional[str] = None
-    ) -> List[str]:
-        logger.warning(
-            f"TheGuardianScraper.list_pages is not implemented. Returning empty list for {start_url}."
-        )
-        return []
+    def extract_article_links(self, html, base_url, section=None):
+        """Extract article links from The Guardian listing page HTML"""
+        soup = BeautifulSoup(html, 'lxml')
+        links = set()
 
-    def parse_article(
-        self, url: str, source: Optional[str] = None, section: Optional[str] = None
-    ) -> Optional[Dict[str, Any]]:
-        logger.warning(
-            f"TheGuardianScraper.parse_article is not implemented. Returning None for {url}."
-        )
+        # The Guardian uses a consistent data-link-name attribute for articles
+        for link_tag in soup.select('a[data-link-name="article"]'):
+            href = link_tag.get('href')
+            if href and href.startswith('http'):
+                links.add(href)
+
+        logger.info(f"Extracted {len(links)} unique article links from {base_url}")
+        return list(links)
+
+    def find_next_page_url(self, html, current_url):
+        """The Guardian uses numbered pagination links."""
+        soup = BeautifulSoup(html, 'lxml')
+        next_link = soup.select_one('a[rel="next"]')
+        if next_link and next_link.get('href'):
+            return urljoin(current_url, next_link['href'])
         return None
 
     def apply_filters(self, article: Dict[str, Any], filters: Dict[str, Any]) -> bool:

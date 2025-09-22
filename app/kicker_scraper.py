@@ -1,4 +1,6 @@
 import logging
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
@@ -7,7 +9,6 @@ logger = logging.getLogger(__name__)
 class KickerScraper(BaseScraper):
     """
     Scraper for Kicker news.
-    This is a placeholder implementation.
     """
 
     def get_site_domain(self):
@@ -16,12 +17,17 @@ class KickerScraper(BaseScraper):
 
     def extract_article_links(self, html, base_url, section=None):
         """Extract article links from Kicker listing page HTML"""
-        logger.warning(
-            f"KickerScraper.extract_article_links is not implemented for {base_url}. Returning empty list."
-        )
-        return []
+        soup = BeautifulSoup(html, 'lxml')
+        links = set()
+
+        for link_tag in soup.select('a.kick__v100-Teaser__headlineLink'):
+            href = link_tag.get('href')
+            if href:
+                links.add(urljoin(base_url, href))
+
+        logger.info(f"Extracted {len(links)} unique article links from {base_url}")
+        return list(links)
 
     def find_next_page_url(self, html, current_url):
         """Find the URL for the next page of articles"""
-        logger.info("KickerScraper does not support pagination.")
         return None
