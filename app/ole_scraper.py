@@ -20,9 +20,9 @@ class OleScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        # Combine selectors for robustness. The site structure has changed.
-        # The new structure uses 'div.story-card a'. We keep the old one as a fallback.
-        for link_tag in soup.select('div.story-card a, a.article-card'):
+        # Combine selectors for robustness. The site structure changes frequently.
+        # 'a.entry-link' is the newest structure. We keep the old ones as fallbacks.
+        for link_tag in soup.select('a.entry-link, div.story-card a, a.article-card'):
             href = link_tag.get('href')
             if href and href.endswith('.html'):
                 full_url = urljoin(base_url, href)
