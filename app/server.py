@@ -253,13 +253,13 @@ def rss_feed():
 
         # Get articles from database
         query_filter = parse_query_filter(q) if q else None
-        articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
+        articles = store_module.get_recent_articles(conn=get_db(), limit=limit, query_filter=query_filter, source='lance')
 
         # If no recent articles or forced refresh, scrape new content
         if not articles or request.args.get('refresh') == '1':
             logger.info("Triggering fresh scrape for RSS feed")
             new_articles = scraper.scrape_and_store(source_url, max_pages=pages)
-            articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
+            articles = store_module.get_recent_articles(conn=get_db(), limit=limit, query_filter=query_filter, source='lance')
 
         # Generate RSS feed
         rss_content = feed_generator.generate_rss(articles)
@@ -287,13 +287,13 @@ def atom_feed():
 
         # Get articles from database
         query_filter = parse_query_filter(q) if q else None
-        articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
+        articles = store_module.get_recent_articles(conn=get_db(), limit=limit, query_filter=query_filter, source='lance')
 
         # If no recent articles or forced refresh, scrape new content
         if not articles or request.args.get('refresh') == '1':
             logger.info("Triggering fresh scrape for Atom feed")
             new_articles = scraper.scrape_and_store(source_url, max_pages=pages)
-            articles = store.get_recent_articles(limit=limit, query_filter=query_filter)
+            articles = store_module.get_recent_articles(conn=get_db(), limit=limit, query_filter=query_filter, source='lance')
 
         # Generate Atom feed
         atom_content = feed_generator.generate_atom(articles)

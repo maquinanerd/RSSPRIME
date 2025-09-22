@@ -20,13 +20,21 @@ class OleScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        # Selectors for different types of article cards. The site structure changes frequently.
-        # These cover the main featured article, standard list items, and smaller cards.
-        for link_tag in soup.select('a.headline-link, a.entry-link, a.small-link'):
+        # Combine specific class selectors with a more generic structural one.
+        for link_tag in soup.select('a.headline-link, a.entry-link, article h2 a'):
             href = link_tag.get('href')
             if href and href.endswith('.html'):
                 full_url = urljoin(base_url, href)
                 links.add(full_url)
+
+        # Fallback if the primary selectors fail, as suggested by user feedback.
+        if not links:
+            logger.warning(f"Primary selectors failed for {base_url}. Trying broader 'article a' selector.")
+            for link_tag in soup.select('article a'):
+                href = link_tag.get('href')
+                if href and href.endswith('.html') and '/videos/' not in href:
+                    full_url = urljoin(base_url, href)
+                    links.add(full_url)
 
         logger.info(f"Extracted {len(links)} unique article links from {base_url}")
         return list(links)
