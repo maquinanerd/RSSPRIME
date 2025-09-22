@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <div class="container mx-auto p-4 lg:p-6">
+        <header class="mb-4">
+            <h1 class="text-3xl font-bold text-gray-900">Log Viewer</h1>
+            <p class="text-gray-600">Cole ou envie um arquivo de log (NDJSON) para analisar e filtrar eventos.</p>
+        </header>
+
+        <section class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Main content: Table -->
+            <main class="lg:col-span-3 order-2 lg:order-1">
+                <section class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="px-3 py-2 flex items-center justify-between border-b">
+                        <div class="font-medium">Eventos (<span id="log-count">0</span>)</div>
+                        <div id="paginator" class="flex items-center gap-2 text-sm">
+                            <button id="prev-page" class="px-3 py-1 border rounded-lg bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
+                            <span id="page-indicator" class="text-gray-600">Página 1 de 1</span>
+                            <button id="next-page" class="px-3 py-1 border rounded-lg bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">Próxima</button>
+                        </div>
+                    </div>
+                    <div class="overflow-auto max-h-[70vh]">
+                        <table class="min-w-full text-sm">
+                            <thead class="sticky top-0 bg-gray-100 border-b text-gray-700">
+                                <tr>
+                                    <th class="text-left px-3 py-2 w-[200px]">timestamp</th>
+                                    <th class="text-left px-3 py-2">nível</th>
+                                    <th class="text-left px-3 py-2">módulo</th>
+                                    <th class="text-left px-3 py-2">http</th>
+                                    <th class="text-left px-3 py-2">feed</th>
+                                    <th class="text-left px-3 py-2">mensagem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="log-table-body">
+                                <tr>
+                                    <td colspan="6" class="px-3 py-6 text-center text-gray-500">Nenhum log carregado. Cole ou envie um arquivo para começar.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Sidebar: Inputs and Filters -->
+            <aside class="space-y-4 order-1 lg:order-2">
+                <div class="bg-white rounded-2xl border p-3 shadow-sm">
+                    <div class="font-medium mb-2">1. Inserir Logs</div>
+                    <textarea id="log-input" class="w-full h-32 font-mono text-xs p-2 border rounded" placeholder="Cole o conteúdo do log aqui..."></textarea>
+                    <div class="flex items-center justify-between mt-2">
+                        <button id="parse-button" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Parse</button>
+                        <label class="text-sm text-blue-600 hover:underline cursor-pointer">
+                            ou
+                            <input type="file" id="file-input" class="hidden" accept=".txt,.log,.ndjson">
+                            <span>faça upload</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border p-3 shadow-sm">
+                    <div class="font-medium mb-2">2. Filtrar</div>
+                    <div class="space-y-3">
+                        <input type="text" id="filter-query" class="w-full p-2 border rounded" placeholder="Buscar na mensagem...">
+                        <select id="filter-level" class="w-full p-2 border rounded"><option value="">Todos os níveis</option></select>
+                        <select id="filter-feed" class="w-full p-2 border rounded"><option value="">Todos os feeds</option></select>
+                        <input type="text" id="filter-http" class="w-full p-2 border rounded" placeholder="Filtrar HTTP (ex: 200, 4xx, 503)">
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border p-3 shadow-sm">
+                    <div class="font-medium mb-2">3. Exportar</div>
+                    <p class="text-sm text-gray-600 mb-2">Exporte os logs filtrados.</p>
+                    <div class="flex gap-2">
+                        <button id="export-ndjson" class="flex-1 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 text-sm">Exportar NDJSON</button>
+                        <button id="export-txt" class="flex-1 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 text-sm">Exportar TXT</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border p-3 shadow-sm">
+                    <div class="font-medium mb-2">Dicas de filtro</div>
+                    <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+                        <li>Filtre <b>4xx</b> para ver 406/404 etc.</li>
+                        <li>Selecione o <b>feed</b> (ex.: <code>cbssports/mlb</code>).</li>
+                        <li>Busque por <code>RetryError</code>, <code>extract_article_links</code>, <code>No article links</code>.</li>
+                    </ul>
+                </div>
+            </aside>
+        </section>
+
+        <footer class="py-6 text-center text-xs text-gray-500">Feito para avaliação rápida de logs – cole, filtre, exporte e me envie.</footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE ---
+            let allLogs = [];
+            let filteredLogs = [];
+            let currentPage = 1;
+            const PAGE_SIZE = 100;
+
+            // --- DOM ELEMENTS ---
+            const logInput = document.getElementById('log-input');
+            const parseButton = document.getElementById('parse-button');
+            const fileInput = document.getElementById('file-input');
+            const logCountEl = document.getElementById('log-count');
+            const logTableBody = document.getElementById('log-table-body');
+            const filterQuery = document.getElementById('filter-query');
+            const filterLevel = document.getElementById('filter-level');
+            const filterFeed = document.getElementById('filter-feed');
+            const filterHttp = document.getElementById('filter-http');
+            const exportNdjsonBtn = document.getElementById('export-ndjson');
+            const exportTxtBtn = document.getElementById('export-txt');
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            const pageIndicator = document.getElementById('page-indicator');
+
+            // --- CONSTANTS ---
+            const LEVEL_COLORS = {
+                'ERROR': 'bg-rose-50 text-rose-700 border-rose-200',
+                'WARNING': 'bg-amber-50 text-amber-700 border-amber-200',
+                'INFO': 'bg-sky-50 text-sky-700 border-sky-200',
+                'DEBUG': 'bg-gray-50 text-gray-700 border-gray-200',
+            };
+
+            // --- EVENT LISTENERS ---
+            parseButton.addEventListener('click', handleParse);
+            fileInput.addEventListener('change', handleFileUpload);
+            [filterQuery, filterHttp].forEach(el => el.addEventListener('input', applyFiltersAndRender));
+            [filterLevel, filterFeed].forEach(el => el.addEventListener('change', applyFiltersAndRender));
+            exportNdjsonBtn.addEventListener('click', () => exportFile('ndjson'));
+            exportTxtBtn.addEventListener('click', () => exportFile('txt'));
+            prevPageBtn.addEventListener('click', () => changePage(-1));
+            nextPageBtn.addEventListener('click', () => changePage(1));
+
+            // --- FUNCTIONS ---
+
+            function handleParse() {
+                const text = logInput.value;
+                if (!text) return;
+                parseLogs(text);
+            }
+
+            function handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    logInput.value = e.target.result;
+                    parseLogs(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+
+            function parseLogs(text) {
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+                allLogs = [];
+                const feeds = new Set();
+                const levels = new Set();
+
+                for (const line of lines) {
+                    try {
+                        const log = JSON.parse(line);
+                        if (log.ts && log.level && log.message) {
+                            allLogs.push(log);
+                            if (log.feed) feeds.add(log.feed);
+                            levels.add(log.level);
+                        }
+                    } catch (e) {
+                        console.warn('Skipping malformed log line:', line);
+                    }
+                }
+                
+                populateFilterDropdowns(levels, feeds);
+                applyFiltersAndRender();
+            }
+
+            function populateFilterDropdowns(levels, feeds) {
+                filterLevel.innerHTML = '<option value="">Todos os níveis</option>';
+                [...levels].sort().forEach(level => {
+                    const option = document.createElement('option');
+                    option.value = level;
+                    option.textContent = level;
+                    filterLevel.appendChild(option);
+                });
+
+                filterFeed.innerHTML = '<option value="">Todos os feeds</option>';
+                [...feeds].sort().forEach(feed => {
+                    const option = document.createElement('option');
+                    option.value = feed;
+                    option.textContent = feed;
+                    filterFeed.appendChild(option);
+                });
+            }
+
+            function applyFiltersAndRender() {
+                const q = filterQuery.value.toLowerCase();
+                const level = filterLevel.value;
+                const feed = filterFeed.value;
+                const http = filterHttp.value.toLowerCase();
+
+                filteredLogs = allLogs.filter(log => {
+                    const messageMatch = !q || (log.message && log.message.toLowerCase().includes(q));
+                    const levelMatch = !level || log.level === level;
+                    const feedMatch = !feed || log.feed === feed;
+                    
+                    let httpMatch = true;
+                    if (http) {
+                        if (http.endsWith('xx')) {
+                            const prefix = http.charAt(0);
+                            httpMatch = log.httpCode && String(log.httpCode).startsWith(prefix);
+                        } else {
+                            httpMatch = log.httpCode && String(log.httpCode) === http;
+                        }
+                    }
+
+                    return messageMatch && levelMatch && feedMatch && httpMatch;
+                });
+
+                currentPage = 1;
+                render();
+            }
+
+            function render() {
+                logCountEl.textContent = filteredLogs.length;
+
+                const start = (currentPage - 1) * PAGE_SIZE;
+                const end = start + PAGE_SIZE;
+                const pageRows = filteredLogs.slice(start, end);
+
+                logTableBody.innerHTML = '';
+
+                if (pageRows.length === 0) {
+                    logTableBody.innerHTML = `<tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">Nenhum evento encontrado com os filtros atuais.</td></tr>`;
+                } else {
+                    pageRows.forEach(log => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b last:border-0 hover:bg-gray-50';
+
+                        const httpCodeSpan = log.httpCode ?
+                            `<span class="px-2 py-1 rounded-lg border text-xs ${
+                                log.httpCode >= 500 ? LEVEL_COLORS['ERROR'] :
+                                log.httpCode >= 400 ? LEVEL_COLORS['WARNING'] :
+                                'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            }">${log.httpCode}</span>` :
+                            '<span class="text-gray-400">—</span>';
+
+                        const feedSpan = log.feed ? escapeHtml(log.feed) : '<span class="text-gray-400">—</span>';
+                        const urlLink = log.url ? `<a href="${escapeHtml(log.url)}" target="_blank" rel="noreferrer" class="text-xs text-blue-700 hover:underline break-all">${escapeHtml(log.url)}</a>` : '';
+
+                        tr.innerHTML = `
+                            <td class="px-3 py-2 font-mono text-xs text-gray-600 whitespace-nowrap">${escapeHtml(log.ts)}</td>
+                            <td class="px-3 py-2">
+                                <span class="px-2 py-1 rounded-lg border text-xs ${LEVEL_COLORS[log.level] || 'bg-gray-50 border-gray-200'}">${escapeHtml(log.level)}</span>
+                            </td>
+                            <td class="px-3 py-2 text-gray-700 whitespace-nowrap">${escapeHtml(log.module) || '—'}</td>
+                            <td class="px-3 py-2 text-gray-700 whitespace-nowrap">${httpCodeSpan}</td>
+                            <td class="px-3 py-2 text-gray-700 whitespace-nowrap">${feedSpan}</td>
+                            <td class="px-3 py-2 text-gray-700 max-w-md break-words">
+                                <div class="flex flex-col gap-0.5">
+                                    <div class="leading-snug">${escapeHtml(log.message)}</div>
+                                    ${urlLink}
+                                </div>
+                            </td>
+                        `;
+                        logTableBody.appendChild(tr);
+                    });
+                }
+                
+                updatePaginator();
+            }
+            
+            function updatePaginator() {
+                const totalPages = Math.ceil(filteredLogs.length / PAGE_SIZE);
+                pageIndicator.textContent = `Página ${currentPage} de ${totalPages || 1}`;
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage >= totalPages;
+
+                prevPageBtn.classList.toggle('opacity-50', prevPageBtn.disabled);
+                nextPageBtn.classList.toggle('opacity-50', nextPageBtn.disabled);
+            }
+
+            function changePage(delta) {
+                const totalPages = Math.ceil(filteredLogs.length / PAGE_SIZE);
+                const newPage = currentPage + delta;
+                if (newPage >= 1 && newPage <= totalPages) {
+                    currentPage = newPage;
+                    render();
+                }
+            }
+
+            function exportFile(format) {
+                if (filteredLogs.length === 0) {
+                    alert('Nenhum log para exportar.');
+                    return;
+                }
+
+                let content = '';
+                let filename = '';
+                let contentType = '';
+
+                if (format === 'ndjson') {
+                    content = filteredLogs.map(log => JSON.stringify(log)).join('\n');
+                    filename = 'logs.ndjson';
+                    contentType = 'application/x-ndjson';
+                } else { // txt
+                    content = filteredLogs.map(log => {
+                        const parts = [
+                            log.ts,
+                            `[${log.level}]`,
+                            log.module ? `(${log.module})` : '',
+                            log.feed ? `{${log.feed}}` : '',
+                            log.httpCode ? `HTTP ${log.httpCode}` : '',
+                            log.message,
+                            log.url ? `URL: ${log.url}` : ''
+                        ];
+                        return parts.filter(Boolean).join(' ');
+                    }).join('\n');
+                    filename = 'logs.txt';
+                    contentType = 'text/plain';
+                }
+
+                downloadFile(content, filename, contentType);
+            }
+
+            function downloadFile(content, filename, contentType) {
+                const blob = new Blob([content], { type: contentType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function escapeHtml(unsafe) {
+                if (typeof unsafe !== 'string') return unsafe;
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            
+            updatePaginator();
+        });
+    </script>
+</body>
+</html>
