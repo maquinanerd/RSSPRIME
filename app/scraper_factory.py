@@ -6,9 +6,10 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Dict, List, Type, Any
+from typing import Dict, List, Type, Any, Tuple
 
 # --- Scrapers locais ---
+from . import store as store_module
 from .lance_scraper import LanceScraper
 from .uol_scraper import UolScraper
 from .folha_scraper import FolhaScraper
@@ -121,7 +122,7 @@ class ScraperFactory:
         max_pages: int = 2,
         max_articles: int = 20,
         request_delay: float = 0.3,
-    ) -> List[dict]:
+    ) -> Tuple[List[dict], int]:
         """
         Faz o scraping de uma fonte/seção específica com limites de performance.
 
@@ -129,6 +130,11 @@ class ScraperFactory:
         - Deduplica URLs.
         - Limita quantidade de artigos.
         - Aplica filtros definidos em SOURCES_CONFIG.
+
+        Returns:
+            A tuple containing:
+            - A list of newly scraped article dictionaries.
+            - The total number of unique article links found.
         """
         try:
             scraper = cls.get_scraper(source, store, request_delay)
@@ -146,7 +152,7 @@ class ScraperFactory:
             start_urls: List[str] = section_config.get("start_urls", [])
             if not start_urls:
                 logger.warning(f"No start URLs configured for {source}/{section}")
-                return []
+                return [], 0
 
             filters = section_config.get("filters", {}) or {}
 
@@ -170,53 +176,53 @@ class ScraperFactory:
                     seen.add(u)
                     deduped_urls.append(u)
 
+            total_links_found = len(deduped_urls)
+
             # Limita quantidade
             limited_urls = deduped_urls[:max_articles]
             logger.info(
                 f"Scraping {source}/{section}: processing {len(limited_urls)} "
-                f"articles (found {len(deduped_urls)})"
+                f"articles (found {total_links_found})"
             )
 
             new_articles: List[dict] = []
+            conn = store.get_conn()
+            try:
+                for i, article_url in enumerate(limited_urls, 1):
+                    try:
+                        logger.info(f"[{i}/{len(limited_urls)}] Parsing: {article_url}")
 
-            for i, article_url in enumerate(limited_urls, 1):
-                try:
-                    logger.info(f"[{i}/{len(limited_urls)}] Parsing: {article_url}")
-
-                    # Check if article already exists in the store to prevent re-parsing
-                    if store.has_article(article_url):
-                        logger.debug(f"Article already exists in store, skipping parsing: {article_url}")
-                        continue
-                    article = scraper.parse_article(article_url, source=source, section=section)
-                    if not article:
-                        continue
-
-                    # Filtros (se o método retornar True = filtrar/descartar)
-                    if filters and getattr(scraper, "apply_filters", None):
-                        if scraper.apply_filters(article, filters):
-                            logger.info(f"Article filtered out: {article_url}")
+                        # Check if article already exists in the store to prevent re-parsing
+                        if store_module.has_article(conn, article_url):
+                            logger.debug(f"Article already exists in store, skipping parsing: {article_url}")
+                            continue
+                        article = scraper.parse_article(article_url, source=source, section=section)
+                        if not article:
                             continue
 
-                    # Upsert no store
-                    stored = getattr(scraper.store, "upsert_article", None)
-                    if callable(stored):
-                        if scraper.store.upsert_article(article):
+                        # Filtros (se o método retornar True = filtrar/descartar)
+                        if filters and getattr(scraper, "apply_filters", None):
+                            if scraper.apply_filters(article, filters):
+                                logger.info(f"Article filtered out: {article_url}")
+                                continue
+
+                        # Upsert no store
+                        if store_module.upsert_article(conn, article):
                             new_articles.append(article)
                             logger.info(f"Stored: {article.get('title')}")
-                    else:
-                        # fallback: apenas acumula
-                        new_articles.append(article)
 
-                    if i < len(limited_urls) and request_delay > 0:
-                        time.sleep(request_delay)
+                        if i < len(limited_urls) and request_delay > 0:
+                            time.sleep(request_delay)
 
-                except Exception as e:
-                    logger.error(f"Error processing article {article_url}: {e}")
-                    continue
+                    except Exception as e:
+                        logger.error(f"Error processing article {article_url}: {e}", exc_info=True)
+                        continue
+            finally:
+                conn.close()
 
-            return new_articles
+            return new_articles, total_links_found
 
         except Exception as e:
-            logger.error(f"Failed to scrape {source}/{section}: {e}")
-            return []
+            logger.error(f"Failed to scrape {source}/{section}: {e}", exc_info=True)
+            return [], 0
 # --- Fim do arquivo scraper_factory.py ---

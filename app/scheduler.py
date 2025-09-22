@@ -138,14 +138,18 @@ class FeedScheduler:
 
             # Optional: cleanup old articles (keep last 30 days)
             try:
-                deleted_count = self.store.cleanup_old_articles(days_to_keep=30)
-                if deleted_count > 0:
-                    logger.info(f"Cleaned up {deleted_count} old articles")
+                conn = self.store.get_conn()
+                try:
+                    deleted_count = store_module.cleanup_old_articles(conn, days_to_keep=30)
+                    if deleted_count > 0:
+                        logger.info(f"Cleaned up {deleted_count} old articles")
+                finally:
+                    conn.close()
             except Exception as e:
-                logger.warning(f"Error during cleanup: {e}")
+                logger.warning(f"Error during cleanup: {e}", exc_info=True)
 
         except Exception as e:
-            logger.error(f"Error in refresh job: {e}")
+            logger.error(f"Error in refresh job: {e}", exc_info=True)
         finally:
             with self.lock:
                 self.is_running_flag = False
