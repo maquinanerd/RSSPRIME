@@ -104,16 +104,9 @@ def logs_viewer():
 def get_server_logs():
     """Returns the content of the server's NDJSON log file."""
     filename = request.args.get('file')
-    if not ADMIN_KEY:
-        return jsonify({'error': 'Acesso negado: A chave de administrador (ADMIN_KEY) não foi configurada no servidor.'}), 403
     if not filename:
         return jsonify({'error': 'Nome do arquivo de log não especificado.'}), 400
 
-    # Validate admin key
-    provided_key = request.args.get('key', '')
-    if not validate_admin_key(provided_key, ADMIN_KEY): # type: ignore
-        return jsonify({'error': 'Chave de administrador inválida.'}), 401
-    
     # Security: Prevent directory traversal attacks. Only allow simple filenames.
     safe_filename = os.path.basename(filename)
     if safe_filename != filename or not safe_filename.endswith('.ndjson'):
@@ -135,13 +128,6 @@ def get_server_logs():
 @app.route('/api/logs/list')
 def list_server_logs():
     """Lists all available NDJSON log files."""
-    if not ADMIN_KEY:
-        return jsonify({'error': 'Acesso negado: A chave de administrador (ADMIN_KEY) não foi configurada no servidor.'}), 403
-
-    provided_key = request.args.get('key', '')
-    if not validate_admin_key(provided_key, ADMIN_KEY): # type: ignore
-        return jsonify({'error': 'Chave de administrador inválida.'}), 401
-
     try:
         log_dir = 'logs'
         if not os.path.exists(log_dir):
@@ -248,7 +234,7 @@ def rss_feed():
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
         # Fixed source URL for security (no user-controlled URLs)
-        source_url = 'https://www.lance.com.br/futebol'
+        source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"RSS feed requested: limit={limit}, pages={pages}, q='{q}'")
 
@@ -282,7 +268,7 @@ def atom_feed():
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         q = request.args.get('q', '')
         # Fixed source URL for security
-        source_url = 'https://www.lance.com.br/futebol'
+        source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"Atom feed requested: limit={limit}, pages={pages}, q='{q}'")
 
@@ -342,7 +328,7 @@ def admin_refresh():
         # Parse parameters
         pages = min(int(request.args.get('pages', MAX_PAGES)), 10)
         # Fixed source URL for security
-        source_url = 'https://www.lance.com.br/futebol'
+        source_url = 'https://www.lance.com.br/mais-noticias'
 
         logger.info(f"Manual refresh triggered: pages={pages}")
 

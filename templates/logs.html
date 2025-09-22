@@ -118,7 +118,6 @@
             let allLogs = [];
             let filteredLogs = [];
             let currentPage = 1;
-            let currentAdminKey = null;
             const PAGE_SIZE = 100;
 
             // --- DOM ELEMENTS ---
@@ -163,22 +162,9 @@
             // --- FUNCTIONS ---
 
             async function handleListServerLogs() {
-                if (!currentAdminKey) {
-                    currentAdminKey = prompt("Por favor, insira a chave de administrador para listar os logs:");
-                    if (currentAdminKey === null) { // User clicked cancel
-                        currentAdminKey = null; // Reset
-                        return;
-                    }
-                }
-
                 try {
-                    const response = await fetch(`/api/logs/list?key=${encodeURIComponent(currentAdminKey)}`);
+                    const response = await fetch(`/api/logs/list`);
                     
-                    if (response.status === 401) {
-                        alert('Chave de administrador inválida. Tente novamente.');
-                        currentAdminKey = null; // Reset key on failure
-                        return;
-                    }
                     if (!response.ok) {
                         const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido no servidor.' }));
                         throw new Error(errorData.error || `Erro no servidor: ${response.statusText}`);
@@ -205,18 +191,17 @@
                 } catch (error) {
                     console.error('Failed to list server logs:', error);
                     alert(`Falha ao listar os logs do servidor: ${error.message}`);
-                    currentAdminKey = null; // Reset key on failure
                 }
             }
 
             async function handleLoadSelectedLog() {
                 const selectedFile = logFileSelector.value;
-                if (!selectedFile || !currentAdminKey) {
+                if (!selectedFile) {
                     return;
                 }
 
                 try {
-                    const response = await fetch(`/api/logs?key=${encodeURIComponent(currentAdminKey)}&file=${encodeURIComponent(selectedFile)}`);
+                    const response = await fetch(`/api/logs?file=${encodeURIComponent(selectedFile)}`);
                     if (!response.ok) {
                         const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido no servidor.' }));
                         throw new Error(errorData.error || `Erro no servidor: ${response.statusText}`);
