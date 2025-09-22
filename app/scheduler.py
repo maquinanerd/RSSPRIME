@@ -4,6 +4,7 @@ import time
 from datetime import datetime, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from . import store as store_module
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +63,14 @@ class FeedScheduler:
     def _initial_refresh(self):
         """Initial refresh on startup"""
         try:
-            # Check if we have any articles in the database
-            stats = self.store.get_stats()
-
+            # To decide on an initial scrape, we need to check if there are any articles.
+            # We'll get a connection and use the module-level get_stats function.
+            conn = self.store.get_conn()
+            try:
+                stats = store_module.get_stats(conn)
+            finally:
+                conn.close()
+            
             if stats['total_articles'] == 0:
                 logger.info("No articles in database, performing initial scrape")
                 self._refresh_job()
@@ -72,7 +78,7 @@ class FeedScheduler:
                 logger.info(f"Database has {stats['total_articles']} articles, skipping initial scrape")
 
         except Exception as e:
-            logger.error(f"Error in initial refresh: {e}")
+            logger.error(f"Error in initial refresh: {e}", exc_info=True)
 
     def _refresh_job(self):
         """Background job to refresh feeds from multiple sources"""
@@ -100,12 +106,21 @@ class FeedScheduler:
                 for section in sections:
                     try:
                         logger.info(f"Refreshing {source}/{section}")
-                        new_articles = ScraperFactory.scrape_source_section(
+                        # Scraper now returns new articles and total links found
+                        new_articles, links_found = ScraperFactory.scrape_source_section(
                             source, section, self.store, 
                             max_pages=1, max_articles=15, request_delay=0.5
                         )
-                        total_new_articles += len(new_articles)
-                        logger.info(f"Added {len(new_articles)} new articles for {source}/{section}")
+                        added_count = len(new_articles)
+                        total_new_articles += added_count
+                        logger.info(f"Added {added_count} new articles for {source}/{section}")
+
+                        # Update feed stats in the database
+                        conn = self.store.get_conn()
+                        try:
+                            store_module.update_feed_stats(conn, source, section, links_found, added_count)
+                        finally:
+                            conn.close()
 
                         # Small delay between sections to be nice to servers
                         time.sleep(2)

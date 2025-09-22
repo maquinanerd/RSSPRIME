@@ -98,7 +98,7 @@ def close_db(error):
 def index():
     """Landing page with feed information and usage examples"""
     feeds_with_stats = store_module.get_all_feeds_with_stats(get_db())
-    return render_template('index.html', feeds=feeds_with_stats)
+    return render_template('index.html', feeds=feeds_with_stats, SOURCES_CONFIG=SOURCES)
 
 @app.route('/logs')
 def logs_viewer():
@@ -308,7 +308,7 @@ def atom_feed():
 def health_check():
     """Health check endpoint with metrics"""
     try:
-        stats = store.get_stats()
+        stats = store_module.get_stats(get_db())
         return jsonify({
             'status': 'ok',
             'timestamp': datetime.utcnow().isoformat(),
@@ -345,7 +345,7 @@ def admin_refresh():
 
         # Perform scraping
         new_articles = scraper.scrape_and_store(source_url, max_pages=pages)
-        stats = store.get_stats()
+        stats = store_module.get_stats(get_db())
 
         return jsonify({
             'status': 'success',

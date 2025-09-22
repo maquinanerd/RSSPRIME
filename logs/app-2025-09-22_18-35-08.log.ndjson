@@ -1,0 +1,31 @@
+{"ts": "2025-09-22 15:35:08,019", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-22 15:35:08,020", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-22 15:35:08,023", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-22 15:35:08,024", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-22 15:35:08,028", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-22 15:35:08,030", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,035", "level": "INFO", "message": "Added job \"Feed Refresh Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,035", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,037", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,037", "level": "INFO", "message": "Scheduler started - refresh every 5 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-22 15:35:08,037", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-22 15:40:08.030373-03:00 (in 299.992890 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,039", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,045", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,052", "level": "INFO", "message": "Iniciando servidor Flask em http://127.0.0.1:5000 (Debug: True)", "module": "__main__"}
+{"ts": "2025-09-22 15:35:08,055", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-22 18:35:08 UTC], next run at: 2025-09-22 18:35:08 UTC)\" (scheduled at 2025-09-22 18:35:08.037696+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-22 15:35:08,055", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,055", "level": "ERROR", "message": "Error in initial refresh: 'ArticleStore' object has no attribute 'get_stats'", "module": "app.scheduler"}
+{"ts": "2025-09-22 15:35:08,055", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-22 15:40:08.030373-03:00 (in 299.974508 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-22 15:35:08,056", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-22 18:35:08 UTC], next run at: 2025-09-22 18:35:08 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-22 15:35:08,072", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
+{"ts": "2025-09-22 15:35:08,075", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-22 15:35:08,694", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 15:35:08] \"\u001b[35m\u001b[1mGET / HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 15:35:08,834", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 15:35:08] \"GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 15:35:08,834", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 15:35:08] \"GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 15:35:09,323", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 15:35:09] \"GET /?__debugger__=yes&cmd=resource&f=console.png&s=RrccQGBhRFQcVStY3mHG HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 15:35:10,141", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 15:35:10] \"GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 15:35:55,665", "level": "ERROR", "message": "Health check error: 'ArticleStore' object has no attribute 'get_stats'", "module": "app.server"}
+{"ts": "2025-09-22 15:35:55,670", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 15:35:55] \"\u001b[35m\u001b[1mGET /health HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 15:38:54,430", "level": "ERROR", "message": "Health check error: 'ArticleStore' object has no attribute 'get_stats'", "module": "app.server"}
+{"ts": "2025-09-22 15:38:54,431", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 15:38:54] \"\u001b[35m\u001b[1mGET /health HTTP/1.1\u001b[0m\" 500 -", "module": "werkzeug"}
+{"ts": "2025-09-22 15:39:28,877", "level": "INFO", "message": " * Detected change in 'E:\\\\Área de Trabalho 2\\\\RSS-PRIME\\\\app\\\\scheduler.py', reloading", "module": "werkzeug"}
