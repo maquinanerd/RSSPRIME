@@ -4,12 +4,31 @@ import re
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
+from .utils import normalize_date
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 
 OLE_BASE_URL = "https://www.ole.com.ar"
  
+BLACKLIST_SUBSTR = (
+    "/suscripciones/", "/estadisticas/", "/agenda/", "/home.html",
+    "/resultados/", "/fixture/", "/posiciones/", "/en-vivo/",
+)
+BLACKLIST_SECTIONS = (
+    "/autos/", "/running/", "/tenis/", "/basquet/", "/rugby/", "/voley/",
+    "/polideportivo/", "/seleccion/", "/juegos-olimpicos/", "/esports/", "/hockey/",
+)
+
+def _is_valid_ole_article_url(url: str) -> bool:
+    """Checks if a URL is a candidate for a valid Olé news article."""
+    if not url.endswith(".html") or "ole.com.ar" not in url:
+        return False
+    if any(s in url for s in BLACKLIST_SUBSTR) or any(s in url for s in BLACKLIST_SECTIONS):
+        return False
+    return True
+
 def _split_jsonld(raw: str) -> list[str]:
     """
     Some sites concatenate multiple JSON objects in the same <script>.
@@ -64,8 +83,9 @@ class OleScraper(BaseScraper):
         3. Falls back to Regex on raw HTML for embedded JS objects.
         """
         soup = BeautifulSoup(html, 'lxml')
-        links = []
-        
+        raw_links = []
+        source_method = "None"
+
         # 1. JSON-LD (Primary, robust method)
         try:
             for tag in soup.find_all("script", {"type": "application/ld+json"}):
@@ -91,17 +111,18 @@ class OleScraper(BaseScraper):
                                     if isinstance(li, dict):
                                         url = li.get("url") or (li.get("item") or {}).get("url")
                                         if url:
-                                            links.append(url)
+                                            raw_links.append(url)
                     except json.JSONDecodeError:
                         continue # Ignore malformed JSON blobs
-            if links:
-                logger.info(f"Successfully extracted {len(links)} links via JSON-LD from {base_url}")
+            if raw_links:
+                source_method = "JSON-LD"
+                logger.info(f"Found {len(raw_links)} raw links via JSON-LD.")
         except Exception as e:
             logger.debug(f"[ole] JSON-LD parsing step failed: {e}")
 
         # 2. CSS Fallback
-        if not links:
-            logger.info("JSON-LD failed, trying CSS selectors fallback.")
+        if not raw_links:
+            logger.info("JSON-LD failed or found no links, trying CSS selectors fallback.")
             selectors = [
                 'article a[href$=".html"]',
                 '.card a[href$=".html"]',
@@ -112,34 +133,132 @@ class OleScraper(BaseScraper):
                 for a_tag in soup.select(sel):
                     href = a_tag.get("href")
                     if href:
-                        links.append(href)
-            if links:
-                logger.info(f"Extracted {len(links)} links via CSS from {base_url}")
+                        raw_links.append(href)
+            if raw_links:
+                source_method = "CSS"
+                logger.info(f"Found {len(raw_links)} raw links via CSS fallback.")
 
         # 3. Regex Fallback for embedded JS
-        if not links:
+        if not raw_links:
             logger.info("CSS selectors failed, trying Regex fallback for embedded JS.")
             pattern = r'"url"\s*:\s*"((?:https:\/\/www\.ole\.com\.ar)?\/[^"]+?\.html)"'
             for match in re.finditer(pattern, html):
-                links.append(match.group(1))
-            if links:
-                logger.info(f"Extracted {len(links)} links via Regex from {base_url}")
+                raw_links.append(match.group(1))
+            if raw_links:
+                source_method = "Regex"
+                logger.info(f"Found {len(raw_links)} raw links via Regex fallback.")
 
         # Normalization, Deduplication, and Filtering
         seen = set()
         final_links = []
-        for link in links:
+        
+        # First, deduplicate and normalize
+        deduped_normalized_links = []
+        for link in raw_links:
             full_url = urljoin(OLE_BASE_URL, link)
-            if 'ole.com.ar' in full_url and full_url.endswith(".html") and '/videos/' not in full_url:
-                if full_url not in seen:
-                    seen.add(full_url)
-                    final_links.append(full_url)
+            if full_url not in seen:
+                seen.add(full_url)
+                deduped_normalized_links.append(full_url)
+        
+        unfiltered_count = len(deduped_normalized_links)
 
-        logger.info(f"Extracted {len(final_links)} unique article links from {base_url} for section '{section}'")
+        # Then, filter based on blacklists
+        for url in deduped_normalized_links:
+            if _is_valid_ole_article_url(url):
+                final_links.append(url)
+        
+        filtered_count = unfiltered_count - len(final_links)
+        if filtered_count > 0:
+            logger.info(f"Filtered out {filtered_count} blacklisted/invalid URLs during listing.")
+
+        logger.info(f"Extracted {len(final_links)} unique and valid article links from {base_url} for section '{section}' (using {source_method}).")
         if not final_links:
             logger.warning(f"No article links found for ole/{section} on page {base_url}")
             
         return final_links
+
+    def parse_article(self, url: str, source: str | None = None, section: str | None = None) -> dict | None:
+        """
+        Parses an Olé article, with strict validation for type and section.
+        """
+        try:
+            html = self._fetch_page(url)
+            if not html:
+                return None
+            
+            soup = BeautifulSoup(html, "lxml")
+
+            # --- Validation ---
+            url_lower = url.lower()
+            if not _is_valid_ole_article_url(url):
+                logger.warning(f"Discarding article: URL is blacklisted. URL: {url}")
+                return None
+
+            is_article_type = False
+            is_correct_section = section not in ['primera', 'ascenso']
+
+            for tag in soup.find_all("script", {"type": "application/ld+json"}):
+                try:
+                    data = json.loads(tag.string or "{}")
+                    payloads = data if isinstance(data, list) else [data]
+                    for obj in payloads:
+                        if obj.get("@type") in ("Article", "NewsArticle"):
+                            is_article_type = True
+                            art_sec = obj.get("articleSection")
+                            if section in ['primera', 'ascenso']:
+                                if isinstance(art_sec, str) and section in art_sec.lower():
+                                    is_correct_section = True
+                                if isinstance(art_sec, list) and any(section in s.lower() for s in art_sec if isinstance(s, str)):
+                                    is_correct_section = True
+                except Exception:
+                    continue
+
+            # Heuristics if JSON-LD validation failed
+            if not is_correct_section:
+                if section == 'primera':
+                    if "/futbol-primera/" in url_lower:
+                        is_correct_section = True
+                    primera_clubs = ("/river-plate/", "/boca-juniors/", "/san-lorenzo/",
+                                     "/independiente/", "/racing-club/", "/estudiantes-lp/", "/talleres/",
+                                     "/gimnasia-lp/", "/argentinos-juniors/", "/rosario-central/")
+                    if any(s in url_lower for s in primera_clubs):
+                        is_correct_section = True
+                elif section == 'ascenso':
+                    if "/futbol-ascenso/" in url_lower:
+                        is_correct_section = True
+
+            if not is_article_type:
+                logger.warning(f"Discarding article: Not a valid article type (Article/NewsArticle). URL: {url}")
+                return None
+            if not is_correct_section:
+                logger.warning(f"Discarding article: Section mismatch for '{section}'. URL: {url}")
+                return None
+            
+            # --- Parsing ---
+            metadata = self.parse_json_ld(html)
+            if not metadata or not metadata.get('title'):
+                fallback = self.extract_fallback_metadata(html, url)
+                metadata = {**fallback, **(metadata or {})}
+
+            if not metadata or not metadata.get('title'):
+                logger.warning(f"Skipping article without title: {url}")
+                return None
+
+            article = {
+                'url': url,
+                'title': metadata.get('title', '').strip(),
+                'description': metadata.get('description', '').strip(),
+                'image': metadata.get('image', ''),
+                'author': metadata.get('author', '').strip(),
+                'date_published': normalize_date(metadata.get('date_published')),
+                'date_modified': normalize_date(metadata.get('date_modified')),
+                'fetched_at': datetime.utcnow(),
+                'source': source, 'section': section, 'site': self.get_site_domain()
+            }
+            return article
+        except Exception as e:
+            logger.error(f"Error parsing article {url}: {e}", exc_info=True)
+            return None
 
     def find_next_page_url(self, html, current_url):
         """Find the URL for the next page of articles"""
