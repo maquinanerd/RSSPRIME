@@ -19,3 +19,6 @@
 {"ts": "2025-09-22 18:40:48,163", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-22 21:40:48 UTC], next run at: 2025-09-22 21:40:48 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
 {"ts": "2025-09-22 18:40:48,176", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
 {"ts": "2025-09-22 18:40:48,180", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-22 18:41:56,209", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:41:56] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:41:56,241", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:41:56] \"\u001b[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1\u001b[0m\" 404 -", "module": "werkzeug"}
+{"ts": "2025-09-22 18:41:56,348", "level": "INFO", "message": "127.0.0.1 - - [22/Sep/2025 18:41:56] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
