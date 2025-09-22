@@ -220,6 +220,15 @@ def dynamic_feeds(source, section, format):
                 section=section,
                 exclude_authors=exclude_authors
             )
+
+        # Add a final validation layer for Olé before generating the feed, as a safeguard.
+        if source == 'ole':
+            from .ole_scraper import _is_valid_ole_article_url
+            original_count = len(articles)
+            articles = [a for a in articles if _is_valid_ole_article_url(a['url'])]
+            filtered_count = original_count - len(articles)
+            if filtered_count > 0:
+                logger.info(f"Final filter removed {filtered_count} invalid Olé articles before feed generation.")
         
         # Generate feed
         if format == 'rss':

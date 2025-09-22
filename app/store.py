@@ -271,5 +271,27 @@ class ArticleStore:
                     """, (source_key, section_key, display_name))
             conn.commit()
             logger.info("Feeds table populated/updated from SOURCES_CONFIG.")
+
+            # --- One-time cleanup for invalid Olé articles ---
+            # This runs on startup to remove any previously saved bad data.
+            try:
+                logger.info("Performing cleanup of invalid Olé articles...")
+                patterns_to_delete = [
+                    "/suscripciones/", "/estadisticas/", "/agenda/", "/home.html",
+                    "/resultados/", "/fixture/", "/posiciones/", "/en-vivo/",
+                    "/autos/", "/running/", "/tenis/", "/basquet/", "/rugby/", "/voley/",
+                    "/polideportivo/", "/seleccion/", "/juegos-olimpicos/", "/esports/", "/hockey/",
+                ]
+                like_conditions = " OR ".join(["url LIKE ?" for _ in patterns_to_delete])
+                query = f"DELETE FROM articles WHERE source = 'ole' AND ({like_conditions})"
+                params = [f'%{p}%' for p in patterns_to_delete]
+                
+                cursor.execute(query, params)
+                deleted_count = cursor.rowcount
+                if deleted_count > 0:
+                    logger.info(f"Cleaned up {deleted_count} invalid Olé articles from the database.")
+                conn.commit()
+            except Exception as e:
+                logger.error(f"Failed to perform Olé cleanup: {e}")
         finally:
             conn.close()
