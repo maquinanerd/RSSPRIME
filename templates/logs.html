@@ -177,6 +177,9 @@
                     }
                 }
                 
+                // Reverse logs to show newest first, which is the most common expectation.
+                allLogs.reverse();
+
                 populateFilterDropdowns(levels, feeds);
                 applyFiltersAndRender();
             }
