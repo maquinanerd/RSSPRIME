@@ -36,45 +36,6 @@
             </div>
         </header>
 
-        <!-- Feed Status Grid -->
-        <section class="mb-5">
-            <div class="grid md:grid-cols-2 lg:grid-cols-3">
-              {% for f in feeds %}
-              <div class="card">
-                <div class="card__header">
-                  <h3>{{ f.display_name }}</h3>
-                  <span class="badge
-                    {% if f.last_added_count > 0 %} badge--ok
-                    {% elif f.last_found_count > 0 %} badge--warn
-                    {% else %} badge--err {% endif %}">
-                    {% if f.last_added_count > 0 %} OK
-                    {% elif f.last_found_count > 0 %} 0 novas
-                    {% else %} Sem itens {% endif %}
-                  </span>
-                </div>
-                <div class="card__body">
-                  <div class="stat">
-                    <span class="stat__label">Última atualização</span>
-                    <span class="stat__value">
-                      {{ f.last_refreshed_at or "—" }}
-                    </span>
-                  </div>
-                  <div class="stat">
-                    <span class="stat__label">Notícias encontradas</span>
-                    <span class="stat__value">{{ f.last_found_count }}</span>
-                  </div>
-                  <div class="stat">
-                    <span class="stat__label">Novas adicionadas</span>
-                    <span class="stat__value">{{ f.last_added_count }}</span>
-                  </div>
-                </div>
-              </div>
-              {% else %}
-                <p class="text-center text-muted col-span-3">Nenhum feed configurado para exibir estatísticas.</p>
-              {% endfor %}
-            </div>
-        </section>
-
         <!-- Feed URLs por Fonte -->
         <section class="mb-5">
             <h2 class="h3 mb-4 mt-5 border-top pt-5">
@@ -241,6 +202,57 @@
                     </div>
                     <p class="mb-1">Visualizador de logs do servidor.</p>
                 </a>
+            </div>
+        </section>
+
+        <!-- Feed Status Grid (Collapsible) -->
+        <section class="mb-5">
+            <h2 class="h3 mb-4 mt-5 border-top pt-5">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Status Detalhado da Varredura
+            </h2>
+            <p>
+                <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#statusGridCollapse" aria-expanded="false" aria-controls="statusGridCollapse">
+                    <i class="fas fa-eye me-2"></i>
+                    Mostrar/Ocultar Status de Atualização dos Feeds
+                </button>
+            </p>
+            <div class="collapse" id="statusGridCollapse">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 mt-3">
+                  {% for f in feeds %}
+                  <div class="card">
+                    <div class="card__header">
+                      <h3>{{ f.display_name }}</h3>
+                      <span class="badge
+                        {% if f.last_added_count > 0 %} badge--ok
+                        {% elif f.last_found_count > 0 %} badge--warn
+                        {% else %} badge--err {% endif %}">
+                        {% if f.last_added_count > 0 %} OK
+                        {% elif f.last_found_count > 0 %} 0 novas
+                        {% else %} Sem itens {% endif %}
+                      </span>
+                    </div>
+                    <div class="card__body">
+                      <div class="stat">
+                        <span class="stat__label">Última atualização</span>
+                        <span class="stat__value">
+                          {{ f.last_refreshed_at or "—" }}
+                        </span>
+                      </div>
+                      <div class="stat">
+                        <span class="stat__label">Notícias encontradas</span>
+                        <span class="stat__value">{{ f.last_found_count }}</span>
+                      </div>
+                      <div class="stat">
+                        <span class="stat__label">Novas adicionadas</span>
+                        <span class="stat__value">{{ f.last_added_count }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  {% else %}
+                    <p class="text-center text-muted col-span-3">Nenhum feed configurado para exibir estatísticas.</p>
+                  {% endfor %}
+                </div>
             </div>
         </section>
 

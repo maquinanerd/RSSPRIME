@@ -59,14 +59,23 @@ class FeedGenerator:
             # Use date_published, but fallback to other dates to ensure pubDate is always present.
             pub_date = article.get('date_published') or article.get('date_modified') or article.get('fetched_at')
             if pub_date:
+                # Ensure datetime is timezone-aware before converting
+                if pub_date.tzinfo is None:
+                    pub_date = pub_date.replace(tzinfo=timezone.utc) # Assume UTC if naive
                 fe.published(pub_date.astimezone(self.brasilia_tz))
             
-            if article['date_modified']:
-                fe.updated(article['date_modified'].astimezone(self.brasilia_tz))
+            date_modified = article.get('date_modified')
+            if date_modified:
+                if date_modified.tzinfo is None:
+                    date_modified = date_modified.replace(tzinfo=timezone.utc)
+                fe.updated(date_modified.astimezone(self.brasilia_tz))
             else:
                 # Fallback to published or fetched date for the 'updated' tag
                 fallback_date = article.get('date_published') or article.get('fetched_at')
-                fe.updated(fallback_date.astimezone(self.brasilia_tz))
+                if fallback_date:
+                    if fallback_date.tzinfo is None:
+                        fallback_date = fallback_date.replace(tzinfo=timezone.utc)
+                    fe.updated(fallback_date.astimezone(self.brasilia_tz))
             
             # Author
             if article['author']:

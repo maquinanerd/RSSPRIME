@@ -172,7 +172,8 @@ def dynamic_feeds(source, section, format):
         
         # Get articles with filters
         query_filter = parse_query_filter(query) if query else None
-        articles = store.get_recent_articles(
+        articles = store_module.get_recent_articles(
+            conn=get_db(),
             limit=limit, 
             query_filter=query_filter,
             source=source,
@@ -190,7 +191,7 @@ def dynamic_feeds(source, section, format):
             logger.info(f"No articles found for {source}/{section}, triggering refresh.")
         else:
             # Refresh if data is older than 5 minutes
-            last_update = store.get_last_update_for_section(source, section)
+            last_update = store_module.get_last_update_for_section(get_db(), source, section)
             if not last_update or (datetime.now(timezone.utc) - last_update) > timedelta(minutes=5):
                 should_refresh = True
                 logger.info(f"Feed for {source}/{section} is stale (last update: {last_update}), triggering refresh.")
@@ -211,8 +212,9 @@ def dynamic_feeds(source, section, format):
             # Update stats in the database
             store_module.update_feed_stats(get_db(), source, section, links_found, added_count)
 
-            articles = store.get_recent_articles(
-                limit=limit, 
+            articles = store_module.get_recent_articles(
+                conn=get_db(),
+                limit=limit,
                 query_filter=query_filter,
                 source=source,
                 section=section,
