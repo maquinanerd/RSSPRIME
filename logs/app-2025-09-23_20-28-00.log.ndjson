@@ -1,0 +1,75 @@
+{"ts": "2025-09-23 17:28:00,165", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,165", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,167", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,167", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,167", "level": "INFO", "message": "Performing cleanup of invalid Olé articles...", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,169", "level": "INFO", "message": "Performing cleanup of invalid A Bola articles...", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,172", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-23 17:28:00,173", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,175", "level": "INFO", "message": "Added job \"Feed Refresh Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,175", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,176", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,176", "level": "INFO", "message": "Scheduler started - refresh every 5 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-23 17:28:00,177", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-23 17:33:00.173253-03:00 (in 299.996064 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,178", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,183", "level": "INFO", "message": "Iniciando servidor Flask em http://127.0.0.1:5000 (Debug: True)", "module": "__main__"}
+{"ts": "2025-09-23 17:28:00,183", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,184", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-23 20:28:00 UTC], next run at: 2025-09-23 20:28:00 UTC)\" (scheduled at 2025-09-23 20:28:00.177449+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-23 17:28:00,184", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,184", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-23 17:33:00.173253-03:00 (in 299.988390 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 17:28:00,186", "level": "INFO", "message": "Database has 1240 articles, skipping initial scrape", "module": "app.scheduler"}
+{"ts": "2025-09-23 17:28:00,187", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-23 20:28:00 UTC], next run at: 2025-09-23 20:28:00 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-23 17:28:00,197", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,199", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,223", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=lance, section=futebol)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,224", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=lance, section=futebol)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,225", "level": "INFO", "message": "Generated RSS feed with 30 articles", "module": "app.feeds"}
+{"ts": "2025-09-23 17:28:00,244", "level": "INFO", "message": "Generated Atom feed with 30 articles", "module": "app.feeds"}
+{"ts": "2025-09-23 17:28:00,246", "level": "INFO", "message": "127.0.0.1 - - [23/Sep/2025 17:28:00] \"GET /feeds/lance/futebol/rss HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,247", "level": "INFO", "message": "127.0.0.1 - - [23/Sep/2025 17:28:00] \"GET /feeds/lance/futebol/atom HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,248", "level": "DEBUG", "message": "Retrieved 19 articles (limit=30, source=g1, section=economia)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,248", "level": "DEBUG", "message": "Retrieved 19 articles (limit=30, source=g1, section=economia)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,249", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=ge, section=futebol)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,249", "level": "INFO", "message": "Feed for g1/economia is stale (last update: 2025-09-23 18:01:42.722907+00:00), triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,250", "level": "INFO", "message": "Feed for g1/economia is stale (last update: 2025-09-23 18:01:42.722907+00:00), triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,251", "level": "INFO", "message": "Created G1Scraper for source 'g1'", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,252", "level": "INFO", "message": "Refresh for g1/economia is already in progress, skipping.", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,252", "level": "INFO", "message": "Feed for ge/futebol is stale (last update: 2025-09-23 19:46:40.355556+00:00), triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,253", "level": "INFO", "message": "Listing pages for g1/economia from https://g1.globo.com/economia/ (max_pages=2)", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,254", "level": "INFO", "message": "Scraped 0 new articles for g1/economia", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,254", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=ge, section=futebol)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,255", "level": "INFO", "message": "Created GloboScraper for source 'ge'", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,256", "level": "INFO", "message": "Fetching page 1: https://g1.globo.com/economia/", "module": "app.base_scraper"}
+{"ts": "2025-09-23 17:28:00,257", "level": "DEBUG", "message": "Retrieved 0 articles (limit=30, source=foxsports, section=nfl)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,261", "level": "INFO", "message": "Listing pages for ge/futebol from https://ge.globo.com/futebol/ (max_pages=2)", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,261", "level": "INFO", "message": "Feed for ge/futebol is stale (last update: 2025-09-23 19:46:40.355556+00:00), triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,263", "level": "INFO", "message": "No articles found for foxsports/nfl, triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,263", "level": "INFO", "message": "Fetching page 1: https://ge.globo.com/futebol/", "module": "app.base_scraper"}
+{"ts": "2025-09-23 17:28:00,269", "level": "INFO", "message": "Refresh for ge/futebol is already in progress, skipping.", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,269", "level": "INFO", "message": "Created FoxSportsScraper for source 'foxsports'", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,269", "level": "INFO", "message": "127.0.0.1 - - [23/Sep/2025 17:28:00] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,289", "level": "INFO", "message": "Scraped 0 new articles for ge/futebol", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,289", "level": "INFO", "message": "Listing pages for foxsports/nfl from https://www.foxsports.com/nfl/news (max_pages=2)", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,290", "level": "INFO", "message": "Fetching page 1: https://www.foxsports.com/nfl/news", "module": "app.base_scraper"}
+{"ts": "2025-09-23 17:28:00,368", "level": "DEBUG", "message": "Retrieved 19 articles (limit=30, source=g1, section=economia)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,370", "level": "INFO", "message": "Generated Atom feed with 19 articles", "module": "app.feeds"}
+{"ts": "2025-09-23 17:28:00,371", "level": "INFO", "message": "127.0.0.1 - - [23/Sep/2025 17:28:00] \"GET /feeds/g1/economia/atom HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,374", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=g1, section=politica)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,375", "level": "INFO", "message": "Feed for g1/politica is stale (last update: 2025-09-23 20:21:45.467328+00:00), triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,375", "level": "INFO", "message": "Listing pages for g1/politica from https://g1.globo.com/politica/ (max_pages=2)", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,376", "level": "INFO", "message": "Fetching page 1: https://g1.globo.com/politica/", "module": "app.base_scraper"}
+{"ts": "2025-09-23 17:28:00,386", "level": "INFO", "message": "127.0.0.1 - - [23/Sep/2025 17:28:00] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,390", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=g1, section=politica)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,489", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=ge, section=futebol)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,490", "level": "INFO", "message": "Generated RSS feed with 30 articles", "module": "app.feeds"}
+{"ts": "2025-09-23 17:28:00,493", "level": "INFO", "message": "Feed for g1/politica is stale (last update: 2025-09-23 20:21:45.467328+00:00), triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,493", "level": "INFO", "message": "Refresh for g1/politica is already in progress, skipping.", "module": "app.scraper_factory"}
+{"ts": "2025-09-23 17:28:00,494", "level": "INFO", "message": "127.0.0.1 - - [23/Sep/2025 17:28:00] \"GET /feeds/ge/futebol/rss HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,494", "level": "INFO", "message": "Scraped 0 new articles for g1/politica", "module": "app.server"}
+{"ts": "2025-09-23 17:28:00,509", "level": "DEBUG", "message": "Robots check for https://ge.globo.com/futebol/ with UA 'Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https:...': True", "module": "app.base_scraper"}
+{"ts": "2025-09-23 17:28:00,534", "level": "DEBUG", "message": "Robots check for https://g1.globo.com/economia/ with UA 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...': True", "module": "app.base_scraper"}
+{"ts": "2025-09-23 17:28:00,569", "level": "DEBUG", "message": "Retrieved 30 articles (limit=30, source=g1, section=politica)", "module": "app.store"}
+{"ts": "2025-09-23 17:28:00,570", "level": "INFO", "message": "Generated Atom feed with 30 articles", "module": "app.feeds"}
+{"ts": "2025-09-23 17:28:00,573", "level": "INFO", "message": "127.0.0.1 - - [23/Sep/2025 17:28:00] \"GET /feeds/g1/politica/atom HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-23 17:28:00,694", "level": "DEBUG", "message": "Robots check for https://www.foxsports.com/nfl/news with UA 'Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https:...': True", "module": "app.base_scraper"}
+{"ts": "2025-09-23 17:28:00,744", "level": "DEBUG", "message": "Robots check for https://g1.globo.com/politica/ with UA 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...': True", "module": "app.base_scraper"}

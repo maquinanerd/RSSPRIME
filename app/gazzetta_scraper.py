@@ -20,10 +20,19 @@ class GazzettaScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        for link_tag in soup.select('div.bck-media-wrapper a'):
-            href = link_tag.get('href')
-            if href and href.endswith(".shtml"):
-                links.add(urljoin(base_url, href))
+        # Gazzetta uses various layouts. Try a few common selectors.
+        selectors = [
+            'a.has-text-primary',      # Common for headlines
+            'h3.title-display-h5 a',   # Titles in cards
+            'div.bck-media-wrapper a', # Old selector as fallback
+        ]
+
+        for selector in selectors:
+            for link_tag in soup.select(selector):
+                href = link_tag.get('href')
+                # Articles usually end with .shtml and are not video/photo galleries
+                if href and href.endswith(".shtml") and "/video/" not in href and "/gallery/" not in href:
+                    links.add(urljoin(base_url, href))
 
         logger.info(f"Extracted {len(links)} unique article links from {base_url}")
         return list(links)

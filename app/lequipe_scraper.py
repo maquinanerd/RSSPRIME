@@ -20,10 +20,20 @@ class LEquipeScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        for link_tag in soup.select('a.Article__link'):
-            href = link_tag.get('href')
-            if href:
-                links.add(urljoin(base_url, href))
+        # L'Équipe uses various layouts. Try a few selectors.
+        selectors = [
+            'a.Article__link',          # Old selector as a fallback
+            'a[data-io-article-url]',   # Common for tracking links
+            '.MediaTeaser__title a',    # Teaser titles
+            'a.Teaser__link',           # Another teaser link variant
+        ]
+
+        for selector in selectors:
+            for link_tag in soup.select(selector):
+                href = link_tag.get('href')
+                # Articles usually end with .html
+                if href and href.endswith('.html') and '/videos/' not in href and '/diaporama/' not in href:
+                    links.add(urljoin(base_url, href))
 
         logger.info(f"Extracted {len(links)} unique article links from {base_url}")
         return list(links)
