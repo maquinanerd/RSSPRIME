@@ -17,8 +17,14 @@ def _canonical(u: str) -> str:
 
 def _is_valid_abola_article_url(url: str) -> bool:
     """Checks if a URL is a candidate for a valid A Bola news article."""
-    if not url or not url.endswith(".html"):
+    if not url:
         return False
+
+    path = urlparse(url).path.lower()
+    # Article URLs typically contain /noticia/
+    if '/noticia/' not in path:
+        return False
+
     if any(s in url for s in BLACKLIST_SUBSTR):
         return False
     return True

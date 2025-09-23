@@ -1,0 +1,14 @@
+apscheduler>=3.11.0
+beautifulsoup4>=4.13.5
+email-validator>=2.3.0
+feedparser>=6.0.11
+feedgen>=1.0.0
+flask>=3.1.2
+flask-sqlalchemy>=3.1.1
+gunicorn>=23.0.0
+lxml>=5.4.0
+psycopg2-binary>=2.9.10
+python-dateutil>=2.9.0.post0
+requests>=2.32.5
+tenacity>=9.1.2
+trafilatura>=2.0.0
