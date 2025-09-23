@@ -293,5 +293,21 @@ class ArticleStore:
                 conn.commit()
             except Exception as e:
                 logger.error(f"Failed to perform Olé cleanup: {e}")
+
+            # --- One-time cleanup for invalid A Bola articles ---
+            try:
+                logger.info("Performing cleanup of invalid A Bola articles...")
+                patterns_to_delete = ["/video/", "/a-bola-tv/", "/programas/", "/videocasts/"]
+                like_conditions = " OR ".join(["url LIKE ?" for _ in patterns_to_delete])
+                query = f"DELETE FROM articles WHERE source = 'abola' AND ({like_conditions})"
+                params = [f'%{p}%' for p in patterns_to_delete]
+                
+                cursor.execute(query, params)
+                deleted_count = cursor.rowcount
+                if deleted_count > 0:
+                    logger.info(f"Cleaned up {deleted_count} invalid A Bola articles from the database.")
+                conn.commit()
+            except Exception as e:
+                logger.error(f"Failed to perform A Bola cleanup: {e}")
         finally:
             conn.close()
