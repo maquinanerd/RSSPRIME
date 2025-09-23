@@ -235,6 +235,7 @@ SOURCES_CONFIG = {
     'abola': {
         'name': 'A Bola',
         'base_url': 'https://www.abola.pt',
+        'official_rss': 'https://www.abola.pt/rss-articles.xml',
         'language': 'pt-PT',
         'scraper_class': 'ABolaScraper',
         'sections': {

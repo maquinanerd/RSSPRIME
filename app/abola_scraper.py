@@ -1,196 +1,126 @@
 import logging
+import re
 import feedparser
-from urllib.parse import urljoin, urlparse, urlunparse
-from datetime import datetime, timezone
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
-from .utils import normalize_date
 
 logger = logging.getLogger(__name__)
 
-ABOLA_RSS = "https://www.abola.pt/rss-articles.xml"
-BLACKLIST_SUBSTR = ("/video/", "/a-bola-tv/", "/programas/", "/videocasts/")
+# Regex to match valid article URLs, e.g., /noticias/qualquer-coisa-123456789012
+ARTICLE_ALLOW = re.compile(r"/noticias/.+-\d{12,}$", re.I)
+# Regex to deny hub/section pages
+DENY_PATTERNS = [
+    r"/futebol/competicao/",
+    r"/futebol/(benfica|sporting|fc-porto)-\d+",
+    r"/futebol/resultados-em-direto",
+    r"/modalidades", r"/videocasts", r"/a-bola-tv", r"/pesquisar",
+]
+DENY_RE = re.compile("|".join(DENY_PATTERNS), re.I)
 
-def _canonical(u: str) -> str:
-    try:
-        pu = urlparse(u)
-        return urlunparse((pu.scheme, pu.netloc, pu.path, "", "", ""))
-    except Exception:
-        return u
-
-def _is_valid_abola_article_url(url: str) -> bool:
-    """Checks if a URL is a candidate for a valid A Bola news article."""
-    if not url:
+def _is_valid_article(href: str) -> bool:
+    """Checks if a URL is a valid, individual article page."""
+    if not href:
         return False
-
-    path = urlparse(url).path.lower()
-    # Article URLs typically contain news-related paths
-    valid_paths = [
-        "/noticia/", "/artigo/", "/futebol/", "/nacional/", "/internacional/",
-        "/modalidades/", "/opiniao/", "/benfica/", "/sporting/", "/fc-porto/"
-    ]
-    if not any(p in path for p in valid_paths):
-        return False
-
-    if any(s in url for s in BLACKLIST_SUBSTR):
-        return False
-    return True
+    return bool(ARTICLE_ALLOW.search(href)) and not DENY_RE.search(href)
 
 class ABolaScraper(BaseScraper):
     source = "abola"
-
-    def __init__(self, store, request_delay=1.0):
-        super().__init__(store, request_delay)
-        self._rss_entries_by_link: dict = {}
 
     def get_site_domain(self):
         """Return the main domain for this scraper"""
         return "abola.pt"
 
-    def _extract_from_rss(self, section: str | None) -> list[str]:
-        """
-        Extracts article links from A Bola's official RSS feed and caches the entries.
-        """
-        self._rss_entries_by_link.clear()  # Clear cache for each run
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) UnifiedFeedBot/1.0",
-            "Accept": "application/rss+xml, application/atom+xml, */*",
-            "Accept-Language": "pt-PT,pt-BR;q=0.9,en;q=0.8",
-        }
-        try:
-            r = self.session.get(ABOLA_RSS, headers=headers, timeout=15)
-            r.raise_for_status()
-            parsed = feedparser.parse(r.content)
-
-            if parsed.bozo:
-                logger.warning(f"Feedparser reported an error parsing A Bola RSS feed: {parsed.bozo_exception}")
-
-            links: list[str] = []
-            for e in parsed.entries:
-                link = e.get("link") or e.get("id")
-                if not link:
-                    continue
-
-                canonical_link = _canonical(link)
-                if _is_valid_abola_article_url(canonical_link):
-                    links.append(canonical_link)
-                    self._rss_entries_by_link[canonical_link] = e  # Cache the full entry
-
-            out: list[str] = []
-            seen: set[str] = set()
-            for u in links:
-                if u not in seen:
-                    seen.add(u)
-                    out.append(u)
-
-            if not out:
-                logger.warning(f"[abola/{section}] No valid article links found in the RSS feed.")
-            return out
-
-        except Exception as e:
-            logger.error(f"Failed to fetch or parse A Bola RSS feed: {e}", exc_info=True)
-            return []
-
-    def _parse_rss_entry(self, entry, source, section):
-        """Parses a feedparser entry into a standard article dictionary."""
-        link = entry.get("link", "").strip()
-        title = entry.get("title", "").strip()
-
-        # Use summary as the main description
-        summary = entry.get("summary", "")
-
-        # Image
-        image_url = None
-        if entry.get("media_content"):
-            media_list = entry.get("media_content", [])
-            if media_list and isinstance(media_list, list) and isinstance(media_list[0], dict):
-                image_url = media_list[0].get("url")
-
-        # Author
-        authors = [a.get("name") for a in entry.get("authors", []) if a.get("name")]
-        author_str = ", ".join(authors) if authors else ""
-
-        # Dates
-        pub_date = normalize_date(entry.get("published"))
-        mod_date = normalize_date(entry.get("updated"))
-
-        article = {
-            'url': link,
-            'title': title,
-            'description': summary,
-            'image': image_url,
-            'author': author_str,
-            'date_published': pub_date,
-            'date_modified': mod_date,
-            'fetched_at': datetime.now(timezone.utc),
-            'source': source,
-            'section': section,
-            'site': self.get_site_domain()
-        }
-        return article
-
-    def parse_article(self, url: str, source: str | None = None, section: str | None = None) -> dict | None:
-        """
-        Parses an article. If the URL came from the RSS feed (cached), it parses
-        the feed entry directly. Otherwise, it falls back to the base scraper's
-        HTML parsing.
-        """
-        if url in self._rss_entries_by_link:
-            logger.debug(f"Parsing article from cached RSS entry: {url}")
-            entry = self._rss_entries_by_link[url]
-            return self._parse_rss_entry(entry, source, section)
-        else:
-            logger.warning(f"Article not in RSS cache, falling back to standard HTML parsing: {url}")
-            return super().parse_article(url, source, section)
-
     def extract_article_links(self, html: str, base_url: str, section: str | None = None) -> list[str]:
-        """
-        Extracts article links from A Bola, trying RSS feed first, then falling
-        back to HTML parsing with specific and generic selectors.
-        """
-        # 1. Attempt to get links from the official RSS feed first.
-        # This will now also populate the self._rss_entries_by_link cache.
-        rss_links = self._extract_from_rss(section)
-        if rss_links:
-            logger.info(f"[abola/{section}] Found {len(rss_links)} links via RSS feed.")
-            return rss_links
-
-        logger.warning(f"[abola/{section}] RSS feed was empty or failed. Falling back to HTML parsing of {base_url}.")
-
-        if not html:
-            logger.error(f"[abola/{section}] HTML content is missing, cannot perform HTML fallback.")
-            return []
-
         soup = BeautifulSoup(html, 'lxml')
         links: set[str] = set()
 
-        # 2. Fallback to specific CSS selectors for A Bola.
-        for item in soup.select('div.media-body a[href]'):
-            href = item.get('href')
-            if href and href.startswith('/'):
-                full_url = urljoin(base_url, href)
-                if _is_valid_abola_article_url(full_url):
-                    links.add(full_url)
+        # 1. Primary, specific selector for article titles
+        anchors = soup.select('a[data-cy="article-title"]')
 
-        if links:
-            logger.info(f"[abola/{section}] Found {len(links)} links via specific HTML selectors.")
-            return list(links)
+        # 2. Fallback to any link that looks like a news article URL
+        if not anchors:
+            logger.debug(f"[abola/{section}] Primary selector 'a[data-cy=\"article-title\"]' found no links. Trying fallback.")
+            anchors = soup.select('a[href^="/noticias/"], a[href^="https://www.abola.pt/noticias/"]')
 
-        logger.warning(f"[abola/{section}] Specific HTML selectors found no links. Falling back to generic discovery.")
+        total_found = len(anchors)
+        allowed_count = 0
 
-        # 3. Final fallback: generic link discovery based on URL patterns.
-        for a in soup.find_all("a", href=True):
-            href = urljoin(base_url, a["href"].strip())
-            if _is_valid_abola_article_url(href):
-                links.add(_canonical(href))
+        for a in anchors:
+            href = a.get("href")
+            if not href:
+                continue
+            
+            full_url = urljoin(base_url, href.strip())
+            if _is_valid_article(full_url):
+                links.add(full_url)
+                allowed_count += 1
+        
+        denied_count = total_found - allowed_count
+        final_count = len(links)
+        logger.info(
+            f"[abola/{section}] links from HTML: found={total_found}, allowed={allowed_count}, denied={denied_count}, after_dedup={final_count}"
+        )
 
-        if links:
-            logger.info(f"[abola/{section}] Found {len(links)} links via generic HTML discovery.")
-            return list(links)
-
-        logger.error(f"[abola/{section}] All extraction methods failed. No links found on {base_url}.")
-        return []
+        return list(links)
 
     def find_next_page_url(self, html, current_url):
-        """Pagination is not needed as we use the full RSS feed."""
-        return None
+        # A Bola uses ?page=N for pagination
+        from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+        
+        parsed_url = urlparse(current_url)
+        query_params = parse_qs(parsed_url.query)
+        
+        current_page = int(query_params.get('page', ['1'])[0])
+        next_page = current_page + 1
+        
+        query_params['page'] = [str(next_page)]
+        
+        # Rebuild the URL with the new page number
+        next_page_url = urlunparse((
+            parsed_url.scheme,
+            parsed_url.netloc,
+            parsed_url.path,
+            parsed_url.params,
+            urlencode(query_params, doseq=True),
+            parsed_url.fragment
+        ))
+        
+        # The list_pages loop in BaseScraper will stop if a page is empty.
+        logger.debug(f"Calculated next page for A Bola: {next_page_url}")
+        return next_page_url
+
+    def list_pages(self, start_url, max_pages=3, section=None):
+        """
+        Overrides BaseScraper.list_pages to add an RSS fallback.
+        """
+        # First, try the standard HTML scraping method
+        html_links = super().list_pages(start_url, max_pages, section)
+        if html_links:
+            return html_links
+
+        # If HTML scraping fails, fall back to the official RSS feed
+        logger.warning(f"[abola/{section}] HTML scraping yielded no links. Trying RSS fallback.")
+        try:
+            from .sources_config import SOURCES_CONFIG
+            rss_url = SOURCES_CONFIG.get('abola', {}).get('official_rss')
+            if not rss_url:
+                logger.error("[abola/ultimas] official_rss URL not configured.")
+                return []
+
+            logger.info(f"[abola/{section}] Fetching RSS fallback from {rss_url}")
+            response = self.session.get(rss_url, timeout=15)
+            response.raise_for_status()
+            feed = feedparser.parse(response.content)
+            
+            rss_links = []
+            for entry in feed.entries:
+                link = entry.get("link")
+                if _is_valid_article(link):
+                    rss_links.append(link)
+            
+            logger.info(f"[abola/{section}] Found {len(rss_links)} valid links via RSS fallback.")
+            return list(dict.fromkeys(rss_links)) # Deduplicate
+        except Exception as e:
+            logger.exception(f"[abola/{section}] RSS fallback failed: {e}")
+            return []
