@@ -20,14 +20,27 @@ class KickerScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        for link_tag in soup.select('a.kick__v100-Teaser__headlineLink'):
-            href = link_tag.get('href')
-            if href:
-                links.add(urljoin(base_url, href))
+        # Kicker uses multiple layouts. We'll try a few common selectors.
+        selectors = [
+            'a.kick__teaser-link',              # Main teaser links
+            'h3.kick__card-headline a',         # Headlines in cards
+            'a.kick__v100-Teaser__headlineLink' # Old selector as a fallback
+        ]
+ 
+        for selector in selectors:
+            for link_tag in soup.select(selector):
+                href = link_tag.get('href')
+                # Kicker article URLs typically contain /artikel
+                if href and '/artikel' in href:
+                    # urljoin handles both relative and absolute URLs
+                    full_url = urljoin(base_url, href)
+                    links.add(full_url)
 
         logger.info(f"Extracted {len(links)} unique article links from {base_url}")
         return list(links)
 
     def find_next_page_url(self, html, current_url):
         """Find the URL for the next page of articles"""
+        # Kicker pagination is often JS-driven ("Mehr laden")
+        logger.info("KickerScraper does not support pagination (likely JS-driven).")
         return None

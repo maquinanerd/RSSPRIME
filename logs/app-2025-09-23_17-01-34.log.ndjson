@@ -1,0 +1,23 @@
+{"ts": "2025-09-23 14:01:34,132", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-23 14:01:34,133", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-23 14:01:34,134", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-23 14:01:34,135", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-23 14:01:34,135", "level": "INFO", "message": "Performing cleanup of invalid Olé articles...", "module": "app.store"}
+{"ts": "2025-09-23 14:01:34,136", "level": "INFO", "message": "Performing cleanup of invalid A Bola articles...", "module": "app.store"}
+{"ts": "2025-09-23 14:01:34,140", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-23 14:01:34,141", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,142", "level": "INFO", "message": "Added job \"Feed Refresh Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,142", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,143", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,143", "level": "INFO", "message": "Scheduler started - refresh every 5 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-23 14:01:34,144", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-23 14:06:34.140929-03:00 (in 299.996901 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,145", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,151", "level": "INFO", "message": "Iniciando servidor Flask em http://127.0.0.1:5000 (Debug: True)", "module": "__main__"}
+{"ts": "2025-09-23 14:01:34,151", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,152", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-23 17:01:34 UTC], next run at: 2025-09-23 17:01:34 UTC)\" (scheduled at 2025-09-23 17:01:34.144159+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-23 14:01:34,152", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,153", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-23 14:06:34.140929-03:00 (in 299.987371 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-23 14:01:34,156", "level": "INFO", "message": "Database has 1086 articles, skipping initial scrape", "module": "app.scheduler"}
+{"ts": "2025-09-23 14:01:34,156", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-23 17:01:34 UTC], next run at: 2025-09-23 17:01:34 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-23 14:01:34,165", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
+{"ts": "2025-09-23 14:01:34,167", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
