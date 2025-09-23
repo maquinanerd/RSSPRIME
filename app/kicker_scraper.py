@@ -1,10 +1,17 @@
 import logging
-from urllib.parse import urljoin
+import re
+from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
+# Regex to match valid article URLs, e.g., /slug-123456/artikel
+ARTICLE_RE = re.compile(r"^/[^?#]+-\d{6,}/artikel(?:[?#].*)?$")
+DENY_PATTERNS = [
+    "/spieltag", "/tabelle", "/tabellenrechner", "/videos",
+    "/live", "/podcast", "/podcastpopup", "/ticker", "/statistik"
+]
 
 class KickerScraper(BaseScraper):
     """
@@ -19,24 +26,29 @@ class KickerScraper(BaseScraper):
         """Extract article links from Kicker listing page HTML"""
         soup = BeautifulSoup(html, 'lxml')
         links = set()
-
-        # Kicker uses multiple layouts. We'll try a few common selectors.
-        selectors = [
-            'a.kick__teaser-link',              # Main teaser links
-            'h3.kick__card-headline a',         # Headlines in cards
-            'a.kick__v100-Teaser__headlineLink' # Old selector as a fallback
-        ]
  
-        for selector in selectors:
-            for link_tag in soup.select(selector):
-                href = link_tag.get('href')
-                # Kicker article URLs typically contain /artikel
-                if href and '/artikel' in href:
-                    # urljoin handles both relative and absolute URLs
-                    full_url = urljoin(base_url, href)
-                    links.add(full_url)
+        # Broad selector for content modules as suggested
+        all_anchors = soup.select("section.kick__modul a[href]")
+        logger.info(f"[kicker/{section}] links from HTML: found={len(all_anchors)}")
 
-        logger.info(f"Extracted {len(links)} unique article links from {base_url}")
+        for a in all_anchors:
+            href = a.get("href", "").strip()
+            
+            # Normalize relative URLs
+            full_url = urljoin(base_url, href)
+            
+            # Use the path for regex matching and filtering
+            path = urlparse(full_url).path
+
+            # Filter out non-article links like navigation, videos, etc.
+            if any(p in path for p in DENY_PATTERNS):
+                continue
+
+            # Keep only pages that match the article pattern (e.g., /slug-123456/artikel)
+            if ARTICLE_RE.search(path):
+                links.add(full_url)
+                
+        logger.info(f"[kicker/{section}] kept after filters={len(links)}")
         return list(links)
 
     def find_next_page_url(self, html, current_url):
