@@ -67,19 +67,23 @@ def has_article(conn, url: str) -> bool:
 
 def upsert_article(conn, article: dict) -> bool:
     """Insert or update an article in the database."""
+    from .utils import canonical_url as c_url # Local import to avoid circular dependency
     try:
         cursor = conn.cursor()
         date_published = article['date_published'].isoformat() if article.get('date_published') else None
         date_modified = article['date_modified'].isoformat() if article.get('date_modified') else None
         scraped_at = article['fetched_at'].isoformat()
+        canonical = c_url(article['url'])
 
         cursor.execute("""
-            INSERT OR REPLACE INTO articles 
-            (url, source, section, title, description, image, author, date_published, date_modified, scraped_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO articles 
+            (url, canonical_url, source, section, title, description, image, author, date_published, date_modified, scraped_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(source, section, canonical_url) DO NOTHING
         """, (
-            article['url'], article.get('source', 'unknown'), article.get('section', 'general'),
-            article['title'], article['description'], article['image'], article['author'],
+            article['url'], canonical, article.get('source', 'unknown'),
+            article.get('section', 'general'), article['title'], article['description'],
+            article['image'], article['author'],
             date_published, date_modified, scraped_at
         ))
         conn.commit()
@@ -229,7 +233,8 @@ class ArticleStore:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS articles (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    url TEXT UNIQUE NOT NULL,
+                    url TEXT NOT NULL,
+                    canonical_url TEXT,
                     source TEXT NOT NULL,
                     section TEXT,
                     title TEXT NOT NULL,
@@ -242,8 +247,15 @@ class ArticleStore:
                 )
             ''')
             # Add columns if they are missing from an older schema
+            _add_column_if_not_exists(cursor, 'articles', 'canonical_url', 'TEXT')
             _add_column_if_not_exists(cursor, 'articles', 'date_published', 'TEXT')
             _add_column_if_not_exists(cursor, 'articles', 'date_modified', 'TEXT')
+
+            # Create unique index for deduplication
+            cursor.execute('''
+                CREATE UNIQUE INDEX IF NOT EXISTS ux_articles_source_section_canonical
+                ON articles (source, section, canonical_url)
+            ''')
 
             # Feeds table for stats
             cursor.execute('''

@@ -1,7 +1,7 @@
 import re
 import logging
 from datetime import datetime, timezone
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 from dateutil import parser as date_parser
 
 logger = logging.getLogger(__name__)
@@ -9,6 +9,16 @@ logger = logging.getLogger(__name__)
 def get_user_agent():
     """Get a polite, identifiable User-Agent string"""
     return "Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https://lance-feeds.repl.co/)"
+
+def canonical_url(u: str) -> str:
+    """Removes query strings and fragments from a URL to create a canonical version."""
+    if not u:
+        return u
+    try:
+        pu = urlparse(u)
+        return urlunparse((pu.scheme, pu.netloc, pu.path, "", "", ""))
+    except Exception:
+        return u
 
 def normalize_date(date_string):
     """Normalize various date formats to datetime object with UTC timezone"""

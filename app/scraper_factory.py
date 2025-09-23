@@ -30,6 +30,7 @@ from .foxsports_scraper import FoxSportsScraper
 from .cbssports_scraper import CBSSportsScraper
 
 from .sources_config import SOURCES_CONFIG
+from .scheduler_locks import acquire_lock, release_lock
 
 logger = logging.getLogger(__name__)
 
@@ -136,12 +137,17 @@ class ScraperFactory:
             - A list of newly scraped article dictionaries.
             - The total number of unique article links found.
         """
+        lock_key = (source, section)
+        if not acquire_lock(lock_key):
+            logger.info(f"Refresh for {source}/{section} is already in progress, skipping.")
+            return [], 0
+
         try:
             scraper = cls.get_scraper(source, store, request_delay)
             source_config = SOURCES_CONFIG.get(source)
             if not source_config:
                 logger.error(f"Source '{source}' not found in SOURCES_CONFIG.")
-                return []
+                return [], 0
 
             sections = source_config.get("sections", {})
             if section not in sections:
@@ -225,4 +231,6 @@ class ScraperFactory:
         except Exception as e:
             logger.error(f"Failed to scrape {source}/{section}: {e}", exc_info=True)
             return [], 0
+        finally:
+            release_lock(lock_key)
 # --- Fim do arquivo scraper_factory.py ---
