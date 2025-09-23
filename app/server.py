@@ -230,12 +230,12 @@ def dynamic_feeds(source, section, format):
             if filtered_count > 0:
                 logger.info(f"Final filter removed {filtered_count} invalid Olé articles before feed generation.")
         elif source == 'abola':
-            from .abola_scraper import _is_valid_abola_article_url
+            from .abola_scraper import _is_valid_article
             original_count = len(articles)
-            articles = [a for a in articles if _is_valid_abola_article_url(a['url'])]
+            articles = [a for a in articles if _is_valid_article(a['url'])]
             filtered_count = original_count - len(articles)
             if filtered_count > 0:
-                logger.info(f"Final filter removed {filtered_count} invalid A Bola articles before feed generation.")
+                logger.info(f"Final filter removed {filtered_count} invalid 'A Bola' articles before feed generation.")
         
         # Generate feed
         if format == 'rss':
