@@ -155,9 +155,16 @@ class ScraperFactory:
                 return []
 
             section_config = sections[section]
-            start_urls: List[str] = section_config.get("start_urls", [])
+            
+            # Prioriza o feed RSS oficial, se disponível.
+            official_rss_url = section_config.get("official_rss")
+            if official_rss_url:
+                start_urls = [official_rss_url]
+            else:
+                start_urls = section_config.get("start_urls", [])
+
             if not start_urls:
-                logger.warning(f"No start URLs configured for {source}/{section}")
+                logger.warning(f"Nenhuma URL de início (start_urls ou official_rss) configurada para {source}/{section}")
                 return [], 0
 
             filters = section_config.get("filters", {}) or {}

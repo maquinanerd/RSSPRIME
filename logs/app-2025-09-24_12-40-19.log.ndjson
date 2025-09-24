@@ -21,3 +21,21 @@
 {"ts": "2025-09-24 09:40:19,856", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-24 12:40:19 UTC], next run at: 2025-09-24 12:40:19 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
 {"ts": "2025-09-24 09:40:19,865", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
 {"ts": "2025-09-24 09:40:19,868", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-24 09:40:29,829", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:40:29] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:40:29,971", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:40:29] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:40:49,073", "level": "DEBUG", "message": "Retrieved 0 articles (limit=30, source=cbssports, section=nfl)", "module": "app.store"}
+{"ts": "2025-09-24 09:40:49,073", "level": "INFO", "message": "No articles found for cbssports/nfl, triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-24 09:40:49,074", "level": "INFO", "message": "Created CBSSportsScraper for source 'cbssports'", "module": "app.scraper_factory"}
+{"ts": "2025-09-24 09:40:49,074", "level": "WARNING", "message": "No start URLs configured for cbssports/nfl", "module": "app.scraper_factory"}
+{"ts": "2025-09-24 09:40:49,074", "level": "INFO", "message": "Scraped 0 new articles for cbssports/nfl", "module": "app.server"}
+{"ts": "2025-09-24 09:40:49,164", "level": "DEBUG", "message": "Retrieved 0 articles (limit=30, source=cbssports, section=nfl)", "module": "app.store"}
+{"ts": "2025-09-24 09:40:49,165", "level": "INFO", "message": "Generated RSS feed with 0 articles", "module": "app.feeds"}
+{"ts": "2025-09-24 09:40:49,182", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:40:49] \"GET /feeds/cbssports/nfl/rss HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:40:50,018", "level": "DEBUG", "message": "Retrieved 0 articles (limit=30, source=cbssports, section=nfl)", "module": "app.store"}
+{"ts": "2025-09-24 09:40:50,018", "level": "INFO", "message": "No articles found for cbssports/nfl, triggering refresh.", "module": "app.server"}
+{"ts": "2025-09-24 09:40:50,019", "level": "WARNING", "message": "No start URLs configured for cbssports/nfl", "module": "app.scraper_factory"}
+{"ts": "2025-09-24 09:40:50,019", "level": "INFO", "message": "Scraped 0 new articles for cbssports/nfl", "module": "app.server"}
+{"ts": "2025-09-24 09:40:50,082", "level": "DEBUG", "message": "Retrieved 0 articles (limit=30, source=cbssports, section=nfl)", "module": "app.store"}
+{"ts": "2025-09-24 09:40:50,083", "level": "INFO", "message": "Generated RSS feed with 0 articles", "module": "app.feeds"}
+{"ts": "2025-09-24 09:40:50,084", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:40:50] \"GET /feeds/cbssports/nfl/rss HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:41:50,818", "level": "INFO", "message": " * Detected change in 'E:\\\\Área de Trabalho 2\\\\RSS-PRIME\\\\app\\\\scraper_factory.py', reloading", "module": "werkzeug"}
