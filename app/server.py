@@ -10,6 +10,7 @@ from . import store as store_module
 from .scheduler import FeedScheduler
 from .utils import validate_admin_key, parse_query_filter
 from .sources_config import SOURCES_CONFIG as SOURCES
+from .dashboard_service import get_dashboard_data_safe
 from .scraper_factory import ScraperFactory
 
 class JsonFormatter(logging.Formatter):
@@ -94,11 +95,12 @@ def close_db(error):
     if hasattr(g, 'db'):
         g.db.close()
 
-@app.route('/')
-def index():
+@app.route('/')  
+async def index():
     """Landing page with feed information and usage examples"""
-    feeds_with_stats = store_module.get_all_feeds_with_stats(get_db())
-    return render_template('index.html', feeds=feeds_with_stats, SOURCES_CONFIG=SOURCES)
+    # Use o novo serviço de dashboard para obter todos os dados necessários
+    dashboard_data = await get_dashboard_data_safe(request)
+    return render_template('index.html', **dashboard_data)
 
 @app.route('/logs')
 def logs_viewer():
