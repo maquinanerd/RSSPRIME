@@ -56,10 +56,18 @@
                                     <div class="list-group-item bg-dark">
                                         <div class="d-flex w-100 justify-content-between">
                                             <h6 class="mb-1">{{ section_data.name or section_key }}</h6>
+                                            {% if section_data.official_rss %}
+                                            <div>
+                                                <a href="{{ section_data.official_rss }}" class="badge bg-success rounded-pill text-decoration-none ms-1" target="_blank" rel="noopener noreferrer">
+                                                    <i class="fas fa-rss-square me-1"></i>Oficial
+                                                </a>
+                                            </div>
+                                            {% else %}
                                             <div>
                                                 <a href="/feeds/{{ source_key }}/{{ section_key }}/rss" class="badge bg-danger rounded-pill text-decoration-none">RSS</a>
                                                 <a href="/feeds/{{ source_key }}/{{ section_key }}/atom" class="badge bg-warning text-dark rounded-pill text-decoration-none ms-1">Atom</a>
                                             </div>
+                                            {% endif %}
                                         </div>
                                         {% if section_data.description %}<small class="text-muted">{{ section_data.description }}</small>{% endif %}
                                     </div>

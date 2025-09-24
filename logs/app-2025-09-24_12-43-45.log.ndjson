@@ -21,3 +21,12 @@
 {"ts": "2025-09-24 09:43:45,902", "level": "INFO", "message": "Job \"Initial Refresh (trigger: date[2025-09-24 12:43:45 UTC], next run at: 2025-09-24 12:43:45 UTC)\" executed successfully", "module": "apscheduler.executors.default"}
 {"ts": "2025-09-24 09:43:45,910", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
 {"ts": "2025-09-24 09:43:45,913", "level": "INFO", "message": " * Debugger PIN: 132-007-044", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:02,790", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:02] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:02,935", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:02] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:04,816", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:04] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:04,846", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:04] \"GET /static/style.css HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:05,503", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:05] \"\u001b[33mGET /favicon.ico HTTP/1.1\u001b[0m\" 404 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:07,314", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:07] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:07,328", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:07] \"\u001b[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1\u001b[0m\" 404 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:20,411", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:20] \"GET / HTTP/1.1\" 200 -", "module": "werkzeug"}
+{"ts": "2025-09-24 09:44:20,437", "level": "INFO", "message": "127.0.0.1 - - [24/Sep/2025 09:44:20] \"\u001b[36mGET /static/style.css HTTP/1.1\u001b[0m\" 304 -", "module": "werkzeug"}
