@@ -282,25 +282,25 @@ SOURCES_CONFIG = {
             'nfl': {
                 'name': 'NFL',
                 'description': 'Get the latest NFL football news, scores, stats, standings, fantasy games, and more from CBS Sports.',
-                'start_urls': ['https://www.cbssports.com/nfl/'],
+                'official_rss': 'https://www.cbssports.com/rss/headlines/nfl/',
                 'filters': {}
             },
             'college-football': {
                 'name': 'College Football',
                 'description': 'Get the latest College Football news, scores, stats, standings, fantasy games, and more from CBS Sports.',
-                'start_urls': ['https://www.cbssports.com/college-football/'],
+                'official_rss': 'https://www.cbssports.com/rss/headlines/college-football/',
                 'filters': {}
             },
             'mlb': {
                 'name': 'MLB',
                 'description': 'Get the latest MLB baseball news, scores, stats, standings, fantasy games, and more from CBS Sports.',
-                'start_urls': ['https://www.cbssports.com/mlb/'],
+                'official_rss': 'https://www.cbssports.com/rss/headlines/mlb/',
                 'filters': {}
             },
             'nba': {
                 'name': 'NBA',
                 'description': 'Get the latest NBA basketball news, scores, stats, standings, fantasy games, and more from CBS Sports.',
-                'start_urls': ['https://www.cbssports.com/nba/'],
+                'official_rss': 'https://www.cbssports.com/rss/headlines/nba/',
                 'filters': {}
             }
         }

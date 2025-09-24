@@ -3,16 +3,6 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
 
-def _is_valid_article_url(url: str) -> bool:
-    """Verifica se uma URL é um artigo válido do CBS Sports."""
-    if not url or not isinstance(url, str):
-        return False
-    # Exclui links que não são de artigos individuais
-    exclude_patterns = ['/video/', '/live/', '/game/', '/team/', '/news/']
-    if any(pattern in url for pattern in exclude_patterns):
-        return False
-    return True
-
 logger = logging.getLogger(__name__)
 
 
@@ -38,24 +28,18 @@ class CBSSportsScraper(BaseScraper):
 
     def extract_article_links(self, html, base_url, section=None):
         """Extrai links de artigos da página de listagem do CBS Sports."""
-        soup = BeautifulSoup(html, 'lxml')
+        # Agora, em vez de raspar HTML, analisamos o XML do feed RSS oficial.
+        soup = BeautifulSoup(html, 'xml')
         links = set()
-
-        # Seletores atualizados para o layout moderno do CBS Sports
-        selectors = [
-            'h5.article-list-pack-title a[href]', # Títulos em listas de artigos
-            'a.item-title',                      # Títulos em outros layouts de card
-            'div.article-list-item-v2 a[href]'   # Layout legado
-        ]
-
-        for selector in selectors:
-            for link_tag in soup.select(selector):
-                href = link_tag['href']
-                # Filter out non-article links
-                if href:
-                    full_url = urljoin(base_url, href.strip())
-                    if _is_valid_article_url(full_url):
-                        links.add(full_url)
+        
+        # O feed RSS oficial usa a tag <link> para cada item.
+        for item in soup.find_all('item'):
+            link_tag = item.find('link')
+            if link_tag and link_tag.text:
+                url = link_tag.text.strip()
+                # Garante que a URL é válida antes de adicionar
+                if url.startswith('http'):
+                    links.add(url)
 
         logger.info(f"Extraídos {len(links)} links de artigos únicos de {base_url}")
         return list(links)
