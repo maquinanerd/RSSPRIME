@@ -95,11 +95,11 @@ def close_db(error):
     if hasattr(g, 'db'):
         g.db.close()
 
-@app.route('/')  
-async def index():
+@app.route('/')
+def index():
     """Landing page with feed information and usage examples"""
     # Use o novo serviço de dashboard para obter todos os dados necessários
-    dashboard_data = await get_dashboard_data_safe(request)
+    dashboard_data = get_dashboard_data_safe(request)
     return render_template('index.html', **dashboard_data)
 
 @app.route('/logs')

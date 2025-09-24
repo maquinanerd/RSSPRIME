@@ -7,7 +7,7 @@ from .sources_config import SOURCES_CONFIG
 logger = logging.getLogger(__name__)
 
 
-async def safe_get_stats():
+def safe_get_stats():
     """Safely fetches statistics from the data store."""
     try:
         store = ArticleStore()
@@ -33,7 +33,7 @@ async def safe_get_stats():
         }
 
 
-async def safe_get_sources_structure():
+def safe_get_sources_structure():
     """
     Builds a structured list of sources and their sections for the dashboard,
     making it easy for the template to render them dynamically.
@@ -111,14 +111,14 @@ def build_examples(request):
     }
 
 
-async def get_dashboard_data_safe(request):
+def get_dashboard_data_safe(request):
     """
     Safely fetches all data required for the dashboard, aggregating from other
     safe functions to prevent template rendering errors.
     """
     try:
-        stats = await safe_get_stats()
-        sources = await safe_get_sources_structure()
+        stats = safe_get_stats()
+        sources = safe_get_sources_structure()
         examples = build_examples(request)
 
         return {
