@@ -42,14 +42,12 @@ class CBSSportsScraper(BaseScraper):
         ]
 
         for selector in selectors:
-            link_tags = soup.select(selector)
-            if not link_tags: continue
-            link_tag = link_tags[0] # Pega o primeiro link que geralmente é o principal
-            if link_tag:
+            # Itera sobre todos os links encontrados pelo seletor, não apenas o primeiro.
+            for link_tag in soup.select(selector):
                 href = link_tag['href']
                 # Filter out non-article links
-                if '/video/' not in href and '/live/' not in href:
-                    full_url = urljoin(base_url, href)
+                if href and '/video/' not in href and '/live/' not in href:
+                    full_url = urljoin(base_url, href.strip())
                     links.add(full_url)
 
         logger.info(f"Extraídos {len(links)} links de artigos únicos de {base_url}")
