@@ -89,15 +89,7 @@ async def safe_get_sources_structure():
                 source_config = SOURCES_CONFIG.get(feed_meta["source_key"])
                 if source_config:
                     feed_meta["source_name"] = source_config.get("name")
-                    # Adiciona a URL oficial do RSS à configuração da seção, se existir
-                    sections_with_links = {}
-                    for section_key, section_data in source_config.get("sections", {}).items():
-                        new_section_data = section_data.copy()
-                        if "official_rss" in section_data:
-                            new_section_data["official_rss_url"] = section_data["official_rss"]
-                        sections_with_links[section_key] = new_section_data
-                    
-                    feed_meta["sections"] = sections_with_links
+                    feed_meta["sections"] = source_config.get("sections", {})
 
         # Filter out empty groups
         structured_sources = [group for group in structured_sources if group["feeds"]]

@@ -256,19 +256,25 @@ SOURCES_CONFIG = {
             'nfl': {
                 'name': 'NFL News',
                 'description': 'Latest NFL news, rumors, and videos from FOX Sports.',
-                'start_urls': ['https://www.foxsports.com/nfl/news'],
+                'official_rss': 'https://api.foxsports.com/v2/content/optimized-rss?partnerKey=MB0Wehpmuj2lUhuRhQaafhBjAJqaPU244mlTDK1i&size=30&tags=fs/nfl',
                 'filters': {}
             },
             'college-football': {
                 'name': 'College Football News',
                 'description': 'Latest College Football news, rumors, and videos from FOX Sports.',
-                'start_urls': ['https://www.foxsports.com/college-football/news'],
+                'official_rss': 'https://api.foxsports.com/v2/content/optimized-rss?partnerKey=MB0Wehpmuj2lUhuRhQaafhBjAJqaPU244mlTDK1i&size=30&tags=fs/cfb',
                 'filters': {}
             },
             'mlb': {
                 'name': 'MLB News',
                 'description': 'Latest MLB news, rumors, and videos from FOX Sports.',
-                'start_urls': ['https://www.foxsports.com/mlb/news'],
+                'official_rss': 'https://api.foxsports.com/v2/content/optimized-rss?partnerKey=MB0Wehpmuj2lUhuRhQaafhBjAJqaPU244mlTDK1i&size=30&tags=fs/mlb',
+                'filters': {}
+            },
+            'nba': {
+                'name': 'NBA News',
+                'description': 'Latest NBA news, rumors, and videos from FOX Sports.',
+                'official_rss': 'https://api.foxsports.com/v2/content/optimized-rss?partnerKey=MB0Wehpmuj2lUhuRhQaafhBjAJqaPU244mlTDK1i&size=30&tags=fs/nba',
                 'filters': {}
             }
         }
