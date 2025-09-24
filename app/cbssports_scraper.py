@@ -3,6 +3,16 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from .base_scraper import BaseScraper
 
+def _is_valid_article_url(url: str) -> bool:
+    """Verifica se uma URL é um artigo válido do CBS Sports."""
+    if not url or not isinstance(url, str):
+        return False
+    # Exclui links que não são de artigos individuais
+    exclude_patterns = ['/video/', '/live/', '/game/', '/team/', '/news/']
+    if any(pattern in url for pattern in exclude_patterns):
+        return False
+    return True
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,24 +41,21 @@ class CBSSportsScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         links = set()
 
-        # Seletores atualizados para o layout moderno do CBS Sports.
-        # Eles visam os contêineres de notícias e extraem o primeiro link.
+        # Seletores atualizados para o layout moderno do CBS Sports
         selectors = [
-            'div.article-list-pack-item a[href]',
-            'div.article-list-item-v2 a[href]',
-            'article.article-list-item a[href]',
-            'div[data-item-id] a[href]',
-            'a.cell-inner[href]'
+            'h5.article-list-pack-title a[href]', # Títulos em listas de artigos
+            'a.item-title',                      # Títulos em outros layouts de card
+            'div.article-list-item-v2 a[href]'   # Layout legado
         ]
 
         for selector in selectors:
-            # Itera sobre todos os links encontrados pelo seletor, não apenas o primeiro.
             for link_tag in soup.select(selector):
                 href = link_tag['href']
                 # Filter out non-article links
-                if href and '/video/' not in href and '/live/' not in href:
+                if href:
                     full_url = urljoin(base_url, href.strip())
-                    links.add(full_url)
+                    if _is_valid_article_url(full_url):
+                        links.add(full_url)
 
         logger.info(f"Extraídos {len(links)} links de artigos únicos de {base_url}")
         return list(links)
