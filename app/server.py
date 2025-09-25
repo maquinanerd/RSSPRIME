@@ -160,12 +160,11 @@ def processed_topic_feed(topic, format):
             return f"Unsupported format: {format}. Use 'rss' or 'atom'", 400
 
         # Get processed data from the database
-        processed_data_json = store_module.get_processed_topic(get_db(), topic)
+        processed_data = store_module.get_processed_topic(get_db(), topic)
 
-        if not processed_data_json:
+        if not processed_data:
             return f"No processed feed found for topic: {topic}. The aggregation may not have run yet.", 404
 
-        processed_data = json.loads(processed_data_json)
         articles = processed_data.get('items', [])
 
         # Generate feed
