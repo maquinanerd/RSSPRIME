@@ -151,7 +151,7 @@ class FeedScheduler:
                             formatted_items.append({
                                 "title": item.get('title'),
                                 "link": item.get('url'),
-                                "pubDate": item.get('date_published', datetime.now(timezone.utc)).isoformat(),
+                                "pubDate": (item.get('date_published') or datetime.now(timezone.utc)).isoformat(),
                                 "summary": item.get('description'),
                                 "categories": item.get('tags', []),
                                 "lang": SOURCES_CONFIG.get(source, {}).get('language'),

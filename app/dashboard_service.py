@@ -1,17 +1,14 @@
-import logging
-from datetime import datetime
-
-from .store import ArticleStore
-from .sources_config import SOURCES_CONFIG
+from . import store as store_module
 
 logger = logging.getLogger(__name__)
 
 
 def safe_get_stats():
     """Safely fetches statistics from the data store."""
+    store = store_module.ArticleStore()
+    conn = store.get_conn()
     try:
-        store = ArticleStore()
-        stats = store.get_stats()
+        stats = store_module.get_stats(conn)
         total_articles = stats.get('total_articles', 0)
         last_update_str = stats.get('last_update')
 
@@ -31,6 +28,9 @@ def safe_get_stats():
             "total_articles": 0,
             "last_update": "Erro",
         }
+    finally:
+        if conn:
+            conn.close()
 
 
 def safe_get_sources_structure():

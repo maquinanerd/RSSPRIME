@@ -20,24 +20,30 @@ class FeedGenerator:
         }
         self.brasilia_tz = ZoneInfo("America/Sao_Paulo")
     
-    def _create_base_feed(self, source='lance', section='futebol', feed_format='rss'):
-        """Create base feed with source-specific metadata"""
+    def _create_base_feed(self, source='lance', section='futebol', feed_format='rss', title=None, description=None):
+        """Create base feed with source-specific or custom metadata"""
         fg = FG()
         
-        # Get source configuration
         source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
         section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
         
-        # Basic feed information with unique IDs
         unique_id = f"https://lance-feeds.repl.co/feeds/{source}/{section}/{feed_format}"
         fg.id(unique_id)
-        fg.title(f"{source_config['name']} - {section_config['name']} - Feed não oficial")
+        
+        if title:
+            fg.title(title)
+        else:
+            fg.title(f"{source_config['name']} - {section_config['name']} - Feed não oficial")
+
+        if description:
+            fg.description(description)
+        else:
+            fg.description(section_config['description'])
+
         fg.link(href=source_config['base_url'], rel='alternate')
-        fg.description(section_config['description'])
         fg.language(source_config.get('language', 'pt-BR'))
         fg.generator('Multi-Source Feed Generator v1.0')
         
-        # Additional metadata
         fg.lastBuildDate(datetime.now(timezone.utc).astimezone(self.brasilia_tz))
         fg.managingEditor('noreply@lance-feeds.repl.co (Multi-Source Feed Bot)')
         fg.webMaster('noreply@lance-feeds.repl.co (Multi-Source Feed Bot)')
@@ -49,79 +55,56 @@ class FeedGenerator:
         try:
             fe = fg.add_entry()
             
-            # Required fields
-            fe.id(article['url'])
+            fe.id(article['link'])
             fe.title(article['title'])
-            fe.link(href=article['url'])
-            fe.description(article['description'] or article['title'])
+            fe.link(href=article['link'])
+            fe.description(article.get('summary') or article['title'])
             
-            # Dates
-            # Use date_published, but fallback to other dates to ensure pubDate is always present.
-            pub_date = article.get('date_published') or article.get('date_modified') or article.get('fetched_at')
-            if pub_date:
-                # Ensure datetime is timezone-aware before converting
+            pub_date_str = article.get('pubDate')
+            if pub_date_str:
+                pub_date = datetime.fromisoformat(pub_date_str)
                 if pub_date.tzinfo is None:
-                    pub_date = pub_date.replace(tzinfo=timezone.utc) # Assume UTC if naive
+                    pub_date = pub_date.replace(tzinfo=timezone.utc)
                 fe.published(pub_date.astimezone(self.brasilia_tz))
+                fe.updated(pub_date.astimezone(self.brasilia_tz))
             
-            date_modified = article.get('date_modified')
-            if date_modified:
-                if date_modified.tzinfo is None:
-                    date_modified = date_modified.replace(tzinfo=timezone.utc)
-                fe.updated(date_modified.astimezone(self.brasilia_tz))
-            else:
-                # Fallback to published or fetched date for the 'updated' tag
-                fallback_date = article.get('date_published') or article.get('fetched_at')
-                if fallback_date:
-                    if fallback_date.tzinfo is None:
-                        fallback_date = fallback_date.replace(tzinfo=timezone.utc)
-                    fe.updated(fallback_date.astimezone(self.brasilia_tz))
+            # Atom does not have a direct author tag, it's a complex type
+            # fe.author(name=article.get('author'))
             
-            # Author
-            if article['author']:
-                fe.author(name=article['author'])
+            fe.guid(article['link'], permalink=True)
             
-            # GUID (for RSS)
-            fe.guid(article['url'], permalink=True)
-            
-            # Image enclosure
-            if article['image']:
+            if article.get('image'):
                 try:
                     mime_type = extract_mime_type(article['image'])
                     fe.enclosure(article['image'], length='0', type=mime_type)
                 except Exception as e:
-                    logger.warning(f"Could not add image enclosure for {article['url']}: {e}")
+                    logger.warning(f"Could not add image enclosure for {article['link']}: {e}")
             
             return True
             
         except Exception as e:
-            logger.error(f"Error adding article to feed: {article['url']}: {e}")
+            logger.error(f"Error adding article to feed: {article.get('link')}: {e}")
             return False
     
-    def generate_rss(self, articles, source='lance', section='futebol'):
+    def generate_rss(self, articles, source='lance', section='futebol', title=None, description=None):
         """Generate RSS 2.0 feed"""
         try:
-            # Get source configuration
-            source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
-            section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
+            fg = self._create_base_feed(source=source, section=section, feed_format='rss', title=title, description=description)
             
-            fg = self._create_base_feed(source=source, section=section, feed_format='rss')
-            
-            # RSS-specific settings
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self')
-            fg.ttl(15)  # 15 minutes TTL
+            fg.ttl(15)
             
-            # Add articles (reverse order so newest appear first in feed)
             added_count = 0
-            for article in reversed(articles):
+            # The articles from the processor are already sorted correctly (newest first)
+            for article in articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
-            # Set lastBuildDate to the date of the newest article, if available
             if articles:
-                newest_article = articles[0] # Query is sorted DESC
-                pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
-                if pub_date:
+                newest_article = articles[0]
+                pub_date_str = newest_article.get('pubDate')
+                if pub_date_str:
+                    pub_date = datetime.fromisoformat(pub_date_str)
                     if pub_date.tzinfo is None:
                         pub_date = pub_date.replace(tzinfo=timezone.utc)
                     fg.lastBuildDate(pub_date.astimezone(self.brasilia_tz))
@@ -133,33 +116,31 @@ class FeedGenerator:
             logger.error(f"Error generating RSS feed: {e}")
             raise
     
-    def generate_atom(self, articles, source='lance', section='futebol'):
+    def generate_atom(self, articles, source='lance', section='futebol', title=None, description=None):
         """Generate Atom 1.0 feed"""
         try:
-            # Get source configuration
-            source_config = SOURCES_CONFIG.get(source, SOURCES_CONFIG['lance'])
-            section_config = source_config['sections'].get(section, list(source_config['sections'].values())[0])
+            fg = self._create_base_feed(source=source, section=section, feed_format='atom', title=title, description=description)
             
-            fg = self._create_base_feed(source=source, section=section, feed_format='atom')
-            
-            # Atom-specific settings
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self')
-            fg.updated(datetime.now(timezone.utc).astimezone(self.brasilia_tz))
             
-            # Add articles (reverse order so newest appear first in feed)
             added_count = 0
-            for article in reversed(articles):
+            # The articles from the processor are already sorted correctly (newest first)
+            for article in articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
-            # Set the main feed 'updated' tag to the date of the newest article
             if articles:
-                newest_article = articles[0] # Query is sorted DESC
-                pub_date = newest_article.get('date_published') or newest_article.get('date_modified') or newest_article.get('fetched_at')
-                if pub_date:
+                newest_article = articles[0]
+                pub_date_str = newest_article.get('pubDate')
+                if pub_date_str:
+                    pub_date = datetime.fromisoformat(pub_date_str)
                     if pub_date.tzinfo is None:
                         pub_date = pub_date.replace(tzinfo=timezone.utc)
                     fg.updated(pub_date.astimezone(self.brasilia_tz))
+                else:
+                    fg.updated(datetime.now(timezone.utc).astimezone(self.brasilia_tz))
+            else:
+                fg.updated(datetime.now(timezone.utc).astimezone(self.brasilia_tz))
 
             logger.info(f"Generated Atom feed with {added_count} articles")
             return fg.atom_str(pretty=True).decode('utf-8')
