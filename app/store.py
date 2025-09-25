@@ -265,10 +265,45 @@ class ArticleStore:
                     last_added_count INTEGER DEFAULT 0, PRIMARY KEY (source, path)
                 )
             ''')
+
+            # Processed topics table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS processed_topics (
+                    topic_name TEXT PRIMARY KEY,
+                    json_data TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+            ''')
             conn.commit()
             logger.info("Database tables initialized successfully.")
         finally:
             conn.close()
+
+def save_processed_topic(conn, topic_name, json_data, updated_at):
+    """Saves the processed JSON data for a topic."""
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT OR REPLACE INTO processed_topics (topic_name, json_data, updated_at)
+            VALUES (?, ?, ?)
+        """, (topic_name, json_data, updated_at))
+        conn.commit()
+        logger.info(f"Successfully saved processed topic: {topic_name}")
+        return True
+    except Exception as e:
+        logger.error(f"Error saving processed topic {topic_name}: {e}", exc_info=True)
+        return False
+
+def get_processed_topic(conn, topic_name):
+    """Retrieves the processed JSON data for a topic."""
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT json_data FROM processed_topics WHERE topic_name = ?", (topic_name,))
+        row = cursor.fetchone()
+        return row[0] if row else None
+    except Exception as e:
+        logger.error(f"Error retrieving processed topic {topic_name}: {e}", exc_info=True)
+        return None
 
     def populate_feeds_from_config(self):
         """Pre-populates the feeds table from the sources config."""

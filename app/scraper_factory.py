@@ -123,14 +123,16 @@ class ScraperFactory:
         max_pages: int = 2,
         max_articles: int = 20,
         request_delay: float = 0.3,
+        save_to_db: bool = True, # New parameter
     ) -> Tuple[List[dict], int]:
         """
-        Faz o scraping de uma fonte/seção específica com limites de performance.
+        Does the scraping of a specific source/section with performance limits.
 
-        - Respeita start_urls da seção.
-        - Deduplica URLs.
-        - Limita quantidade de artigos.
-        - Aplica filtros definidos em SOURCES_CONFIG.
+        - Respects the section's start_urls.
+        - Deduplicates URLs.
+        - Limits the number of articles.
+        - Applies filters defined in SOURCES_CONFIG.
+        - Conditionally saves to the database based on save_to_db.
 
         Returns:
             A tuple containing:
@@ -152,77 +154,60 @@ class ScraperFactory:
             sections = source_config.get("sections", {})
             if section not in sections:
                 logger.error(f"Section '{section}' not configured for source '{source}'.")
-                return []
+                return [], 0
 
             section_config = sections[section]
             
-            # Prioriza o feed RSS oficial, se disponível.
             official_rss_url = section_config.get("official_rss")
-            if official_rss_url:
-                start_urls = [official_rss_url]
-            else:
-                start_urls = section_config.get("start_urls", [])
+            start_urls = [official_rss_url] if official_rss_url else section_config.get("start_urls", [])
 
             if not start_urls:
-                logger.warning(f"Nenhuma URL de início (start_urls ou official_rss) configurada para {source}/{section}")
+                logger.warning(f"No start_urls or official_rss configured for {source}/{section}")
                 return [], 0
 
             filters = section_config.get("filters", {}) or {}
 
-            # Coleta URLs de artigos de todas as start_urls (com deduplicação)
             all_article_urls: List[str] = []
             for start_url in start_urls:
-                logger.info(
-                    f"Listing pages for {source}/{section} from {start_url} (max_pages={max_pages})"
-                )
+                logger.info(f"Listing pages for {source}/{section} from {start_url} (max_pages={max_pages})")
                 try:
                     urls = scraper.list_pages(start_url, max_pages, section=section) or []
                     all_article_urls.extend(urls)
                 except Exception as e:
                     logger.error(f"Failed listing pages from {start_url}: {e}")
 
-            # Deduplica mantendo ordem
             seen = set()
-            deduped_urls = []
-            for u in all_article_urls:
-                if u not in seen:
-                    seen.add(u)
-                    deduped_urls.append(u)
-
+            deduped_urls = [u for u in all_article_urls if not (u in seen or seen.add(u))]
             total_links_found = len(deduped_urls)
-
-            # Limita quantidade
             limited_urls = deduped_urls[:max_articles]
-            logger.info(
-                f"Scraping {source}/{section}: processing {len(limited_urls)} "
-                f"articles (found {total_links_found})"
-            )
+            
+            logger.info(f"Scraping {source}/{section}: processing {len(limited_urls)} articles (found {total_links_found})")
 
-            new_articles: List[dict] = []
+            scraped_articles: List[dict] = []
             conn = store.get_conn()
             try:
                 for i, article_url in enumerate(limited_urls, 1):
                     try:
                         logger.info(f"[{i}/{len(limited_urls)}] Parsing: {article_url}")
 
-                        # Check if article already exists in the store to prevent re-parsing
-                        if store_module.has_article(conn, article_url):
+                        if save_to_db and store_module.has_article(conn, article_url):
                             logger.debug(f"Article already exists in store, skipping parsing: {article_url}")
                             continue
+                        
                         article = scraper.parse_article(article_url, source=source, section=section)
                         if not article:
                             continue
 
-                        # Filtros (se o método retornar True = filtrar/descartar)
                         if filters and getattr(scraper, "apply_filters", None):
                             if scraper.apply_filters(article, filters):
                                 logger.info(f"Article filtered out: {article_url}")
                                 continue
+                        
+                        scraped_articles.append(article)
 
-                        # Upsert no store
-                        if store_module.upsert_article(conn, article):
-                            new_articles.append(article)
-                            logger.info(f"Stored: {article.get('title')}")
+                        if save_to_db:
+                            if store_module.upsert_article(conn, article):
+                                logger.info(f"Stored: {article.get('title')}")
 
                         if i < len(limited_urls) and request_delay > 0:
                             time.sleep(request_delay)
@@ -233,7 +218,11 @@ class ScraperFactory:
             finally:
                 conn.close()
 
-            return new_articles, total_links_found
+            # If saving to DB, we should return only the *newly* added ones.
+            # If not saving, we return all scraped articles.
+            # The current logic for `new_articles` in the old implementation was flawed because it was populated inside the loop.
+            # The correct list to return is `scraped_articles` which contains all successfully parsed articles.
+            return scraped_articles, total_links_found
 
         except Exception as e:
             logger.error(f"Failed to scrape {source}/{section}: {e}", exc_info=True)

@@ -1,16 +1,65 @@
 import logging
 import threading
 import time
+import json
 from datetime import datetime, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from . import store as store_module
+from . import feed_processor
+from .sources_config import SOURCES_CONFIG
+from .scraper_factory import ScraperFactory
 
 logger = logging.getLogger(__name__)
 
+# Definition of topics, their sources, and processing rules as per the prompt
+TOPIC_DEFINITIONS = {
+    "esportes_nacionais": {
+        "priority_source_order": ["ge", "lance"],
+        "sources": {
+            "ge": ["futebol"],
+            "lance": ["futebol"]
+        }
+    },
+    "economia_politica": {
+        "priority_source_order": ["g1", "folha"], # valor and estadao not in SOURCES_CONFIG
+        "sources": {
+            "g1": ["economia", "politica"],
+            "folha": ["economia", "politica"]
+        }
+    },
+    "internacional_latam": {
+        "priority_source_order": ["ole", "as_cl", "as_co", "as_mx"],
+        "sources": {
+            "ole": ["primera", "ascenso"],
+            "as_cl": ["futbol"],
+            "as_co": ["futbol"],
+            "as_mx": ["futbol"]
+        }
+    },
+    "internacional_europa": {
+        "priority_source_order": ["as_es", "marca", "theguardian", "lequipe", "kicker", "gazzetta", "abola"],
+        "sources": {
+            "as_es": ["primera", "copa_del_rey", "segunda"],
+            "marca": ["futbol"],
+            "theguardian": ["football"],
+            "lequipe": ["football"],
+            "kicker": ["bundesliga", "2-bundesliga"],
+            "gazzetta": ["calcio"],
+            "abola": ["ultimas"]
+        }
+    },
+    "ligas_eua": {
+        "priority_source_order": ["foxsports", "cbssports"],
+        "sources": {
+            "foxsports": ["nfl", "college-football", "mlb", "nba"],
+            "cbssports": ["nfl", "college-football", "mlb", "nba"]
+        }
+    }
+}
+
 class FeedScheduler:
-    def __init__(self, scraper, store, refresh_interval_minutes=10):
-        self.scraper = scraper
+    def __init__(self, store, refresh_interval_minutes=30):
         self.store = store
         self.refresh_interval_minutes = refresh_interval_minutes
         self.scheduler = BackgroundScheduler()
@@ -21,150 +70,134 @@ class FeedScheduler:
     def start(self):
         """Start the background scheduler"""
         try:
-            # Add the refresh job
             self.scheduler.add_job(
                 func=self._refresh_job,
                 trigger=IntervalTrigger(minutes=self.refresh_interval_minutes),
                 id='feed_refresh',
-                name='Feed Refresh Job',
+                name='Feed Aggregation Job',
                 replace_existing=True,
-                max_instances=1  # Prevent overlapping runs
+                max_instances=1
             )
-
             self.scheduler.start()
             logger.info(f"Scheduler started - refresh every {self.refresh_interval_minutes} minutes")
 
-            # Run initial refresh in background
             self.scheduler.add_job(
                 func=self._initial_refresh,
-                trigger='date', # Run immediately
+                trigger='date',
                 run_date=datetime.now(timezone.utc),
                 id='initial_refresh',
-                name='Initial Refresh',
-                max_instances=1
+                name='Initial Refresh'
             )
-
         except Exception as e:
             logger.error(f"Error starting scheduler: {e}")
 
     def stop(self):
         """Stop the background scheduler"""
-        try:
-            if self.scheduler.running:
-                self.scheduler.shutdown()
-                logger.info("Scheduler stopped")
-        except Exception as e:
-            logger.error(f"Error stopping scheduler: {e}")
+        if self.scheduler.running:
+            self.scheduler.shutdown()
+            logger.info("Scheduler stopped")
 
     def is_running(self):
-        """Check if scheduler is running"""
         return self.scheduler.running if self.scheduler else False
 
     def _initial_refresh(self):
-        """Initial refresh on startup"""
-        try:
-            # To decide on an initial scrape, we need to check if there are any articles.
-            # We'll get a connection and use the module-level get_stats function.
-            conn = self.store.get_conn()
-            try:
-                stats = store_module.get_stats(conn)
-            finally:
-                conn.close()
-            
-            if stats['total_articles'] == 0:
-                logger.info("No articles in database, performing initial scrape")
-                self._refresh_job()
-            else:
-                logger.info(f"Database has {stats['total_articles']} articles, skipping initial scrape")
-
-        except Exception as e:
-            logger.error(f"Error in initial refresh: {e}", exc_info=True)
+        """Initial refresh on startup to ensure there is data."""
+        logger.info("Performing initial data aggregation.")
+        self._refresh_job()
 
     def _refresh_job(self):
-        """Background job to refresh feeds from multiple sources"""
+        """Background job to scrape, process, and store feeds for all topics."""
         with self.lock:
             if self.is_running_flag:
-                logger.warning("Refresh job already running, skipping")
+                logger.warning("Aggregation job already running, skipping.")
                 return
-
             self.is_running_flag = True
 
+        logger.info("Starting feed aggregation for all topics.")
+        start_time = datetime.now(timezone.utc)
+
         try:
-            logger.info("Starting multi-source feed refresh")
-            start_time = datetime.now(timezone.utc)
+            for topic, definition in TOPIC_DEFINITIONS.items():
+                logger.info(f"Processing topic: {topic}")
+                
+                input_data_for_processor = {
+                    "run_id": f"run_{datetime.now(timezone.utc).timestamp()}",
+                    "topic": topic,
+                    "priority_source_order": definition["priority_source_order"],
+                    "feeds": [],
+                    "max_items": 200
+                }
 
-            total_new_articles = 0
-            from .sources_config import SOURCES_CONFIG
-            from .scraper_factory import ScraperFactory
-            
-            # Iterate over all configured sources, not just 'lance'
-            for source, source_config in SOURCES_CONFIG.items():
-                if not source_config or 'sections' not in source_config:
-                    continue
-
-                sections = source_config.get('sections', {}).keys()
-                for section in sections:
-                    try:
-                        logger.info(f"Refreshing {source}/{section}")
-                        # Scraper now returns new articles and total links found
-                        new_articles, links_found = ScraperFactory.scrape_source_section(
-                            source, section, self.store, 
-                            max_pages=1, max_articles=15, request_delay=0.5
-                        )
-                        added_count = len(new_articles)
-                        total_new_articles += added_count
-                        logger.info(f"Added {added_count} new articles for {source}/{section}")
-
-                        # Update feed stats in the database
-                        conn = self.store.get_conn()
+                for source, sections in definition["sources"].items():
+                    source_items = []
+                    for section in sections:
                         try:
-                            store_module.update_feed_stats(conn, source, section, links_found, added_count)
-                        finally:
-                            conn.close()
+                            logger.info(f"Scraping {source}/{section} for topic {topic}")
+                            # We no longer save to store here, just get the articles
+                            new_articles, _ = ScraperFactory.scrape_source_section(
+                                source, section, self.store, 
+                                max_pages=1, max_articles=20, request_delay=0.5, save_to_db=False
+                            )
+                            source_items.extend(new_articles)
+                            time.sleep(1) # Be nice to servers
+                        except Exception as e:
+                            logger.error(f"Error scraping {source}/{section}: {e}")
+                            continue
+                    
+                    if source_items:
+                        # The processor expects a specific format for items
+                        formatted_items = []
+                        for item in source_items:
+                            formatted_items.append({
+                                "title": item.get('title'),
+                                "link": item.get('url'),
+                                "pubDate": item.get('date_published', datetime.now(timezone.utc)).isoformat(),
+                                "summary": item.get('description'),
+                                "categories": item.get('tags', []),
+                                "lang": SOURCES_CONFIG.get(source, {}).get('language'),
+                                "image": item.get('image')
+                            })
 
-                        # Small delay between sections to be nice to servers
-                        time.sleep(2)
+                        input_data_for_processor["feeds"].append({
+                            "source": source,
+                            "category": topic, # Or derive from section if needed
+                            "items": formatted_items
+                        })
 
-                    except Exception as e:
-                        logger.error(f"Error refreshing {source}/{section}: {e}")
-                        continue
+                # Process the collected data for the topic
+                processed_data = feed_processor.process_feed_data(input_data_for_processor)
 
-            # Update last run time
-            self.last_run = datetime.now(timezone.utc)
-
-            # Log results
-            duration = (self.last_run - start_time).total_seconds()
-            logger.info(f"Multi-source feed refresh completed in {duration:.1f}s - {total_new_articles} new articles")
-
-            # Optional: cleanup old articles (keep last 30 days)
-            try:
+                # Save the final processed JSON to the database
                 conn = self.store.get_conn()
                 try:
-                    deleted_count = store_module.cleanup_old_articles(conn, days_to_keep=30)
-                    if deleted_count > 0:
-                        logger.info(f"Cleaned up {deleted_count} old articles")
+                    store_module.save_processed_topic(
+                        conn,
+                        topic,
+                        json.dumps(processed_data, indent=2),
+                        processed_data['updated_at']
+                    )
                 finally:
                     conn.close()
-            except Exception as e:
-                logger.warning(f"Error during cleanup: {e}", exc_info=True)
+
+            self.last_run = datetime.now(timezone.utc)
+            duration = (self.last_run - start_time).total_seconds()
+            logger.info(f"Feed aggregation completed in {duration:.1f}s")
 
         except Exception as e:
-            logger.error(f"Error in refresh job: {e}", exc_info=True)
+            logger.error(f"Fatal error in aggregation job: {e}", exc_info=True)
         finally:
             with self.lock:
                 self.is_running_flag = False
 
     def trigger_refresh(self):
-        """Manually trigger a refresh (for admin endpoint)"""
+        """Manually trigger a refresh."""
         try:
-            # Add a one-time job
             self.scheduler.add_job(
                 func=self._refresh_job,
                 trigger='date',
                 run_date=datetime.now(timezone.utc),
                 id=f'manual_refresh_{datetime.now().timestamp()}',
-                name='Manual Refresh',
-                max_instances=1
+                name='Manual Refresh'
             )
             return True
         except Exception as e:
@@ -172,7 +205,6 @@ class FeedScheduler:
             return False
 
     def get_status(self):
-        """Get scheduler status information"""
         return {
             'running': self.is_running(),
             'refresh_interval_minutes': self.refresh_interval_minutes,
@@ -182,7 +214,6 @@ class FeedScheduler:
         }
 
     def _get_next_run_time(self):
-        """Get next scheduled run time"""
         try:
             job = self.scheduler.get_job('feed_refresh')
             if job and job.next_run_time:

@@ -1,0 +1,3 @@
+{"ts": "2025-09-25 14:51:03,579", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-25 14:51:03,579", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-25 14:51:03,671", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
