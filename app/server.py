@@ -76,9 +76,8 @@ if not ADMIN_KEY:
 # Initialize components
 store = store_module.ArticleStore()
 
-scraper = LanceScraper(store, request_delay=REQUEST_DELAY_MS/1000.0)
 feed_generator = FeedGenerator()
-scheduler = FeedScheduler(scraper, store, refresh_interval_minutes=5)
+scheduler = FeedScheduler(store, refresh_interval_minutes=30)
 
 # Start background scheduler
 scheduler.start()
