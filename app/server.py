@@ -187,6 +187,46 @@ def processed_topic_feed(topic, format):
         logger.error(f"Error generating processed {format} feed for topic {topic}: {e}", exc_info=True)
         return jsonify({'error': f'Failed to generate processed {format} feed'}), 500
 
+from .scheduler import TOPIC_DEFINITIONS
+
+@app.route('/feeds/topic/<topic>/<format>')
+def processed_topic_feed(topic, format):
+    """Serves the processed, aggregated, and deduplicated feed for a given topic."""
+    try:
+        # Validate topic and format
+        if topic not in TOPIC_DEFINITIONS:
+            return f"Unknown topic: {topic}", 404
+        if format not in ['rss', 'atom']:
+            return f"Unsupported format: {format}. Use 'rss' or 'atom'", 400
+
+        # Get processed data from the database
+        processed_data_json = store_module.get_processed_topic(get_db(), topic)
+
+        if not processed_data_json:
+            return f"No processed feed found for topic: {topic}. The aggregation may not have run yet.", 404
+
+        processed_data = json.loads(processed_data_json)
+        articles = processed_data.get('items', [])
+
+        # Generate feed
+        feed_title = f"Feed Agregado para {topic.replace('_', ' ').title()}"
+        feed_description = f"Notícias agregadas e processadas sobre {topic.replace('_', ' ')}."
+
+        if format == 'rss':
+            feed_content = feed_generator.generate_rss(articles, title=feed_title, description=feed_description)
+            content_type = 'application/rss+xml'
+        else:  # atom
+            feed_content = feed_generator.generate_atom(articles, title=feed_title, description=feed_description)
+            content_type = 'application/atom+xml'
+
+        response = Response(feed_content, mimetype=content_type)
+        response.headers['Cache-Control'] = 'public, max-age=900'  # 15 minutes cache
+        return response
+
+    except Exception as e:
+        logger.error(f"Error generating processed {format} feed for topic {topic}: {e}", exc_info=True)
+        return jsonify({'error': f'Failed to generate processed {format} feed'}), 500
+
 @app.route('/feeds/<source>/<section>/<format>')
 def dynamic_feeds(source, section, format):
     """Dynamic feeds for any source/section/format combination"""

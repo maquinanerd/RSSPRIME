@@ -54,36 +54,48 @@ class FeedGenerator:
         """Add a single article to the feed"""
         try:
             fe = fg.add_entry()
-            
-            fe.id(article['link'])
+
+            # Handle URL from either 'link' (new format) or 'url' (old format)
+            link = article.get('link') or article.get('url')
+            if not link:
+                logger.error("Skipping article with no link or url.")
+                return False
+
+            fe.id(link)
             fe.title(article['title'])
-            fe.link(href=article['link'])
-            fe.description(article.get('summary') or article['title'])
-            
+            fe.link(href=link)
+            fe.description(article.get('summary') or article.get('description') or article['title'])
+
+            # Handle date from either 'pubDate' (new ISO string) or 'date_published' (old datetime object)
+            pub_date = None
             pub_date_str = article.get('pubDate')
-            if pub_date_str:
+            if pub_date_str and isinstance(pub_date_str, str):
                 pub_date = datetime.fromisoformat(pub_date_str)
+            else:
+                pub_date = article.get('date_published') or article.get('date_modified') or article.get('fetched_at')
+
+            if pub_date:
                 if pub_date.tzinfo is None:
                     pub_date = pub_date.replace(tzinfo=timezone.utc)
                 fe.published(pub_date.astimezone(self.brasilia_tz))
                 fe.updated(pub_date.astimezone(self.brasilia_tz))
-            
-            # Atom does not have a direct author tag, it's a complex type
-            # fe.author(name=article.get('author'))
-            
-            fe.guid(article['link'], permalink=True)
-            
+
+            if article.get('author'):
+                fe.author(name=article['author'])
+
+            fe.guid(link, permalink=True)
+
             if article.get('image'):
                 try:
                     mime_type = extract_mime_type(article['image'])
                     fe.enclosure(article['image'], length='0', type=mime_type)
                 except Exception as e:
-                    logger.warning(f"Could not add image enclosure for {article['link']}: {e}")
-            
+                    logger.warning(f"Could not add image enclosure for {link}: {e}")
+
             return True
-            
+
         except Exception as e:
-            logger.error(f"Error adding article to feed: {article.get('link')}: {e}")
+            logger.error(f"Error adding article to feed: {article.get('link') or article.get('url')}: {e}", exc_info=True)
             return False
     
     def generate_rss(self, articles, source='lance', section='futebol', title=None, description=None):
