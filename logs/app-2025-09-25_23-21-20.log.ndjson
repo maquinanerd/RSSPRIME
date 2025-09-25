@@ -1,0 +1,38 @@
+{"ts": "2025-09-25 20:21:20,602", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-25 20:21:20,602", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-25 20:21:20,604", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-25 20:21:20,604", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-25 20:21:20,605", "level": "INFO", "message": "Performing cleanup of invalid ole articles...", "module": "app.store"}
+{"ts": "2025-09-25 20:21:20,606", "level": "INFO", "message": "Performing cleanup of invalid abola articles...", "module": "app.store"}
+{"ts": "2025-09-25 20:21:20,610", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-25 20:21:20,611", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,612", "level": "INFO", "message": "Added job \"Feed Aggregation Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,612", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,613", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,613", "level": "INFO", "message": "Scheduler started - refresh every 30 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-25 20:21:20,613", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-25 20:51:20.611058-03:00 (in 1799.997625 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,614", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,618", "level": "INFO", "message": "Iniciando servidor Flask em http://127.0.0.1:5000 (Debug: True)", "module": "__main__"}
+{"ts": "2025-09-25 20:21:20,618", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,619", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-25 23:21:20 UTC], next run at: 2025-09-25 23:21:20 UTC)\" (scheduled at 2025-09-25 23:21:20.613596+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-25 20:21:20,619", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,620", "level": "INFO", "message": "Performing initial data aggregation.", "module": "app.scheduler"}
+{"ts": "2025-09-25 20:21:20,620", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-25 20:51:20.611058-03:00 (in 1799.990838 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 20:21:20,620", "level": "INFO", "message": "Starting feed aggregation for all topics.", "module": "app.scheduler"}
+{"ts": "2025-09-25 20:21:20,621", "level": "INFO", "message": "Processing topic: esportes_nacionais", "module": "app.scheduler"}
+{"ts": "2025-09-25 20:21:20,621", "level": "INFO", "message": "Scraping ge/futebol for topic esportes_nacionais", "module": "app.scheduler"}
+{"ts": "2025-09-25 20:21:20,622", "level": "INFO", "message": "Created GloboScraper for source 'ge'", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 20:21:20,622", "level": "INFO", "message": "Listing pages for ge/futebol from https://ge.globo.com/futebol/ (max_pages=1)", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 20:21:20,622", "level": "INFO", "message": "Fetching page 1: https://ge.globo.com/futebol/", "module": "app.base_scraper"}
+{"ts": "2025-09-25 20:21:20,662", "level": "INFO", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on http://127.0.0.1:5000", "module": "werkzeug"}
+{"ts": "2025-09-25 20:21:20,662", "level": "INFO", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "module": "werkzeug"}
+{"ts": "2025-09-25 20:21:20,664", "level": "INFO", "message": " * Restarting with stat", "module": "werkzeug"}
+{"ts": "2025-09-25 20:21:21,041", "level": "DEBUG", "message": "Robots check for https://ge.globo.com/futebol/ with UA 'Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https:...': True", "module": "app.base_scraper"}
+{"ts": "2025-09-25 20:21:21,733", "level": "DEBUG", "message": "Fetched https://ge.globo.com/futebol/ - Status: 200, Length: 944606 bytes", "module": "app.base_scraper"}
+{"ts": "2025-09-25 20:21:21,899", "level": "INFO", "message": "Found 9 article links on page", "module": "app.globo_scraper"}
+{"ts": "2025-09-25 20:21:21,899", "level": "INFO", "message": "Found 9 article links on page 1", "module": "app.base_scraper"}
+{"ts": "2025-09-25 20:21:22,400", "level": "INFO", "message": "Total article links collected: 9", "module": "app.base_scraper"}
+{"ts": "2025-09-25 20:21:22,400", "level": "INFO", "message": "Scraping ge/futebol: processing 9 articles (found 9)", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 20:21:22,401", "level": "INFO", "message": "[1/9] Parsing: https://ge.globo.com/futebol/times/fluminense/noticia/2025/09/25/veja-detalhes-de-como-sera-a-nova-terceira-camisa-do-fluminense-de-cores-grena-e-dourado.ghtml", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 20:21:22,401", "level": "DEBUG", "message": "Robots check for https://ge.globo.com/futebol/times/fluminense/noticia/2025/09/25/veja-detalhes-de-como-sera-a-nova-terceira-camisa-do-fluminense-de-cores-grena-e-dourado.ghtml with UA 'Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https:...': True", "module": "app.base_scraper"}
+{"ts": "2025-09-25 20:21:22,468", "level": "DEBUG", "message": "Fetched https://ge.globo.com/futebol/times/fluminense/noticia/2025/09/25/veja-detalhes-de-como-sera-a-nova-terceira-camisa-do-fluminense-de-cores-grena-e-dourado.ghtml - Status: 200, Length: 1020299 bytes", "module": "app.base_scraper"}

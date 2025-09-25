@@ -106,6 +106,22 @@ def build_examples(request):
         "uol_refresh": f"{base_url}feeds/uol/mundo/rss?refresh=1",
     }
 
+from .scheduler import TOPIC_DEFINITIONS
+
+def get_topic_feeds_structure():
+    """Builds a structured list of AI-aggregated topics for the dashboard."""
+    try:
+        topic_feeds = []
+        for topic_key, _ in TOPIC_DEFINITIONS.items():
+            topic_feeds.append({
+                "key": topic_key,
+                "name": topic_key.replace('_', ' ').title(),
+            })
+        return topic_feeds
+    except Exception as e:
+        logger.error(f"Failed to build topic feeds structure: {e}")
+        return []
+
 def get_dashboard_data_safe(request):
     """
     Safely fetches all data required for the dashboard, aggregating from other
@@ -114,14 +130,16 @@ def get_dashboard_data_safe(request):
     try:
         stats = safe_get_stats()
         sources = safe_get_sources_structure()
+        topic_feeds = get_topic_feeds_structure()
         examples = build_examples(request)
 
         return {
             "stats": stats,
             "sources": sources,
+            "topic_feeds": topic_feeds,
             "examples": examples,
             "request": request,
         }
     except Exception:
         logger.exception("Critical failure while building dashboard data")
-        return {"stats": {}, "sources": [], "examples": {}, "request": request}
+        return {"stats": {}, "sources": [], "topic_feeds": [], "examples": {}, "request": request}
