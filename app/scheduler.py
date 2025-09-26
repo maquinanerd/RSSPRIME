@@ -125,7 +125,7 @@ class FeedScheduler:
                     "topic": topic,
                     "priority_source_order": definition["priority_source_order"],
                     "feeds": [],
-                    "max_items": 200
+                    "max_items": 100
                 }
 
                 for source, sections in definition["sources"].items():
@@ -136,7 +136,7 @@ class FeedScheduler:
                             # We no longer save to store here, just get the articles
                             new_articles, _ = ScraperFactory.scrape_source_section(
                                 source, section, self.store, 
-                                max_pages=1, max_articles=20, request_delay=0.5, save_to_db=False
+                                max_pages=1, max_articles=100, request_delay=0.5, save_to_db=False
                             )
                             source_items.extend(new_articles)
                             time.sleep(1) # Be nice to servers

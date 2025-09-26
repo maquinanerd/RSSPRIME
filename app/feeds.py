@@ -104,10 +104,9 @@ class FeedGenerator:
             fg = self._create_base_feed(source=source, section=section, feed_format='rss', title=title, description=description)
             
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self')
-            fg.ttl(15)
-            
             added_count = 0
-            # The articles from the processor are already sorted correctly (newest first)
+            # Sort articles by date descending to be absolutely sure
+            articles.sort(key=lambda x: x.get('date_published') or x.get('date_modified') or x.get('fetched_at'), reverse=True)
             for article in articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
