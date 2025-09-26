@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from urllib.parse import urlparse
 from feedgen.feed import FeedGenerator as FG
-from .utils import extract_mime_type, deduplicate, sort_key
+from .utils import extract_mime_type, deduplicate_articles, best_dt
 from .sources_config import SOURCES_CONFIG
 
 logger = logging.getLogger(__name__)
@@ -67,23 +67,17 @@ class FeedGenerator:
             fe.link(href=link)
             fe.description(article.get('summary') or article.get('description') or article['title'])
 
-            # Handle date from either 'pubDate' (new ISO string) or 'date_published' (old datetime object)
-            pub_date = None
-            pub_date_str = article.get('pubDate')
-            if pub_date_str and isinstance(pub_date_str, str):
-                pub_date = datetime.fromisoformat(pub_date_str)
-            else:
-                pub_date = article.get('date_published') or article.get('date_modified') or article.get('fetched_at')
+            # Use best_dt to ensure we have a valid, timezone-aware date
+            pub_date = best_dt(article)
 
             if pub_date:
-                if pub_date.tzinfo is None:
-                    pub_date = pub_date.replace(tzinfo=timezone.utc)
                 fe.published(pub_date.astimezone(self.brasilia_tz))
                 fe.updated(pub_date.astimezone(self.brasilia_tz))
 
             if article.get('author'):
                 fe.author(name=article['author'])
 
+            # Use the article link as the GUID
             fe.guid(link, permalink=True)
 
             # Enclosure with length=0 is invalid. Removing it.
@@ -107,22 +101,33 @@ class FeedGenerator:
             
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self', type='application/rss+xml')
             
-            # Deduplicate and sort articles
-            processed_articles = deduplicate(articles)
-            processed_articles.sort(key=sort_key, reverse=True)
+            # 1. Deduplicate articles
+            dedup_articles = deduplicate_articles(articles)
+
+            # 2. Sort articles reverse-chronologically
+            sorted_articles = sorted(
+                dedup_articles,
+                key=lambda it: best_dt(it) or datetime.min.replace(tzinfo=timezone.utc),
+                reverse=True
+            )
+
+            # 3. Sanity check the sort order
+            for i in range(len(sorted_articles) - 1):
+                di = best_dt(sorted_articles[i])
+                dj = best_dt(sorted_articles[i+1])
+                if di and dj and di < dj:
+                    logger.error(f"Feed items out of order: {di} (index {i}) < {dj} (index {i+1})")
+                    break
 
             added_count = 0
-            for article in processed_articles:
+            for article in sorted_articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
-            if processed_articles:
-                newest_article = processed_articles[0]
-                pub_date_str = newest_article.get('pubDate')
-                if pub_date_str:
-                    pub_date = datetime.fromisoformat(pub_date_str)
-                    if pub_date.tzinfo is None:
-                        pub_date = pub_date.replace(tzinfo=timezone.utc)
+            if sorted_articles:
+                newest_article = sorted_articles[0]
+                pub_date = best_dt(newest_article)
+                if pub_date:
                     fg.lastBuildDate(pub_date.astimezone(self.brasilia_tz))
 
             logger.info(f"Generated RSS feed with {added_count} articles")
@@ -139,22 +144,33 @@ class FeedGenerator:
             
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self', type='application/atom+xml')
             
-            # Deduplicate and sort articles
-            processed_articles = deduplicate(articles)
-            processed_articles.sort(key=sort_key, reverse=True)
+            # 1. Deduplicate articles
+            dedup_articles = deduplicate_articles(articles)
+
+            # 2. Sort articles reverse-chronologically
+            sorted_articles = sorted(
+                dedup_articles,
+                key=lambda it: best_dt(it) or datetime.min.replace(tzinfo=timezone.utc),
+                reverse=True
+            )
+
+            # 3. Sanity check the sort order
+            for i in range(len(sorted_articles) - 1):
+                di = best_dt(sorted_articles[i])
+                dj = best_dt(sorted_articles[i+1])
+                if di and dj and di < dj:
+                    logger.error(f"Feed items out of order: {di} (index {i}) < {dj} (index {i+1})")
+                    break
             
             added_count = 0
-            for article in processed_articles:
+            for article in sorted_articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
-            if processed_articles:
-                newest_article = processed_articles[0]
-                pub_date_str = newest_article.get('pubDate')
-                if pub_date_str:
-                    pub_date = datetime.fromisoformat(pub_date_str)
-                    if pub_date.tzinfo is None:
-                        pub_date = pub_date.replace(tzinfo=timezone.utc)
+            if sorted_articles:
+                newest_article = sorted_articles[0]
+                pub_date = best_dt(newest_article)
+                if pub_date:
                     fg.updated(pub_date.astimezone(self.brasilia_tz))
                 else:
                     fg.updated(datetime.now(timezone.utc).astimezone(self.brasilia_tz))

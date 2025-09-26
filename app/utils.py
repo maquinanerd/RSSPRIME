@@ -181,30 +181,27 @@ def norm_title(t):
     """Normalize title for deduplication"""
     return ' '.join((t or '').lower().split())
 
-def sort_key(item):
-    """Generate a sort key from an article's dates."""
-    # Prioritize dates in order: published, modified, fetched
-    date_to_parse = (item.get('pubDate') or 
-                     item.get('date_published') or 
-                     item.get('date_modified') or 
-                     item.get('fetched_at'))
+def best_dt(item):
+    """Get the best datetime object from an article, timezone-aware."""
+    # Prioritize dates in order: published, modified, fetched, then pubDate string
+    date_to_parse = (item.get('date_published') or 
+                     item.get('date_modified')  or
+                     item.get('fetched_at')     or
+                     item.get('pubDate'))
     
-    # Use existing normalize_date function
     dt = normalize_date(date_to_parse)
     
     # Fallback to a very old date if no date is found
     return dt or datetime.min.replace(tzinfo=timezone.utc)
 
-def deduplicate(items):
-    """Deduplicate a list of articles based on title and canonical link."""
+def deduplicate_articles(items):
+    """Deduplicate a list of articles based on GUID or link."""
     seen = set()
-    out = []
+    dedup = []
     for it in items:
-        # Use existing canonical_url function
-        link = it.get('link') or it.get('url')
-        key = (norm_title(it.get('title')), canonical_url(link))
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(it)
-    return out
+        # Use guid or link as the unique key
+        key = it.get('guid') or it.get('link') or it.get('url')
+        if key and key not in seen:
+            seen.add(key)
+            dedup.append(it)
+    return dedup

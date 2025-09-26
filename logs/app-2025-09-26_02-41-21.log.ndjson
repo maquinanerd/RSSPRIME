@@ -1,0 +1,28 @@
+{"ts": "2025-09-25 23:41:21,543", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-25 23:41:21,543", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-25 23:41:21,546", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-25 23:41:21,547", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-25 23:41:21,547", "level": "INFO", "message": "Performing cleanup of invalid ole articles...", "module": "app.store"}
+{"ts": "2025-09-25 23:41:21,548", "level": "INFO", "message": "Performing cleanup of invalid abola articles...", "module": "app.store"}
+{"ts": "2025-09-25 23:41:21,553", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-25 23:41:21,554", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,555", "level": "INFO", "message": "Added job \"Feed Aggregation Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,555", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,556", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,556", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-26 00:11:21.554104-03:00 (in 1799.997369 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,556", "level": "INFO", "message": "Scheduler started - refresh every 30 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-25 23:41:21,559", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,564", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,564", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-26 02:41:21 UTC], next run at: 2025-09-26 02:41:21 UTC)\" (scheduled at 2025-09-26 02:41:21.557224+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-25 23:41:21,565", "level": "INFO", "message": "Performing initial data aggregation.", "module": "app.scheduler"}
+{"ts": "2025-09-25 23:41:21,565", "level": "INFO", "message": "Starting feed aggregation for all topics.", "module": "app.scheduler"}
+{"ts": "2025-09-25 23:41:21,565", "level": "INFO", "message": "Processing topic: esportes_nacionais", "module": "app.scheduler"}
+{"ts": "2025-09-25 23:41:21,565", "level": "INFO", "message": "Scraping ge/futebol for topic esportes_nacionais", "module": "app.scheduler"}
+{"ts": "2025-09-25 23:41:21,565", "level": "INFO", "message": "Created GloboScraper for source 'ge'", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 23:41:21,566", "level": "INFO", "message": "Listing pages for ge/futebol from https://ge.globo.com/futebol/ (max_pages=1)", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 23:41:21,566", "level": "INFO", "message": "Fetching page 1: https://ge.globo.com/futebol/", "module": "app.base_scraper"}
+{"ts": "2025-09-25 23:41:21,566", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,567", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-26 00:11:21.554104-03:00 (in 1799.986938 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 23:41:21,605", "level": "WARNING", "message": " * Debugger is active!", "module": "werkzeug"}
+{"ts": "2025-09-25 23:41:21,607", "level": "INFO", "message": " * Debugger PIN: 111-901-945", "module": "werkzeug"}
+{"ts": "2025-09-25 23:41:21,675", "level": "DEBUG", "message": "Robots check for https://ge.globo.com/futebol/ with UA 'Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https:...': True", "module": "app.base_scraper"}
