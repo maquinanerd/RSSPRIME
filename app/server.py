@@ -303,8 +303,8 @@ def dynamic_feeds(source, section, format):
             )
             fg.link(href=channel_data['link'], rel='self', type='application/rss+xml')
 
-            # Add articles in reversed order to counteract prepending
-            for article in reversed(sorted_articles):
+            # Add articles in the pre-sorted order
+            for article in sorted_articles:
                 feed_generator._add_article_to_feed(fg, article)
 
             # Set lastBuildDate from the channel_data dict, converting it back to datetime
