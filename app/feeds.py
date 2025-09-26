@@ -106,8 +106,8 @@ class FeedGenerator:
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self')
             added_count = 0
             # Sort articles by date descending to be absolutely sure
-            articles.sort(key=lambda x: x.get('date_published') or x.get('date_modified') or x.get('fetched_at'), reverse=True)
-            for article in articles:
+            sorted_articles = sorted(articles, key=lambda x: x.get('date_published') or x.get('date_modified') or x.get('fetched_at'), reverse=True)
+            for article in sorted_articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
@@ -135,8 +135,9 @@ class FeedGenerator:
             fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self')
             
             added_count = 0
-            # The articles from the processor are already sorted correctly (newest first)
-            for article in articles:
+            # Sort articles by date descending to be absolutely sure
+            sorted_articles = sorted(articles, key=lambda x: x.get('date_published') or x.get('date_modified') or x.get('fetched_at'), reverse=True)
+            for article in sorted_articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             

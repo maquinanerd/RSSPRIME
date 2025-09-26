@@ -1,0 +1,29 @@
+{"ts": "2025-09-25 22:17:31,895", "level": "WARNING", "message": "SESSION_SECRET not set, using temporary secret key for development", "module": "app.server"}
+{"ts": "2025-09-25 22:17:31,895", "level": "WARNING", "message": "ADMIN_KEY environment variable not set. Admin endpoints will be inaccessible.", "module": "app.server"}
+{"ts": "2025-09-25 22:17:31,897", "level": "INFO", "message": "Database tables initialized successfully.", "module": "app.store"}
+{"ts": "2025-09-25 22:17:31,897", "level": "INFO", "message": "Feeds table populated/updated from SOURCES_CONFIG.", "module": "app.store"}
+{"ts": "2025-09-25 22:17:31,897", "level": "INFO", "message": "Performing cleanup of invalid ole articles...", "module": "app.store"}
+{"ts": "2025-09-25 22:17:31,899", "level": "INFO", "message": "Performing cleanup of invalid abola articles...", "module": "app.store"}
+{"ts": "2025-09-25 22:17:31,903", "level": "DEBUG", "message": "Looking up time zone info from registry", "module": "tzlocal"}
+{"ts": "2025-09-25 22:17:31,904", "level": "INFO", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,907", "level": "INFO", "message": "Added job \"Feed Aggregation Job\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,907", "level": "INFO", "message": "Scheduler started", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,908", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,908", "level": "INFO", "message": "Scheduler started - refresh every 30 minutes", "module": "app.scheduler"}
+{"ts": "2025-09-25 22:17:31,908", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-25 22:47:31.903802-03:00 (in 1799.995262 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,909", "level": "INFO", "message": "Added job \"Initial Refresh\" to job store \"default\"", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,914", "level": "DEBUG", "message": "Looking for jobs to run", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,914", "level": "INFO", "message": "Running job \"Initial Refresh (trigger: date[2025-09-26 01:17:31 UTC], next run at: 2025-09-26 01:17:31 UTC)\" (scheduled at 2025-09-26 01:17:31.908663+00:00)", "module": "apscheduler.executors.default"}
+{"ts": "2025-09-25 22:17:31,914", "level": "INFO", "message": "Removed job initial_refresh", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,914", "level": "INFO", "message": "Performing initial data aggregation.", "module": "app.scheduler"}
+{"ts": "2025-09-25 22:17:31,915", "level": "DEBUG", "message": "Next wakeup is due at 2025-09-25 22:47:31.903802-03:00 (in 1799.988724 seconds)", "module": "apscheduler.scheduler"}
+{"ts": "2025-09-25 22:17:31,915", "level": "INFO", "message": "Starting feed aggregation for all topics.", "module": "app.scheduler"}
+{"ts": "2025-09-25 22:17:31,915", "level": "INFO", "message": "Processing topic: esportes_nacionais", "module": "app.scheduler"}
+{"ts": "2025-09-25 22:17:31,915", "level": "INFO", "message": "Scraping ge/futebol for topic esportes_nacionais", "module": "app.scheduler"}
+{"ts": "2025-09-25 22:17:31,915", "level": "INFO", "message": "Created GloboScraper for source 'ge'", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 22:17:31,915", "level": "INFO", "message": "Listing pages for ge/futebol from https://ge.globo.com/futebol/ (max_pages=1)", "module": "app.scraper_factory"}
+{"ts": "2025-09-25 22:17:31,915", "level": "INFO", "message": "Fetching page 1: https://ge.globo.com/futebol/", "module": "app.base_scraper"}
+{"ts": "2025-09-25 22:17:31,968", "level": "INFO", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://192.168.1.169:5000", "module": "werkzeug"}
+{"ts": "2025-09-25 22:17:31,968", "level": "INFO", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "module": "werkzeug"}
+{"ts": "2025-09-25 22:17:31,969", "level": "INFO", "message": " * Restarting with stat", "module": "werkzeug"}
+{"ts": "2025-09-25 22:17:32,024", "level": "DEBUG", "message": "Robots check for https://ge.globo.com/futebol/ with UA 'Mozilla/5.0 (compatible; LanceFeedBot/1.0; +https:...': True", "module": "app.base_scraper"}
