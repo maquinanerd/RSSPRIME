@@ -163,7 +163,7 @@ class FeedGenerator:
                     break
             
             added_count = 0
-            for article in sorted_articles:
+            for article in reversed(sorted_articles):
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
