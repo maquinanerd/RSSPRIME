@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from urllib.parse import urlparse
 from feedgen.feed import FeedGenerator as FG
-from .utils import extract_mime_type
+from .utils import extract_mime_type, deduplicate, sort_key
 from .sources_config import SOURCES_CONFIG
 
 logger = logging.getLogger(__name__)
@@ -43,6 +43,7 @@ class FeedGenerator:
         fg.link(href=source_config['base_url'], rel='alternate')
         fg.language(source_config.get('language', 'pt-BR'))
         fg.generator('Multi-Source Feed Generator v1.0')
+        fg.ttl(30)  # Add TTL
         
         fg.lastBuildDate(datetime.now(timezone.utc).astimezone(self.brasilia_tz))
         fg.managingEditor('noreply@lance-feeds.repl.co (Multi-Source Feed Bot)')
@@ -85,12 +86,13 @@ class FeedGenerator:
 
             fe.guid(link, permalink=True)
 
-            if article.get('image'):
-                try:
-                    mime_type = extract_mime_type(article['image'])
-                    fe.enclosure(article['image'], length='0', type=mime_type)
-                except Exception as e:
-                    logger.warning(f"Could not add image enclosure for {link}: {e}")
+            # Enclosure with length=0 is invalid. Removing it.
+            # if article.get('image'):
+            #     try:
+            #         mime_type = extract_mime_type(article['image'])
+            #         fe.enclosure(article['image'], length='0', type=mime_type)
+            #     except Exception as e:
+            #         logger.warning(f"Could not add image enclosure for {link}: {e}")
 
             return True
 
@@ -103,16 +105,19 @@ class FeedGenerator:
         try:
             fg = self._create_base_feed(source=source, section=section, feed_format='rss', title=title, description=description)
             
-            fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self')
+            fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/rss', rel='self', type='application/rss+xml')
+            
+            # Deduplicate and sort articles
+            processed_articles = deduplicate(articles)
+            processed_articles.sort(key=sort_key, reverse=True)
+
             added_count = 0
-            # Sort articles by date descending to be absolutely sure
-            sorted_articles = sorted(articles, key=lambda x: x.get('date_published') or x.get('date_modified') or x.get('fetched_at'), reverse=True)
-            for article in sorted_articles:
+            for article in processed_articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
-            if articles:
-                newest_article = articles[0]
+            if processed_articles:
+                newest_article = processed_articles[0]
                 pub_date_str = newest_article.get('pubDate')
                 if pub_date_str:
                     pub_date = datetime.fromisoformat(pub_date_str)
@@ -132,17 +137,19 @@ class FeedGenerator:
         try:
             fg = self._create_base_feed(source=source, section=section, feed_format='atom', title=title, description=description)
             
-            fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self')
+            fg.link(href=f'https://lance-feeds.repl.co/feeds/{source}/{section}/atom', rel='self', type='application/atom+xml')
+            
+            # Deduplicate and sort articles
+            processed_articles = deduplicate(articles)
+            processed_articles.sort(key=sort_key, reverse=True)
             
             added_count = 0
-            # Sort articles by date descending to be absolutely sure
-            sorted_articles = sorted(articles, key=lambda x: x.get('date_published') or x.get('date_modified') or x.get('fetched_at'), reverse=True)
-            for article in sorted_articles:
+            for article in processed_articles:
                 if self._add_article_to_feed(fg, article):
                     added_count += 1
             
-            if articles:
-                newest_article = articles[0]
+            if processed_articles:
+                newest_article = processed_articles[0]
                 pub_date_str = newest_article.get('pubDate')
                 if pub_date_str:
                     pub_date = datetime.fromisoformat(pub_date_str)
