@@ -277,6 +277,47 @@ def dynamic_feeds(source, section, format):
             if filtered_count > 0:
                 logger.info(f"Final filter removed {filtered_count} invalid 'A Bola' articles before feed generation.")
         
+        # Special handling for Lance Futebol RSS feed to apply custom sorting without deduplication
+        if source == 'lance' and section == 'futebol' and format == 'rss':
+            from app.order_feed_desc import order_desc
+            from email.utils import parsedate_to_datetime
+
+            # Define channel metadata as per request
+            channel_data = {
+                "title": "Lance! - Futebol - Feed não oficial",
+                "link": "https://lance-feeds.repl.co/feeds/lance/futebol/rss",
+                "description": "Notícias de futebol do Lance!",
+                "language": "pt-BR",
+            }
+
+            # Sort articles in place and update channel_data with lastBuildDate
+            sorted_articles = order_desc(articles, channel_data)
+
+            # Manually construct the feed to respect the new order and skip feedgen's internal sorting/dedup
+            fg = feed_generator._create_base_feed(
+                source=source,
+                section=section,
+                feed_format='rss',
+                title=channel_data['title'],
+                description=channel_data['description']
+            )
+            fg.link(href=channel_data['link'], rel='self', type='application/rss+xml')
+
+            # Add articles in the pre-sorted order
+            for article in sorted_articles:
+                feed_generator._add_article_to_feed(fg, article)
+
+            # Set lastBuildDate from the channel_data dict, converting it back to datetime
+            if 'lastBuildDate' in channel_data:
+                dt_obj = parsedate_to_datetime(channel_data['lastBuildDate'])
+                fg.lastBuildDate(dt_obj)
+
+            feed_content = fg.rss_str(pretty=True).decode('utf-8')
+            
+            response = Response(feed_content, mimetype='application/rss+xml')
+            response.headers['Cache-Control'] = 'public, max-age=900'
+            return response
+
         # Generate feed
         if format == 'rss':
             feed_content = feed_generator.generate_rss(articles, source=source, section=section)
